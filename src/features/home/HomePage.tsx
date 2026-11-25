@@ -8,6 +8,9 @@ import { AnimatedNumber } from '@/components/ui/animated-number'
 import { MacroTiles } from '@/features/nutrition/MacroTiles'
 import { LogWeightSheet } from '@/features/body/LogWeightSheet'
 import { ActiveWorkoutBanner } from '@/features/workout/ActiveWorkoutBanner'
+import { InsightsCard } from '@/features/progress/InsightsCard'
+import { WaterCard } from '@/features/activity/WaterCard'
+import { CardioSheet } from '@/features/activity/CardioSheet'
 import { useStartWorkout } from '@/features/workout/use-start-workout'
 import {
   useActiveSession,
@@ -17,6 +20,8 @@ import {
   useNextTemplateId,
   useNutritionGoal,
   useTemplates,
+  useTodayCardio,
+  useTodayEnergy,
 } from '@/features/profile/hooks'
 import { useDisplayName } from '@/features/profile/use-profile'
 import { weightStats } from '@/domain/body-weight'
@@ -39,6 +44,7 @@ export function HomePage() {
   const weights = useBodyWeights()
   const start = useStartWorkout()
   const [logOpen, setLogOpen] = useState(false)
+  const [cardioOpen, setCardioOpen] = useState(false)
 
   const now = new Date()
   const todayKey = toDateKey(now)
@@ -50,6 +56,8 @@ export function HomePage() {
   const trainedDays = new Set(thisWeek.map((s) => toDateKey(new Date(s.startedAt))))
   const weekGoal = profile?.daysPerWeek ?? 0
   const trainedToday = trainedDays.has(todayKey)
+  const energy = useTodayEnergy(todayKey)
+  const cardioToday = useTodayCardio(todayKey)
   const stats = weights ? weightStats(weights, todayKey, profile?.targetWeightKg ?? null) : null
 
   return (
@@ -147,17 +155,59 @@ export function HomePage() {
         </div>
       </section>
 
+      <InsightsCard limit={2} className="mt-6" />
+
+      {/* Actividad de hoy: cardio */}
+      <section className="mt-6">
+        <div className="mb-3 flex items-center justify-between px-1">
+          <h2 className="text-sm font-medium text-muted">{t.cardio.today}</h2>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="-mr-2 h-9"
+            onClick={() => setCardioOpen(true)}
+          >
+            <Plus />
+            {t.cardio.add}
+          </Button>
+        </div>
+        {cardioToday && cardioToday.length > 0 && (
+          <Card className="mb-3 divide-y divide-border py-1">
+            {cardioToday.map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center justify-between gap-3 py-2.5 text-[0.95rem]"
+              >
+                <span className="font-medium">{t.cardio.activities[c.activity]}</span>
+                <span className="num text-sm text-muted">
+                  {t.cardio.entry(c.minutes, formatDecimal(c.kcal, 0))}
+                </span>
+              </div>
+            ))}
+          </Card>
+        )}
+        <WaterCard date={todayKey} />
+      </section>
+
       {/* Nutrición */}
       {goal && (
         <section className="mt-6">
           <h2 className="mb-3 px-1 text-sm font-medium text-muted">{h.nutrition}</h2>
           <Card>
             <p className="flex items-baseline gap-1.5">
-              <AnimatedNumber value={goal.kcal} className="text-3xl font-bold" />
+              <AnimatedNumber
+                value={energy?.totalKcal ?? goal.kcal}
+                className="text-3xl font-bold"
+              />
               <span className="text-sm text-muted">
                 {t.units.kcal} · {h.nutritionTarget}
               </span>
             </p>
+            {energy && energy.cardioKcal > 0 && (
+              <p className="mt-1 num text-sm text-success">
+                {h.cardioBonus(formatDecimal(energy.cardioKcal, 0))}
+              </p>
+            )}
             <MacroTiles macros={goal} className="mt-4" />
           </Card>
         </section>
@@ -205,6 +255,7 @@ export function HomePage() {
         </Card>
       </section>
 
+      <CardioSheet open={cardioOpen} onOpenChange={setCardioOpen} />
       <LogWeightSheet
         open={logOpen}
         onOpenChange={setLogOpen}

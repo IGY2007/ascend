@@ -1,6 +1,8 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type {
   BodyWeight,
+  CardioLog,
+  WaterLog,
   Exercise,
   ExerciseSet,
   NutritionGoal,
@@ -25,6 +27,8 @@ export class AscendDB extends Dexie {
   sessions!: EntityTable<WorkoutSession, 'id'>
   sessionExercises!: EntityTable<SessionExercise, 'id'>
   exerciseSets!: EntityTable<ExerciseSet, 'id'>
+  cardioLogs!: EntityTable<CardioLog, 'id'>
+  waterLogs!: EntityTable<WaterLog, 'id'>
 
   constructor(name = 'ascend') {
     super(name)
@@ -65,6 +69,12 @@ export class AscendDB extends Dexie {
             if (t.source === 'generated') t.weekdays = []
           })
       })
+
+    // v3: cardio y agua.
+    this.version(3).stores({
+      cardioLogs: 'id, date',
+      waterLogs: 'id, date',
+    })
   }
 }
 

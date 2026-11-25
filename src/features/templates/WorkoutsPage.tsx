@@ -10,6 +10,7 @@ import { ActiveWorkoutBanner } from '@/features/workout/ActiveWorkoutBanner'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
 import { AddSheet } from './AddSheet'
+import { CardioSheet } from '@/features/activity/CardioSheet'
 
 const w = t.workouts
 
@@ -17,6 +18,7 @@ export function WorkoutsPage() {
   const templates = useTemplates()
   const nextId = useNextTemplateId()
   const [addOpen, setAddOpen] = useState(false)
+  const [cardioOpen, setCardioOpen] = useState(false)
 
   return (
     <>
@@ -80,7 +82,8 @@ export function WorkoutsPage() {
           </ol>
         </>
       )}
-      <AddSheet open={addOpen} onOpenChange={setAddOpen} />
+      <AddSheet open={addOpen} onOpenChange={setAddOpen} onCardio={() => setCardioOpen(true)} />
+      <CardioSheet open={cardioOpen} onOpenChange={setCardioOpen} />
     </>
   )
 }

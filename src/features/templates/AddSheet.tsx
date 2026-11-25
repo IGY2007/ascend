@@ -17,9 +17,11 @@ const w = t.workouts
 export function AddSheet({
   open,
   onOpenChange,
+  onCardio,
 }: {
   open: boolean
   onOpenChange: (o: boolean) => void
+  onCardio: () => void
 }) {
   const templates = useTemplates()
   const nextId = useNextTemplateId()
@@ -77,7 +79,15 @@ export function AddSheet({
             hint={w.createRoutineHint}
             onClick={() => setMode('create')}
           />
-          <Action icon={Activity} title={w.cardioSoon} disabled />
+          <Action
+            icon={Activity}
+            title={w.cardio}
+            hint={w.cardioHint}
+            onClick={() => {
+              onOpenChange(false)
+              onCardio()
+            }}
+          />
         </div>
       )}
 

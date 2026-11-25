@@ -7,6 +7,8 @@ import {
   templatesService,
 } from '@/services/local-data'
 import { historyService, workoutService } from '@/services/workout'
+import { cardioService, todayEnergy, waterService } from '@/services/activity'
+import { statsService } from '@/services/stats'
 
 /** undefined = cargando · null = todavía no hizo el cuestionario */
 export function useLocalProfile() {
@@ -53,4 +55,50 @@ export function useHistory() {
 
 export function useSessionSummary(id: string | undefined) {
   return useLiveQuery(async () => (id ? ((await historyService.summary(id)) ?? null) : null), [id])
+}
+
+export function useTodayCardio(date: string) {
+  return useLiveQuery(() => cardioService.byDate(date), [date])
+}
+
+export function useTodayWater(date: string) {
+  return useLiveQuery(
+    async () => (await waterService.byDate(date)).reduce((s, w) => s + w.ml, 0),
+    [date],
+  )
+}
+
+export function useWaterTarget() {
+  return useLiveQuery(() => waterService.target())
+}
+
+export function useTodayEnergy(date: string) {
+  return useLiveQuery(async () => (await todayEnergy(date)) ?? null, [date])
+}
+
+export function useInsights(today: string) {
+  return useLiveQuery(() => statsService.insights(today), [today])
+}
+
+export function useWeeklyStats(today: string) {
+  return useLiveQuery(() => statsService.weekly(today, 8), [today])
+}
+
+export function useWaterDaily(today: string) {
+  return useLiveQuery(() => statsService.waterDaily(today, 14), [today])
+}
+
+export function useExercisesDone() {
+  return useLiveQuery(() => statsService.exercisesDone())
+}
+
+export function useExerciseHistory(exerciseId: string | null) {
+  return useLiveQuery(
+    async () => (exerciseId ? statsService.exerciseHistory(exerciseId) : []),
+    [exerciseId],
+  )
+}
+
+export function useCardioLogs() {
+  return useLiveQuery(async () => (await cardioService.all()).reverse())
 }

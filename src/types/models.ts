@@ -1,3 +1,5 @@
+import type { CardioActivity, Intensity } from '@/domain/cardio'
+
 /**
  * Modelos de la app (camelCase). Se guardan en Dexie y, cuando se active Supabase, se mapean a las
  * tablas de supabase/migrations/. Todos los registros propios llevan id UUID de cliente, userId y
@@ -196,6 +198,32 @@ export interface ExerciseSet {
   rir: number | null
   isCompleted: boolean
   completedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// ---- Cardio y agua ----
+
+export interface CardioLog {
+  id: string
+  userId: string
+  /** Fecha local AAAA-MM-DD */
+  date: string
+  activity: CardioActivity
+  intensity: Intensity
+  minutes: number
+  /** Calorías estimadas al guardar (con el peso de ese momento) */
+  kcal: number
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface WaterLog {
+  id: string
+  userId: string
+  date: string
+  ml: number
   createdAt: string
   updatedAt: string
 }

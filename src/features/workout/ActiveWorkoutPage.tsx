@@ -32,6 +32,8 @@ import { RestTimer, type RestState } from './RestTimer'
 import { useWakeLock } from './use-wake-lock'
 
 const wk = t.workout
+/** Descanso recomendado entre series: 2 a 2:30 min. El temporizador cuenta 2:30 (ajustable con ±15). */
+const REST_SECONDS = 150
 
 function usePersistedState<T>(key: string, initial: T) {
   const [value, setValue] = useState<T>(() => {
@@ -153,9 +155,8 @@ export function ActiveWorkoutPage() {
                 total={exercises.length}
                 onOpenList={() => setListOpen(true)}
                 onReplace={() => setPickerMode('replace')}
-                onSetCompleted={(restSeconds) =>
-                  restSeconds > 0 &&
-                  setRest({ endsAt: Date.now() + restSeconds * 1000, total: restSeconds })
+                onSetCompleted={() =>
+                  setRest({ endsAt: Date.now() + REST_SECONDS * 1000, total: REST_SECONDS })
                 }
               />
             </motion.div>
@@ -167,6 +168,7 @@ export function ActiveWorkoutPage() {
       <footer className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-bg/90 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur-xl">
         <div className="mx-auto max-w-lg space-y-2.5 px-4 pt-3">
           <RestTimer rest={rest} onChange={setRest} />
+          {!rest && <p className="text-center text-xs text-muted">{wk.restRecommended}</p>}
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
@@ -307,7 +309,7 @@ function ExerciseBlock({
   total: number
   onOpenList: () => void
   onReplace: () => void
-  onSetCompleted: (restSeconds: number) => void
+  onSetCompleted: () => void
 }) {
   const type = se.exercise?.exerciseType ?? 'weighted'
   const timed = type === 'timed'
@@ -338,7 +340,7 @@ function ExerciseBlock({
       if (set.weightKg === null && type === 'weighted') values.weightKg = weightPlaceholder(i)
     }
     await workoutService.toggleSet(set.id, values)
-    if (completing) onSetCompleted(se.targetRestSeconds ?? 0)
+    if (completing) onSetCompleted()
   }
 
   const target =
@@ -361,7 +363,6 @@ function ExerciseBlock({
             {[
               target && `${wk.target}: ${target}`,
               se.targetRir !== null && t.workouts.rir(se.targetRir),
-              se.targetRestSeconds && t.workouts.rest(se.targetRestSeconds),
             ]
               .filter(Boolean)
               .join(' · ')}
@@ -394,7 +395,9 @@ function ExerciseBlock({
               .join(' · ')}
           </p>
         ) : (
-          <p className="text-subtle">{wk.firstTime}</p>
+          <p className="text-subtle">
+            {se.sets.some((x) => x.weightKg !== null) ? wk.fromRoutine : wk.firstTime}
+          </p>
         )}
       </div>
       {suggestion && <Tip className="mt-3">{wk.suggestion(formatDecimal(suggestion))}</Tip>}

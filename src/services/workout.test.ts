@@ -104,4 +104,24 @@ describe('entrenamiento', () => {
     await workoutService.discard(id)
     expect(await db.sessions.count()).toBe(0)
   })
+
+  it('los kilos de la rutina se precargan y se actualizan con lo que levantaste', async () => {
+    const tpl = (await templatesService.list())[0]!
+    const item = tpl.items[0]!
+    await templatesService.updateItem(item.id, { targetWeights: [50, 52.5, 55] })
+    const id = await workoutService.startFromTemplate(tpl.id)
+    const view = (await workoutService.view(id))!
+    expect(view.exercises[0]!.sets.map((s) => s.weightKg)).toEqual([50, 52.5, 55])
+
+    // Levanta más en la última serie y termina
+    const last = view.exercises[0]!.sets[2]!
+    await workoutService.updateSet(last.id, { weightKg: 57.5 })
+    for (const s of view.exercises[0]!.sets) {
+      await workoutService.updateSet(s.id, { repetitions: 8 })
+      await workoutService.toggleSet(s.id)
+    }
+    await workoutService.finish(id)
+    const updated = (await templatesService.list())[0]!.items[0]!
+    expect(updated.targetWeights).toEqual([50, 52.5, 57.5])
+  })
 })

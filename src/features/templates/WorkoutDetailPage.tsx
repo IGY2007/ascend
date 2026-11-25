@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { ChevronLeft, Clock, Copy, Pencil, Play, Plus, Trash2 } from 'lucide-react'
+import { formatDecimal } from '@/domain/numbers'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -17,6 +18,16 @@ import { t } from '@/i18n'
 import { EditItemSheet } from './EditItemSheet'
 
 const w = t.workouts
+
+/** "60 kg" si todas las series tienen el mismo peso; si no, "60 · 62,5 · 65 kg". */
+function weightsLabel(weights: (number | null)[] | undefined): string | null {
+  const ws = (weights ?? []).filter((x): x is number => x !== null)
+  if (ws.length === 0) return null
+  const unique = [...new Set(ws)]
+  return w.weightsSummary(
+    unique.length === 1 ? formatDecimal(unique[0]!) : ws.map((x) => formatDecimal(x)).join(' · '),
+  )
+}
 
 export function WorkoutDetailPage() {
   const { id } = useParams()
@@ -103,6 +114,11 @@ export function WorkoutDetailPage() {
 
           {tpl.notes && <Tip className="mb-4">{tpl.notes}</Tip>}
 
+          <p className="mb-3 flex items-center gap-2 px-1 text-sm text-muted">
+            <Clock className="size-4 shrink-0" />
+            {w.restRecommended}
+          </p>
+
           {tpl.items.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted">
               {w.emptyRoutine}
@@ -135,10 +151,11 @@ export function WorkoutDetailPage() {
                                 timed,
                               )}
                             </span>
-                            <span className="flex items-center gap-1 text-muted">
-                              <Clock className="size-3.5" aria-label={w.restLabel} />
-                              {w.rest(item.targetRestSeconds)}
-                            </span>
+                            {!timed && weightsLabel(item.targetWeights) && (
+                              <span className="font-semibold text-accent-2">
+                                {weightsLabel(item.targetWeights)}
+                              </span>
+                            )}
                             {item.targetRir !== null && (
                               <span className="text-muted">{w.rir(item.targetRir)}</span>
                             )}

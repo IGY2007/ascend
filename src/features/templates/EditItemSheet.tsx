@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowDown, ArrowUp, Pencil, Repeat, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, Copy, Pencil, Repeat, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Sheet } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import { exercisesService, templatesService, type TemplateItem } from '@/service
 import { t } from '@/i18n'
 
 const w = t.workouts
+const MAX_SETS = 20
 
 interface Props {
   item: TemplateItem | null
@@ -19,13 +20,13 @@ interface Props {
   onClose: () => void
 }
 
-/** Editar un ejercicio de la rutina: cambiarlo, renombrarlo, series, reps, descanso, RIR y notas. */
+/** Editar un ejercicio de la rutina: cambiarlo, renombrarlo, series, reps, kilos por serie, RIR y notas. */
 export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
   const [sets, setSets] = useState<number | null>(null)
   const [min, setMin] = useState<number | null>(null)
   const [max, setMax] = useState<number | null>(null)
-  const [rest, setRest] = useState<number | null>(null)
   const [rir, setRir] = useState<number | null>(null)
+  const [weights, setWeights] = useState<(number | null)[]>([])
   const [notes, setNotes] = useState('')
   const [renaming, setRenaming] = useState<string | null>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -36,31 +37,40 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
     setSets(item.targetSets)
     setMin(item.targetRepsMin)
     setMax(item.targetRepsMax)
-    setRest(item.targetRestSeconds)
     setRir(item.targetRir)
+    setWeights(item.targetWeights ?? [])
     setNotes(item.notes ?? '')
     setRenaming(null)
   }
 
   const timed = item?.exercise?.exerciseType === 'timed'
+  const setCount = Math.min(MAX_SETS, Math.max(0, sets ?? 0))
   const valid =
     sets !== null &&
     sets >= 1 &&
-    sets <= 20 &&
+    sets <= MAX_SETS &&
     min !== null &&
     max !== null &&
     min >= 1 &&
-    max >= min &&
-    rest !== null
+    max >= min
+
+  const setWeight = (i: number, v: number | null) =>
+    setWeights((prev) => {
+      const next = [...prev]
+      while (next.length <= i) next.push(null)
+      next[i] = v
+      return next
+    })
 
   const save = async () => {
     if (!item || !valid) return
+    const trimmed = Array.from({ length: setCount }, (_, i) => weights[i] ?? null)
     await templatesService.updateItem(item.id, {
       targetSets: sets,
       targetRepsMin: min,
       targetRepsMax: max,
-      targetRestSeconds: rest,
       targetRir: rir,
+      targetWeights: timed ? [] : trimmed,
       notes: notes.trim() || null,
     })
     toast.success(w.saved)
@@ -143,13 +153,55 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
               </Button>
             </div>
 
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-4 gap-2.5">
               {field(w.sets, sets, setSets)}
               {field(timed ? `${w.seconds} mín.` : w.repsMin, min, setMin)}
               {field(timed ? `${w.seconds} máx.` : w.repsMax, max, setMax)}
-              {field(w.restSeconds, rest, setRest)}
               {field(w.targetRir, rir, setRir)}
             </div>
+
+            {/* Kilos por serie */}
+            {!timed && setCount > 0 && (
+              <fieldset>
+                <div className="mb-2 flex items-baseline justify-between gap-3">
+                  <legend className="text-sm font-medium text-fg">{w.weightsTitle}</legend>
+                  {setCount > 1 && weights[0] != null && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setWeights(Array.from({ length: setCount }, () => weights[0] ?? null))
+                      }
+                      className="flex items-center gap-1 text-xs font-medium text-accent-2"
+                    >
+                      <Copy className="size-3.5" />
+                      {w.weightsSameAll}
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {Array.from({ length: setCount }, (_, i) => (
+                    <label key={i} className="relative block">
+                      <span className="pointer-events-none absolute top-1.5 left-3 text-[0.65rem] font-medium text-subtle">
+                        {t.workout.set} {i + 1}
+                      </span>
+                      <NumberInput
+                        value={weights[i] ?? null}
+                        onValueChange={(v) => setWeight(i, v)}
+                        placeholder={
+                          weights[i - 1] != null ? String(weights[i - 1]).replace('.', ',') : '—'
+                        }
+                        aria-label={`${t.workout.kg} ${t.workout.set} ${i + 1}`}
+                        className="h-14 pt-3 pr-8 text-lg"
+                      />
+                      <span className="pointer-events-none absolute right-3 bottom-3.5 text-xs text-muted">
+                        {t.units.kg}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-subtle">{w.weightsHint}</p>
+              </fieldset>
+            )}
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-medium text-muted">{w.notes}</span>

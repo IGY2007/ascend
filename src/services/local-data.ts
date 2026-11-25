@@ -462,6 +462,7 @@ export const templatesService = {
         | 'targetRepsMax'
         | 'targetRestSeconds'
         | 'targetRir'
+        | 'targetWeights'
         | 'notes'
       >
     >,

@@ -69,7 +69,7 @@ async function createSessionExercise(
       SessionExercise,
       'targetSets' | 'targetRepsMin' | 'targetRepsMax' | 'targetRestSeconds' | 'targetRir' | 'notes'
     >
-  > = {},
+  > & { targetWeights?: (number | null)[] } = {},
 ) {
   const id = uuid()
   await db.sessionExercises.add({
@@ -97,7 +97,9 @@ async function createSessionExercise(
       sessionExerciseId: id,
       setNumber: i + 1,
       setType: 'normal' as const,
-      weightKg: previous[i]?.weightKg ?? previous.at(-1)?.weightKg ?? null,
+      // Peso: el de la rutina para esa serie; si no hay, lo de la última vez.
+      weightKg:
+        targets.targetWeights?.[i] ?? previous[i]?.weightKg ?? previous.at(-1)?.weightKg ?? null,
       repetitions: null,
       durationSeconds: null,
       rir: null,
@@ -288,20 +290,51 @@ export const workoutService = {
     const session = await db.sessions.get(sessionId)
     if (!session) return
     const end = new Date()
-    await db.transaction('rw', [db.sessions, db.sessionExercises, db.exerciseSets], async () => {
-      const sets = await db.exerciseSets.where('sessionId').equals(sessionId).toArray()
-      await db.exerciseSets.bulkDelete(sets.filter((s) => !s.isCompleted).map((s) => s.id))
-      const kept = new Set(sets.filter((s) => s.isCompleted).map((s) => s.sessionExerciseId))
-      const ses = await db.sessionExercises.where('sessionId').equals(sessionId).toArray()
-      await db.sessionExercises.bulkDelete(ses.filter((s) => !kept.has(s.id)).map((s) => s.id))
-      for (const id of kept) await renumberSets(id)
-      await db.sessions.update(sessionId, {
-        status: 'completed',
-        completedAt: end.toISOString(),
-        durationSeconds: Math.round((end.getTime() - new Date(session.startedAt).getTime()) / 1000),
-        updatedAt: end.toISOString(),
-      })
-    })
+    await db.transaction(
+      'rw',
+      [db.sessions, db.sessionExercises, db.exerciseSets, db.templateExercises],
+      async () => {
+        const sets = await db.exerciseSets.where('sessionId').equals(sessionId).toArray()
+        await db.exerciseSets.bulkDelete(sets.filter((s) => !s.isCompleted).map((s) => s.id))
+
+        // La rutina se actualiza con los kilos que levantaste: la próxima arrancás desde ahí.
+        if (session.templateId) {
+          const items = await db.templateExercises
+            .where('templateId')
+            .equals(session.templateId)
+            .toArray()
+          const sesAll = await db.sessionExercises.where('sessionId').equals(sessionId).toArray()
+          for (const se of sesAll) {
+            const item = items.find((it) => it.exerciseId === se.exerciseId)
+            if (!item) continue
+            const lifted = sets
+              .filter(
+                (s) => s.sessionExerciseId === se.id && s.isCompleted && s.setType === 'normal',
+              )
+              .sort((a, b) => a.setNumber - b.setNumber)
+              .map((s) => s.weightKg)
+            if (lifted.some((w) => w !== null)) {
+              await db.templateExercises.update(item.id, {
+                targetWeights: lifted,
+                updatedAt: end.toISOString(),
+              })
+            }
+          }
+        }
+        const kept = new Set(sets.filter((s) => s.isCompleted).map((s) => s.sessionExerciseId))
+        const ses = await db.sessionExercises.where('sessionId').equals(sessionId).toArray()
+        await db.sessionExercises.bulkDelete(ses.filter((s) => !kept.has(s.id)).map((s) => s.id))
+        for (const id of kept) await renumberSets(id)
+        await db.sessions.update(sessionId, {
+          status: 'completed',
+          completedAt: end.toISOString(),
+          durationSeconds: Math.round(
+            (end.getTime() - new Date(session.startedAt).getTime()) / 1000,
+          ),
+          updatedAt: end.toISOString(),
+        })
+      },
+    )
   },
 
   /** Descarta el entrenamiento en curso (se borra del dispositivo). */

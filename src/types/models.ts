@@ -144,6 +144,8 @@ export interface TemplateExercise {
   targetRepsMax: number
   targetRestSeconds: number
   targetRir: number | null
+  /** Kilos objetivo por serie (índice = serie). Se precargan al entrenar y se actualizan al terminar. */
+  targetWeights?: (number | null)[]
   notes: string | null
   createdAt: string
   updatedAt: string

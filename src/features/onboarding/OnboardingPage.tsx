@@ -17,6 +17,12 @@ import {
   Trophy,
   Venus,
   Zap,
+  Columns2,
+  Columns3,
+  Layers,
+  LayoutGrid,
+  Rabbit,
+  Turtle,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Logo } from '@/components/brand/Logo'
@@ -26,7 +32,10 @@ import { AnimatedNumber } from '@/components/ui/animated-number'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
 import { previewPlan, profileService } from '@/services/local-data'
-import { sortWeekdays } from '@/domain/routine-generator'
+import { recommendedSplit } from '@/domain/routine-generator'
+import { bmi } from '@/domain/body-metrics'
+import { formatDecimal } from '@/domain/numbers'
+import { Tip } from '@/components/ui/tip'
 import { useLocalProfile } from '@/features/profile/hooks'
 import type {
   ActivityLevel,
@@ -35,11 +44,12 @@ import type {
   OnboardingAnswers,
   Sex,
   TrainingPlace,
-  Weekday,
+  SplitStyle,
 } from '@/types/models'
 import { OptionCard } from './OptionCard'
 import { UnitField } from './UnitField'
 import { MacroTiles } from '@/features/nutrition/MacroTiles'
+import { MetricsGrid } from '@/features/nutrition/MetricsGrid'
 
 type Draft = Partial<Omit<OnboardingAnswers, 'targetWeightKg'>> & { targetWeightKg?: number | null }
 
@@ -53,6 +63,8 @@ const STEPS = [
   'activity',
   'experience',
   'days',
+  'split',
+  'legs',
   'duration',
   'place',
   'summary',
@@ -85,10 +97,12 @@ function validate(step: Step, d: Draft): string | null {
       return d.activity ? null : ''
     case 'experience':
       return d.experience ? null : ''
-    case 'days': {
-      const n = d.trainingDays?.length ?? 0
-      return n >= 2 && n <= 6 ? null : o.errors.days
-    }
+    case 'days':
+      return inRange(d.daysPerWeek, 2, 6) ? null : o.errors.days
+    case 'split':
+      return d.split ? null : ''
+    case 'legs':
+      return d.easeLegs === undefined ? '' : null
     case 'duration':
       return d.sessionMinutes ? null : ''
     case 'place':
@@ -144,6 +158,26 @@ export function OnboardingPage() {
     window.setTimeout(() => go(1), 180)
   }
 
+  const suggestedSplit = recommendedSplit(
+    draft.experience ?? 'intermediate',
+    draft.daysPerWeek ?? 3,
+  )
+  const bmiValue = draft.weightKg && draft.heightCm ? bmi(draft.weightKg, draft.heightCm) : null
+  const goalTip =
+    bmiValue === null
+      ? null
+      : o.tips.goal(
+          formatDecimal(bmiValue, 1),
+          bmiValue < 20 ? o.tips.goalLow : bmiValue >= 27 ? o.tips.goalHigh : o.tips.goalMid,
+        )
+  const targetWeeks =
+    draft.targetWeightKg && draft.weightKg
+      ? Math.ceil(
+          Math.abs(draft.targetWeightKg - draft.weightKg) /
+            (draft.targetWeightKg > draft.weightKg ? 0.35 : draft.weightKg * 0.0075),
+        )
+      : null
+
   const plan = useMemo(() => (isComplete(draft) ? previewPlan(draft) : null), [draft])
 
   const finish = async () => {
@@ -153,7 +187,6 @@ export function OnboardingPage() {
       await profileService.completeOnboarding({
         ...draft,
         name: draft.name.trim(),
-        trainingDays: sortWeekdays(draft.trainingDays),
         targetWeightKg: draft.targetWeightKg ?? null,
       })
       toast.success(t.onboarding.summaryTitle)
@@ -168,7 +201,17 @@ export function OnboardingPage() {
   const questionCount = STEPS.length - 2 // sin bienvenida ni resumen
   const showChrome = step !== 'welcome'
   const progress = Math.min(1, index / (STEPS.length - 1))
-  const autoAdvance = ['sex', 'goal', 'activity', 'experience', 'duration', 'place'].includes(step)
+  const autoAdvance = [
+    'sex',
+    'goal',
+    'activity',
+    'experience',
+    'days',
+    'split',
+    'legs',
+    'duration',
+    'place',
+  ].includes(step)
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden pt-safe">
@@ -303,6 +346,7 @@ export function OnboardingPage() {
                     />
                   ))}
                 </Options>
+                {goalTip && <Tip className="mt-5">{goalTip}</Tip>}
               </Question>
             )}
 
@@ -315,6 +359,10 @@ export function OnboardingPage() {
                   onChange={(v) => set('targetWeightKg', v)}
                   autoFocus
                 />
+                <Tip className="mt-5">
+                  {o.tips.target}
+                  {targetWeeks ? ` ${o.tips.targetWeeks(targetWeeks)}` : ''}
+                </Tip>
               </Question>
             )}
 
@@ -339,6 +387,7 @@ export function OnboardingPage() {
                     />
                   ))}
                 </Options>
+                <Tip className="mt-5">{o.tips.activity}</Tip>
               </Question>
             )}
 
@@ -362,40 +411,81 @@ export function OnboardingPage() {
                     />
                   ))}
                 </Options>
+                <Tip className="mt-5">{o.tips.experience}</Tip>
               </Question>
             )}
 
             {step === 'days' && (
-              <Question title={o.daysQ} hint={o.daysHint(draft.trainingDays?.length ?? 0)}>
-                <div className="grid grid-cols-7 gap-1.5" role="group" aria-label={o.daysQ}>
-                  {([1, 2, 3, 4, 5, 6, 0] as Weekday[]).map((d) => {
-                    const on = draft.trainingDays?.includes(d) ?? false
-                    return (
-                      <button
-                        key={d}
-                        type="button"
-                        aria-pressed={on}
-                        aria-label={L.weekdayLong[d]}
-                        onClick={() =>
-                          set(
-                            'trainingDays',
-                            on
-                              ? (draft.trainingDays ?? []).filter((x) => x !== d)
-                              : [...(draft.trainingDays ?? []), d],
-                          )
-                        }
-                        className={cn(
-                          'flex h-16 flex-col items-center justify-center rounded-2xl border text-sm font-semibold transition-[transform,background-color,border-color,color] duration-150 active:scale-95',
-                          on
-                            ? 'border-accent bg-accent text-accent-fg'
-                            : 'border-border bg-card text-muted',
-                        )}
-                      >
-                        {L.weekdayShort[d]}
-                      </button>
-                    )
-                  })}
+              <Question title={o.daysQ} hint={o.daysHint}>
+                <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label={o.daysQ}>
+                  {[2, 3, 4, 5, 6].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      role="radio"
+                      aria-checked={draft.daysPerWeek === n}
+                      aria-label={o.daysValue(n)}
+                      onClick={() => choose('daysPerWeek', n)}
+                      className={cn(
+                        'h-20 rounded-2xl border num text-2xl font-bold transition-[transform,background-color,border-color,color] duration-150 active:scale-95',
+                        draft.daysPerWeek === n
+                          ? 'border-accent bg-accent text-accent-fg'
+                          : 'border-border bg-card text-muted',
+                      )}
+                    >
+                      {n}
+                    </button>
+                  ))}
                 </div>
+                <Tip className="mt-6">{o.tips.days}</Tip>
+              </Question>
+            )}
+
+            {step === 'split' && (
+              <Question title={o.splitQ}>
+                <Options>
+                  {(
+                    [
+                      ['classic', Columns3],
+                      ['ppl', Layers],
+                      ['upper_lower', Columns2],
+                      ['full_body', LayoutGrid],
+                    ] as const
+                  ).map(([v, icon]) => (
+                    <OptionCard
+                      key={v}
+                      icon={icon}
+                      title={L.split[v as SplitStyle]}
+                      description={L.splitHint[v as SplitStyle]}
+                      badge={v === suggestedSplit ? o.recommended : undefined}
+                      selected={draft.split === v}
+                      onSelect={() => choose('split', v)}
+                    />
+                  ))}
+                </Options>
+                <Tip className="mt-5">{o.tips.split(L.split[suggestedSplit])}</Tip>
+              </Question>
+            )}
+
+            {step === 'legs' && (
+              <Question title={o.legsQ}>
+                <Options>
+                  <OptionCard
+                    icon={Rabbit}
+                    title={o.legsYes}
+                    description={o.legsYesHint}
+                    selected={draft.easeLegs === false}
+                    onSelect={() => choose('easeLegs', false)}
+                  />
+                  <OptionCard
+                    icon={Turtle}
+                    title={o.legsNo}
+                    description={o.legsNoHint}
+                    selected={draft.easeLegs === true}
+                    onSelect={() => choose('easeLegs', true)}
+                  />
+                </Options>
+                <Tip className="mt-5">{o.tips.legs}</Tip>
               </Question>
             )}
 
@@ -420,6 +510,7 @@ export function OnboardingPage() {
                     </button>
                   ))}
                 </div>
+                <Tip className="mt-6">{o.tips.duration}</Tip>
               </Question>
             )}
 
@@ -464,15 +555,19 @@ export function OnboardingPage() {
                   <MacroTiles macros={plan.macros} className="mt-5" />
                 </section>
 
-                <h2 className="mt-7 mb-3 text-sm font-medium text-muted">{o.yourRoutines}</h2>
+                <h2 className="mt-7 mb-3 text-sm font-medium text-muted">{o.metrics}</h2>
+                <MetricsGrid metrics={plan.metrics} />
+
+                <h2 className="mt-7 mb-1 text-sm font-medium text-muted">{o.yourRoutines}</h2>
+                <p className="mb-3 text-xs text-subtle">{t.workouts.rotation}</p>
                 <ul className="space-y-2.5">
-                  {plan.routines.map((r) => (
+                  {plan.routines.map((r, i) => (
                     <li
                       key={r.name}
                       className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5"
                     >
                       <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent/12 text-sm font-semibold text-accent-2">
-                        {r.weekdays[0] !== undefined ? L.weekdayShort[r.weekdays[0]] : '—'}
+                        {i + 1}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block font-semibold">{r.name}</span>
@@ -485,6 +580,7 @@ export function OnboardingPage() {
                   ))}
                 </ul>
                 <p className="mt-5 text-xs leading-relaxed text-subtle">{o.estimateNote}</p>
+                <p className="mt-2 text-xs leading-relaxed text-subtle">{o.metricsNote}</p>
               </div>
             )}
           </motion.section>

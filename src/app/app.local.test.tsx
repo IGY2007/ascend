@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { RouterProvider } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { t } from '@/i18n'
+import { ANSWERS } from '@/test/fixtures'
 
 // Modo local: sin variables de Supabase. La app nunca debe tocar la red de Supabase.
 vi.mock('@/lib/supabase', () => ({
@@ -78,8 +79,11 @@ describe('app en modo local', () => {
     await radio(t.labels.experience.intermediate)
 
     await heading(o.daysQ)
-    for (const d of ['lunes', 'martes', 'jueves', 'viernes']) click(d)
-    click(o.next)
+    await radio(o.daysValue(4))
+    await heading(o.splitQ)
+    await radio(t.labels.split.upper_lower.replace('/', '\\/'))
+    await heading(o.legsQ)
+    await radio(o.legsNo)
 
     await heading(o.durationQ)
     await radio(o.minutes(60))
@@ -103,23 +107,16 @@ describe('app en modo local', () => {
   it('con el plan hecho, Entrenar muestra las rutinas y su detalle', async () => {
     const { profileService } = await import('@/services/local-data')
     await profileService.completeOnboarding({
-      name: 'Julian',
-      sex: 'male',
-      age: 25,
-      heightCm: 178,
-      weightKg: 75,
-      goal: 'muscle',
-      targetWeightKg: null,
-      activity: 'sedentary',
-      experience: 'intermediate',
-      trainingDays: [1, 3, 5],
+      ...ANSWERS,
+      split: 'full_body',
+      daysPerWeek: 3,
       sessionMinutes: 45,
       place: 'home',
     })
     await renderApp('#/workouts')
     fireEvent.click(await screen.findByText('Full Body A'))
-    const first = await screen.findByText('Sentadilla goblet')
+    const first = await screen.findByText('Goblet Squat')
     const list = first.closest('ol')!
-    expect(within(list).getAllByRole('listitem')).toHaveLength(4) // 45 min → 4 ejercicios
+    expect(within(list).getAllByRole('listitem')).toHaveLength(5) // 45 min → 4 ejercicios + plancha
   })
 })

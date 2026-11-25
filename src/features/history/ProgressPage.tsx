@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { History, Plus, Trash2 } from 'lucide-react'
+import { ChevronRight, History, Plus, Trash2 } from 'lucide-react'
+import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -8,7 +9,8 @@ import { PageHeader } from '@/components/ui/page-header'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WeightChart } from '@/features/body/WeightChart'
 import { LogWeightSheet } from '@/features/body/LogWeightSheet'
-import { useBodyWeights, useLocalProfile } from '@/features/profile/hooks'
+import { useBodyWeights, useHistory, useLocalProfile } from '@/features/profile/hooks'
+import { formatDuration } from '@/domain/workout'
 import { bodyWeightService } from '@/services/local-data'
 import { filterRange, weightStats } from '@/domain/body-weight'
 import { fromDateKey, toDateKey } from '@/domain/dates'
@@ -33,6 +35,7 @@ const signed = (n: number | null) => (n === null ? '—' : formatSigned(n, 1))
 
 export function ProgressPage() {
   const weights = useBodyWeights()
+  const history = useHistory()
   const profile = useLocalProfile()
   const [range, setRange] = useState<(typeof RANGES)[number]['key']>('d30')
   const [logOpen, setLogOpen] = useState(false)
@@ -132,7 +135,35 @@ export function ProgressPage() {
       )}
 
       <h2 className="mt-8 mb-3 px-1 text-sm font-medium text-muted">{p.historyTitle}</h2>
-      <EmptyState icon={History} title={p.emptyTitle} description={p.emptyBody} comingSoon />
+      {history === undefined ? (
+        <Skeleton className="h-24 rounded-[var(--radius-card)]" />
+      ) : history.length === 0 ? (
+        <EmptyState icon={History} title={p.emptyTitle} description={p.emptyBody} />
+      ) : (
+        <ul className="space-y-2">
+          {history.map((s) => (
+            <li key={s.id}>
+              <Link
+                to={`/workout/${s.id}/summary`}
+                className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 transition-transform active:scale-[0.99]"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">{s.name}</span>
+                  <span className="block text-sm text-muted first-letter:uppercase">
+                    {entryDate.format(new Date(s.startedAt))} ·{' '}
+                    {p.sessionMeta(formatDuration(s.durationSeconds ?? 0), s.sets)}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right num text-sm font-semibold">
+                  {formatDecimal(s.volume, 0)}{' '}
+                  <span className="text-xs font-normal text-muted">{t.units.kg}</span>
+                </span>
+                <ChevronRight className="size-4 shrink-0 text-subtle" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <LogWeightSheet
         open={logOpen}

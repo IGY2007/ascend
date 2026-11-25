@@ -36,7 +36,10 @@ export interface Exercise {
   id: string
   /** null = ejercicio global de la biblioteca */
   ownerUserId: string | null
+  /** Nombre visible (en inglés para la biblioteca global) */
   name: string
+  /** Nombre en español (solo para buscar) */
+  nameEs?: string | null
   primaryMuscle: MuscleGroup | null
   equipment: Equipment | null
   exerciseType: ExerciseType
@@ -49,6 +52,8 @@ export type Goal = 'muscle' | 'fat_loss' | 'recomp' | 'strength'
 export type ActivityLevel = 'sedentary' | 'light' | 'active' | 'very_active'
 export type Experience = 'beginner' | 'intermediate' | 'advanced'
 export type TrainingPlace = 'gym' | 'home'
+/** full_body · upper_lower · ppl (Push / Pull + Core / Legs) · classic (Chest & Triceps / Back & Biceps / Legs & Shoulders) */
+export type SplitStyle = 'full_body' | 'upper_lower' | 'ppl' | 'classic'
 /** 0 = domingo … 6 = sábado (igual que Date.getDay()) */
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
@@ -62,7 +67,11 @@ export interface OnboardingAnswers {
   targetWeightKg: number | null
   activity: ActivityLevel
   experience: Experience
-  trainingDays: Weekday[]
+  /** Días de entrenamiento por semana (2–6). Las rutinas rotan: no hay días fijos. */
+  daysPerWeek: number
+  split: SplitStyle
+  /** Hace tiempo que no entrena piernas: arrancar con menos volumen y más margen. */
+  easeLegs: boolean
   sessionMinutes: number
   place: TrainingPlace
 }
@@ -113,6 +122,7 @@ export interface WorkoutTemplate {
   userId: string
   name: string
   description: string | null
+  /** Días asignados (opcional). Vacío = entra en la rotación. */
   weekdays: Weekday[]
   notes: string | null
   position: number
@@ -133,6 +143,59 @@ export interface TemplateExercise {
   targetRestSeconds: number
   targetRir: number | null
   notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// ---- Entrenamientos ----
+
+export type SessionStatus = 'in_progress' | 'completed' | 'discarded'
+export type SetType = 'warmup' | 'normal'
+
+export interface WorkoutSession {
+  id: string
+  userId: string
+  templateId: string | null
+  name: string
+  startedAt: string
+  completedAt: string | null
+  durationSeconds: number | null
+  status: SessionStatus
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SessionExercise {
+  id: string
+  userId: string
+  sessionId: string
+  exerciseId: string | null
+  exerciseNameSnapshot: string
+  position: number
+  targetSets: number | null
+  targetRepsMin: number | null
+  targetRepsMax: number | null
+  targetRestSeconds: number | null
+  targetRir: number | null
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ExerciseSet {
+  id: string
+  userId: string
+  sessionId: string
+  sessionExerciseId: string
+  setNumber: number
+  setType: SetType
+  weightKg: number | null
+  repetitions: number | null
+  durationSeconds: number | null
+  rir: number | null
+  isCompleted: boolean
+  completedAt: string | null
   createdAt: string
   updatedAt: string
 }

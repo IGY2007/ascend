@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { t } from '@/i18n'
+import { ANSWERS } from '@/test/fixtures'
 
 type Listener = (event: AuthChangeEvent, session: Session | null) => void
 const listeners: Listener[] = []
@@ -68,20 +69,7 @@ describe('app con cuentas (smoke)', () => {
     localStorage.clear()
     // Perfil local ya completo: estos tests cubren el login, no el cuestionario.
     const { profileService } = await import('@/services/local-data')
-    await profileService.completeOnboarding({
-      name: 'Julian',
-      sex: 'male',
-      age: 25,
-      heightCm: 178,
-      weightKg: 75,
-      goal: 'muscle',
-      targetWeightKg: null,
-      activity: 'sedentary',
-      experience: 'intermediate',
-      trainingDays: [1, 3, 5],
-      sessionMinutes: 60,
-      place: 'gym',
-    })
+    await profileService.completeOnboarding(ANSWERS)
   })
 
   it('sin sesión, una ruta protegida lleva al login', async () => {

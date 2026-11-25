@@ -1,15 +1,20 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router'
-import { ChevronRight, Moon, Plus, TrendingDown, TrendingUp } from 'lucide-react'
+import { Check, ChevronRight, Play, Plus, TrendingDown, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AnimatedNumber } from '@/components/ui/animated-number'
 import { MacroTiles } from '@/features/nutrition/MacroTiles'
 import { LogWeightSheet } from '@/features/body/LogWeightSheet'
+import { ActiveWorkoutBanner } from '@/features/workout/ActiveWorkoutBanner'
+import { useStartWorkout } from '@/features/workout/use-start-workout'
 import {
+  useActiveSession,
   useBodyWeights,
+  useHistory,
   useLocalProfile,
+  useNextTemplateId,
   useNutritionGoal,
   useTemplates,
 } from '@/features/profile/hooks'
@@ -27,28 +32,24 @@ export function HomePage() {
   const name = useDisplayName()
   const profile = useLocalProfile()
   const templates = useTemplates()
+  const nextId = useNextTemplateId()
+  const active = useActiveSession()
+  const history = useHistory()
   const goal = useNutritionGoal()
   const weights = useBodyWeights()
+  const start = useStartWorkout()
   const [logOpen, setLogOpen] = useState(false)
 
   const now = new Date()
   const todayKey = toDateKey(now)
-  const todayDow = now.getDay() as Weekday
-
-  const todayTemplate = templates?.find((tpl) => tpl.weekdays.includes(todayDow))
-  const nextTemplate = useMemo(() => {
-    if (!templates || todayTemplate) return null
-    for (let i = 1; i <= 7; i++) {
-      const dow = addDays(now, i).getDay() as Weekday
-      const tpl = templates.find((x) => x.weekdays.includes(dow))
-      if (tpl) return { tpl, dow }
-    }
-    return null
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templates, todayTemplate, todayKey])
-
-  const trainingDays = new Set(templates?.flatMap((x) => x.weekdays) ?? [])
   const weekStart = startOfWeek(now)
+  const weekStartKey = toDateKey(weekStart)
+
+  const next = templates?.find((x) => x.id === nextId)
+  const thisWeek = (history ?? []).filter((s) => toDateKey(new Date(s.startedAt)) >= weekStartKey)
+  const trainedDays = new Set(thisWeek.map((s) => toDateKey(new Date(s.startedAt))))
+  const weekGoal = profile?.daysPerWeek ?? 0
+  const trainedToday = trainedDays.has(todayKey)
   const stats = weights ? weightStats(weights, todayKey, profile?.targetWeightKg ?? null) : null
 
   return (
@@ -62,52 +63,55 @@ export function HomePage() {
         </h1>
       </header>
 
-      {/* Hoy */}
+      <ActiveWorkoutBanner />
+
+      {/* Lo que toca en la rotación */}
       {templates === undefined ? (
-        <Skeleton className="h-32 rounded-[var(--radius-card)]" />
-      ) : todayTemplate ? (
-        <Link
-          to={`/workouts/${todayTemplate.id}`}
-          className="block transition-transform active:scale-[0.99]"
-        >
-          <Card highlight className="flex items-center gap-4">
+        <Skeleton className="h-36 rounded-[var(--radius-card)]" />
+      ) : next && !active ? (
+        <Card highlight>
+          <Link to={`/workouts/${next.id}`} className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-accent-2">{h.today}</p>
-              <p className="mt-1 text-2xl font-bold tracking-tight">{todayTemplate.name}</p>
-              <p className="mt-1 truncate text-sm text-muted">{todayTemplate.description}</p>
-              <p className="mt-3 num text-sm text-muted">
-                {h.exercises(todayTemplate.items.length)}
+              <p className="text-sm font-medium text-accent-2">
+                {trainedToday ? h.trainedToday : h.upNext}
+              </p>
+              <p className="mt-1 truncate text-2xl font-bold tracking-tight">{next.name}</p>
+              <p className="mt-1 num text-sm text-muted">
+                {h.exercises(next.items.length)}
                 {profile && ` · ${h.approxMinutes(profile.sessionMinutes)}`}
               </p>
             </div>
             <ChevronRight className="size-6 shrink-0 text-muted" />
-          </Card>
-        </Link>
-      ) : (
-        <Card className="flex items-center gap-4">
-          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-card-2 text-muted">
-            <Moon className="size-6" strokeWidth={1.8} />
-          </span>
-          <div className="min-w-0">
-            <p className="font-semibold">{h.restDay}</p>
-            <p className="mt-0.5 text-sm text-muted">
-              {nextTemplate
-                ? h.nextUp(nextTemplate.tpl.name, t.labels.weekdayLong[nextTemplate.dow])
-                : h.noPlan}
-            </p>
-          </div>
+          </Link>
+          <Button size="lg" block className="mt-4" onClick={() => void start(next.id)}>
+            <Play />
+            {h.startWorkout}
+          </Button>
         </Card>
-      )}
+      ) : null}
 
-      {/* Semana */}
+      {/* Semana: días entrenados de verdad */}
       <section className="mt-6">
-        <h2 className="mb-3 px-1 text-sm font-medium text-muted">{h.thisWeek}</h2>
+        <div className="mb-3 flex items-baseline justify-between px-1">
+          <h2 className="text-sm font-medium text-muted">{h.thisWeek}</h2>
+          {weekGoal > 0 && (
+            <p
+              className={cn(
+                'num text-xs',
+                thisWeek.length >= weekGoal ? 'text-success' : 'text-subtle',
+              )}
+            >
+              {thisWeek.length >= weekGoal ? h.weekDone : h.weekProgress(thisWeek.length, weekGoal)}
+            </p>
+          )}
+        </div>
         <div className="grid grid-cols-7 gap-1.5">
           {Array.from({ length: 7 }, (_, i) => {
             const date = addDays(weekStart, i)
+            const key = toDateKey(date)
             const dow = date.getDay() as Weekday
-            const isToday = toDateKey(date) === todayKey
-            const training = trainingDays.has(dow)
+            const isToday = key === todayKey
+            const trained = trainedDays.has(key)
             return (
               <div
                 key={i}
@@ -127,10 +131,16 @@ export function HomePage() {
                 <span
                   aria-hidden
                   className={cn(
-                    'size-1.5 rounded-full',
-                    training ? 'bg-accent-2' : 'bg-transparent',
+                    'grid size-4 place-items-center rounded-full',
+                    trained
+                      ? 'bg-success text-bg'
+                      : key < todayKey
+                        ? 'bg-card-2'
+                        : 'bg-transparent',
                   )}
-                />
+                >
+                  {trained && <Check className="size-2.5" strokeWidth={4} />}
+                </span>
               </div>
             )
           })}
@@ -158,22 +168,18 @@ export function HomePage() {
         <h2 className="mb-3 px-1 text-sm font-medium text-muted">{h.weight}</h2>
         <Card>
           <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              {stats?.latest ? (
-                <>
-                  <p className="flex items-baseline gap-1.5">
-                    <AnimatedNumber
-                      value={stats.latest.weightKg}
-                      format={(v) => formatDecimal(v, 1)}
-                      className="text-3xl font-bold"
-                    />
-                    <span className="text-sm text-muted">{t.units.kg}</span>
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-muted">{h.noWeight}</p>
-              )}
-            </div>
+            {stats?.latest ? (
+              <p className="flex items-baseline gap-1.5">
+                <AnimatedNumber
+                  value={stats.latest.weightKg}
+                  format={(v) => formatDecimal(v, 1)}
+                  className="text-3xl font-bold"
+                />
+                <span className="text-sm text-muted">{t.units.kg}</span>
+              </p>
+            ) : (
+              <p className="text-sm text-muted">{h.noWeight}</p>
+            )}
             <Button size="sm" variant="secondary" onClick={() => setLogOpen(true)}>
               <Plus />
               {h.logWeight}

@@ -8,6 +8,7 @@ interface OptionCardProps {
   title: string
   description?: string
   icon?: LucideIcon
+  badge?: string
   className?: string
 }
 
@@ -17,6 +18,7 @@ export function OptionCard({
   title,
   description,
   icon: Icon,
+  badge,
   className,
 }: OptionCardProps) {
   return (
@@ -44,7 +46,14 @@ export function OptionCard({
         </span>
       )}
       <span className="min-w-0 flex-1">
-        <span className="block font-semibold">{title}</span>
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="font-semibold">{title}</span>
+          {badge && (
+            <span className="rounded-full bg-accent/16 px-2 py-0.5 text-[0.7rem] font-semibold text-accent-2">
+              {badge}
+            </span>
+          )}
+        </span>
         {description && (
           <span className="mt-0.5 block text-sm leading-snug text-muted">{description}</span>
         )}

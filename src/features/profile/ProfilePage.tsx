@@ -12,7 +12,8 @@ import { MacroTiles } from '@/features/nutrition/MacroTiles'
 import { UnitField } from '@/features/onboarding/UnitField'
 import { useAuth, useUser } from '@/features/auth/auth-context'
 import { authErrorMessage, authService } from '@/services/auth'
-import { backupService, nutritionService } from '@/services/local-data'
+import { backupService, bodyMetrics, nutritionService } from '@/services/local-data'
+import { MetricsGrid } from '@/features/nutrition/MetricsGrid'
 import { kcalFromMacros } from '@/domain/nutrition'
 import { formatDecimal } from '@/domain/numbers'
 import { toDateKey } from '@/domain/dates'
@@ -20,7 +21,7 @@ import { isLocalMode } from '@/lib/env'
 import { formatMonthYear, t } from '@/i18n'
 import type { MacroTargets } from '@/types/models'
 import { useDisplayName } from './use-profile'
-import { useLocalProfile, useNutritionGoal } from './hooks'
+import { useLatestWeight, useLocalProfile, useNutritionGoal } from './hooks'
 
 const pr = t.profile
 
@@ -29,6 +30,9 @@ export function ProfilePage() {
   const name = useDisplayName()
   const profile = useLocalProfile()
   const goal = useNutritionGoal()
+  const latest = useLatestWeight()
+  const currentWeight = latest?.weightKg ?? profile?.weightKg ?? null
+  const metrics = profile && currentWeight ? bodyMetrics(profile, currentWeight) : null
   const navigate = useNavigate()
   const [redoOpen, setRedoOpen] = useState(false)
   const [macrosOpen, setMacrosOpen] = useState(false)
@@ -72,7 +76,8 @@ export function ProfilePage() {
             ] as [string, string][])
           : []),
         [pr.experienceLabel, t.labels.experience[profile.experience]],
-        [pr.trainingLabel, pr.trainingValue(profile.trainingDays.length, profile.sessionMinutes)],
+        [pr.trainingLabel, pr.daysValue(profile.daysPerWeek, profile.sessionMinutes)],
+        [pr.splitLabel, t.labels.split[profile.split]],
         [pr.placeLabel, t.labels.place[profile.place]],
       ]
     : []
@@ -112,13 +117,37 @@ export function ProfilePage() {
               </Button>
             </div>
             <MacroTiles macros={goal} className="mt-4" />
-            <p className="mt-4 text-xs leading-relaxed text-subtle">{t.onboarding.estimateNote}</p>
+            <div className="mt-4 flex items-start justify-between gap-3 border-t border-border pt-3">
+              <p className="text-xs leading-relaxed text-muted">
+                {goal.source === 'manual' ? pr.manualMacros : pr.autoMacros}
+              </p>
+              {goal.source === 'manual' && currentWeight && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="shrink-0"
+                  onClick={() => void nutritionService.resetToCalculated(currentWeight)}
+                >
+                  {pr.resetMacros}
+                </Button>
+              )}
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-subtle">{t.onboarding.estimateNote}</p>
           </Card>
         </>
       )}
 
       {profile && (
         <>
+          {metrics && (
+            <>
+              <SectionTitle>{t.onboarding.metrics}</SectionTitle>
+              <MetricsGrid metrics={metrics} />
+              <p className="mt-2 px-1 text-xs leading-relaxed text-subtle">
+                {t.onboarding.metricsNote}
+              </p>
+            </>
+          )}
           <SectionTitle>{pr.yourData}</SectionTitle>
           <Card className="divide-y divide-border py-1">
             {rows.map(([label, value]) => (
@@ -239,7 +268,11 @@ function EditMacrosSheet({
         />
         <UnitField label={t.macros.fat} unit={t.units.g} kind="integer" value={f} onChange={setF} />
         <p className="text-center num text-sm text-muted">
-          = <span className="text-lg font-semibold text-fg">{kcal !== null ? formatDecimal(kcal, 0) : '—'}</span> {t.units.kcal}
+          ={' '}
+          <span className="text-lg font-semibold text-fg">
+            {kcal !== null ? formatDecimal(kcal, 0) : '—'}
+          </span>{' '}
+          {t.units.kcal}
         </p>
         <Button type="submit" size="lg" block disabled={!valid}>
           {t.common.save}

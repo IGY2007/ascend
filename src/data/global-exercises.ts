@@ -6,7 +6,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '41c2b638-7020-53cd-b2a9-891cb4579df7',
     ownerUserId: null,
-    name: 'Press banca plano con barra',
+    name: 'Barbell Bench Press',
+    nameEs: 'Press banca plano con barra',
     primaryMuscle: 'chest',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -14,7 +15,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '1aaadf89-d240-5cc9-8185-183f330832e4',
     ownerUserId: null,
-    name: 'Press banca inclinado con barra',
+    name: 'Incline Barbell Bench Press',
+    nameEs: 'Press banca inclinado con barra',
     primaryMuscle: 'chest',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -22,7 +24,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '63dd9296-d005-5f5b-904e-f7e7f9baadff',
     ownerUserId: null,
-    name: 'Press banca declinado con barra',
+    name: 'Decline Barbell Bench Press',
+    nameEs: 'Press banca declinado con barra',
     primaryMuscle: 'chest',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -30,7 +33,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '7b7c8c2c-01ad-59b0-8cb0-30cd79bcfe58',
     ownerUserId: null,
-    name: 'Press plano con mancuernas',
+    name: 'Dumbbell Bench Press',
+    nameEs: 'Press plano con mancuernas',
     primaryMuscle: 'chest',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -38,7 +42,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'c222831c-2e6d-5990-94b1-44edbdc6b25f',
     ownerUserId: null,
-    name: 'Press inclinado con mancuernas',
+    name: 'Incline Dumbbell Press',
+    nameEs: 'Press inclinado con mancuernas',
     primaryMuscle: 'chest',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -46,7 +51,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'd594b16d-b83a-53e5-a67e-b584951869d1',
     ownerUserId: null,
-    name: 'Aperturas con mancuernas',
+    name: 'Dumbbell Fly',
+    nameEs: 'Aperturas con mancuernas',
     primaryMuscle: 'chest',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -54,7 +60,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'db412803-5bd1-54e9-8269-aa063f912f9f',
     ownerUserId: null,
-    name: 'Press de pecho en máquina',
+    name: 'Machine Chest Press',
+    nameEs: 'Press de pecho en máquina',
     primaryMuscle: 'chest',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -62,7 +69,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '3a0079de-1a1f-520e-9d56-dd223d3b543a',
     ownerUserId: null,
-    name: 'Pec deck (contractora)',
+    name: 'Pec Deck Fly',
+    nameEs: 'Pec deck (contractora)',
     primaryMuscle: 'chest',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -70,7 +78,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '6c80e46e-797b-5b16-a37a-b6a6ed29b3b7',
     ownerUserId: null,
-    name: 'Cruces en polea alta',
+    name: 'High Cable Crossover',
+    nameEs: 'Cruces en polea alta',
     primaryMuscle: 'chest',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -78,7 +87,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '0b2de7ce-32d8-505b-9236-f02853cea94f',
     ownerUserId: null,
-    name: 'Cruces en polea baja',
+    name: 'Low Cable Crossover',
+    nameEs: 'Cruces en polea baja',
     primaryMuscle: 'chest',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -86,7 +96,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'a383e644-0c03-5663-9b23-d88b91d7715a',
     ownerUserId: null,
-    name: 'Fondos en paralelas (pecho)',
+    name: 'Chest Dips',
+    nameEs: 'Fondos en paralelas (pecho)',
     primaryMuscle: 'chest',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -94,7 +105,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '726d0741-6a01-5119-a3ca-e50a5a32a483',
     ownerUserId: null,
-    name: 'Flexiones de brazos',
+    name: 'Push-Up',
+    nameEs: 'Flexiones de brazos',
     primaryMuscle: 'chest',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -102,7 +114,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '614b4145-8f45-56e1-ac41-5609a1932ba1',
     ownerUserId: null,
-    name: 'Dominadas',
+    name: 'Pull-Up',
+    nameEs: 'Dominadas',
     primaryMuscle: 'back',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -110,7 +123,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '10f06838-12c4-5799-9652-ca406dc35364',
     ownerUserId: null,
-    name: 'Dominadas supinas (chin-ups)',
+    name: 'Chin-Up',
+    nameEs: 'Dominadas supinas (chin-ups)',
     primaryMuscle: 'back',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -118,7 +132,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '5be2acbd-3417-52ce-a527-ba26f2f83374',
     ownerUserId: null,
-    name: 'Jalón al pecho',
+    name: 'Lat Pulldown',
+    nameEs: 'Jalón al pecho',
     primaryMuscle: 'back',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -126,7 +141,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '5aeca705-9a6f-578b-9690-789c0256807d',
     ownerUserId: null,
-    name: 'Jalón con agarre estrecho',
+    name: 'Close-Grip Lat Pulldown',
+    nameEs: 'Jalón con agarre estrecho',
     primaryMuscle: 'back',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -134,7 +150,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '2ec053e4-cafa-576c-a3f3-6cf31f169b5b',
     ownerUserId: null,
-    name: 'Remo con barra',
+    name: 'Barbell Row',
+    nameEs: 'Remo con barra',
     primaryMuscle: 'back',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -142,7 +159,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '38e009cb-d02e-5eb7-b538-c2c382c43edf',
     ownerUserId: null,
-    name: 'Remo con mancuerna a una mano',
+    name: 'One-Arm Dumbbell Row',
+    nameEs: 'Remo con mancuerna a una mano',
     primaryMuscle: 'back',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -150,7 +168,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'c23fc802-6a00-56af-a00a-79d857aa7c75',
     ownerUserId: null,
-    name: 'Remo en polea baja (gironda)',
+    name: 'Seated Cable Row',
+    nameEs: 'Remo en polea baja (gironda)',
     primaryMuscle: 'back',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -158,7 +177,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'e5d763b8-a2be-5bf5-8a33-12fb61ee702c',
     ownerUserId: null,
-    name: 'Remo en máquina',
+    name: 'Machine Row',
+    nameEs: 'Remo en máquina',
     primaryMuscle: 'back',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -166,7 +186,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '7803a1f5-84dc-506e-b587-0a0f1125ba95',
     ownerUserId: null,
-    name: 'Remo en barra T',
+    name: 'T-Bar Row',
+    nameEs: 'Remo en barra T',
     primaryMuscle: 'back',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -174,7 +195,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'c8633678-5c90-55ff-babc-a706b640ce31',
     ownerUserId: null,
-    name: 'Pullover en polea alta',
+    name: 'Cable Pullover',
+    nameEs: 'Pullover en polea alta',
     primaryMuscle: 'back',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -182,7 +204,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'ee36e8fd-3f9e-5b47-a7a4-e337ee4eed93',
     ownerUserId: null,
-    name: 'Peso muerto convencional',
+    name: 'Conventional Deadlift',
+    nameEs: 'Peso muerto convencional',
     primaryMuscle: 'back',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -190,7 +213,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'b791ef3e-62e7-5871-a54d-a6fa65cec3fb',
     ownerUserId: null,
-    name: 'Hiperextensiones lumbares',
+    name: 'Back Extension',
+    nameEs: 'Hiperextensiones lumbares',
     primaryMuscle: 'back',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -198,7 +222,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '4b7f40e8-a96f-5b00-a6ea-75b311684639',
     ownerUserId: null,
-    name: 'Press militar con barra',
+    name: 'Barbell Overhead Press',
+    nameEs: 'Press militar con barra',
     primaryMuscle: 'shoulders',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -206,7 +231,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '6359e167-fd32-5955-8dd2-2b5e3dff2d06',
     ownerUserId: null,
-    name: 'Press de hombros con mancuernas',
+    name: 'Dumbbell Shoulder Press',
+    nameEs: 'Press de hombros con mancuernas',
     primaryMuscle: 'shoulders',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -214,7 +240,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '7419dcd6-0785-5146-8602-f06bcfbf7523',
     ownerUserId: null,
-    name: 'Press de hombros en máquina',
+    name: 'Machine Shoulder Press',
+    nameEs: 'Press de hombros en máquina',
     primaryMuscle: 'shoulders',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -222,7 +249,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '6427a20f-63b5-56a2-8632-3e0ffe5edc1f',
     ownerUserId: null,
-    name: 'Press Arnold',
+    name: 'Arnold Press',
+    nameEs: 'Press Arnold',
     primaryMuscle: 'shoulders',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -230,7 +258,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'f6667ecf-658a-53f9-974e-8678549a6814',
     ownerUserId: null,
-    name: 'Elevaciones laterales con mancuernas',
+    name: 'Dumbbell Lateral Raise',
+    nameEs: 'Elevaciones laterales con mancuernas',
     primaryMuscle: 'shoulders',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -238,7 +267,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'efe75dcf-e749-55da-8173-5a62da58912f',
     ownerUserId: null,
-    name: 'Elevaciones laterales en polea',
+    name: 'Cable Lateral Raise',
+    nameEs: 'Elevaciones laterales en polea',
     primaryMuscle: 'shoulders',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -246,7 +276,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'faf05c9d-05d2-558c-bdbd-4e325c2fb867',
     ownerUserId: null,
-    name: 'Elevaciones frontales',
+    name: 'Front Raise',
+    nameEs: 'Elevaciones frontales',
     primaryMuscle: 'shoulders',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -254,7 +285,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '85e47cbb-23d0-5dde-a4be-ddce381403f4',
     ownerUserId: null,
-    name: 'Pájaros (vuelos posteriores)',
+    name: 'Reverse Dumbbell Fly',
+    nameEs: 'Pájaros (vuelos posteriores)',
     primaryMuscle: 'shoulders',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -262,7 +294,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'c1397272-62b3-541a-a23b-2d5d50b913ec',
     ownerUserId: null,
-    name: 'Reverse pec deck',
+    name: 'Reverse Pec Deck',
+    nameEs: 'Reverse pec deck',
     primaryMuscle: 'shoulders',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -270,7 +303,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'a93b88de-16e5-5022-bffa-97caf6b99a9d',
     ownerUserId: null,
-    name: 'Face pull',
+    name: 'Face Pull',
+    nameEs: 'Face pull',
     primaryMuscle: 'shoulders',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -278,7 +312,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '5f9472cf-3f80-56f6-ada5-528e2000e1b4',
     ownerUserId: null,
-    name: 'Encogimientos con mancuernas',
+    name: 'Dumbbell Shrug',
+    nameEs: 'Encogimientos con mancuernas',
     primaryMuscle: 'shoulders',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -286,7 +321,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '5839deb6-9866-5138-9eae-9154835dd6a1',
     ownerUserId: null,
-    name: 'Curl con barra',
+    name: 'Barbell Curl',
+    nameEs: 'Curl con barra',
     primaryMuscle: 'biceps',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -294,7 +330,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'f1f2727f-3700-56ef-882d-fba6f371cf5a',
     ownerUserId: null,
-    name: 'Curl con barra Z',
+    name: 'EZ-Bar Curl',
+    nameEs: 'Curl con barra Z',
     primaryMuscle: 'biceps',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -302,7 +339,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '6e946eff-6f5b-5379-8146-3c5ad31c06a7',
     ownerUserId: null,
-    name: 'Curl con mancuernas alterno',
+    name: 'Alternating Dumbbell Curl',
+    nameEs: 'Curl con mancuernas alterno',
     primaryMuscle: 'biceps',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -310,7 +348,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '544e3b97-db31-52ae-aa70-a1b2a0aa157a',
     ownerUserId: null,
-    name: 'Curl martillo',
+    name: 'Hammer Curl',
+    nameEs: 'Curl martillo',
     primaryMuscle: 'biceps',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -318,7 +357,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '33974184-aba7-5a7c-897e-52520ba40928',
     ownerUserId: null,
-    name: 'Curl inclinado con mancuernas',
+    name: 'Incline Dumbbell Curl',
+    nameEs: 'Curl inclinado con mancuernas',
     primaryMuscle: 'biceps',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -326,7 +366,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '26674aa9-e43f-572d-9c70-6a4dda824aa7',
     ownerUserId: null,
-    name: 'Curl predicador (banco Scott)',
+    name: 'Preacher Curl',
+    nameEs: 'Curl predicador (banco Scott)',
     primaryMuscle: 'biceps',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -334,7 +375,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '8682c908-c630-5ecc-9968-0a34743670df',
     ownerUserId: null,
-    name: 'Curl en polea',
+    name: 'Cable Curl',
+    nameEs: 'Curl en polea',
     primaryMuscle: 'biceps',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -342,7 +384,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'f10d1e24-b3da-5dbb-ba79-82888f5092ba',
     ownerUserId: null,
-    name: 'Curl concentrado',
+    name: 'Concentration Curl',
+    nameEs: 'Curl concentrado',
     primaryMuscle: 'biceps',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -350,7 +393,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '2743b9eb-b37b-56f8-b528-c9f55428a475',
     ownerUserId: null,
-    name: 'Extensión de tríceps en polea con cuerda',
+    name: 'Rope Triceps Pushdown',
+    nameEs: 'Extensión de tríceps en polea con cuerda',
     primaryMuscle: 'triceps',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -358,7 +402,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '3bade018-6634-59ae-a17d-2ab36ee287df',
     ownerUserId: null,
-    name: 'Extensión de tríceps en polea con barra',
+    name: 'Bar Triceps Pushdown',
+    nameEs: 'Extensión de tríceps en polea con barra',
     primaryMuscle: 'triceps',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -366,7 +411,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '2fdff67e-cdcb-53bd-bfae-7062d303dcfe',
     ownerUserId: null,
-    name: 'Press francés',
+    name: 'Skull Crusher',
+    nameEs: 'Press francés',
     primaryMuscle: 'triceps',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -374,7 +420,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '0e653698-2353-561f-8c03-64c1c76ab4a9',
     ownerUserId: null,
-    name: 'Extensión de tríceps sobre la cabeza con mancuerna',
+    name: 'Overhead Dumbbell Triceps Extension',
+    nameEs: 'Extensión de tríceps sobre la cabeza con mancuerna',
     primaryMuscle: 'triceps',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -382,7 +429,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '4ee40320-5e72-56a0-9568-bd86625b707d',
     ownerUserId: null,
-    name: 'Extensión de tríceps sobre la cabeza en polea',
+    name: 'Overhead Cable Triceps Extension',
+    nameEs: 'Extensión de tríceps sobre la cabeza en polea',
     primaryMuscle: 'triceps',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -390,7 +438,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'ffd4156e-1941-5149-8659-de432cba75a1',
     ownerUserId: null,
-    name: 'Fondos en paralelas (tríceps)',
+    name: 'Triceps Dips',
+    nameEs: 'Fondos en paralelas (tríceps)',
     primaryMuscle: 'triceps',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -398,7 +447,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'f5b56f78-e087-5f78-a49c-17b953dfe2e4',
     ownerUserId: null,
-    name: 'Press banca agarre cerrado',
+    name: 'Close-Grip Bench Press',
+    nameEs: 'Press banca agarre cerrado',
     primaryMuscle: 'triceps',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -406,7 +456,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'c32caacc-7ee4-5162-a448-fe1e7b4491de',
     ownerUserId: null,
-    name: 'Patada de tríceps',
+    name: 'Triceps Kickback',
+    nameEs: 'Patada de tríceps',
     primaryMuscle: 'triceps',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -414,7 +465,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '576d5a7b-745e-5259-8529-0f3b5a7c6ffe',
     ownerUserId: null,
-    name: 'Sentadilla con barra',
+    name: 'Barbell Back Squat',
+    nameEs: 'Sentadilla con barra',
     primaryMuscle: 'quads',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -422,7 +474,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '9fa5e1d2-e26b-53e4-9cc0-afad01d85822',
     ownerUserId: null,
-    name: 'Sentadilla frontal',
+    name: 'Front Squat',
+    nameEs: 'Sentadilla frontal',
     primaryMuscle: 'quads',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -430,7 +483,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '659fa3e4-a41d-527f-878b-c5b766a0ece9',
     ownerUserId: null,
-    name: 'Sentadilla hack',
+    name: 'Hack Squat',
+    nameEs: 'Sentadilla hack',
     primaryMuscle: 'quads',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -438,7 +492,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '7f303cc9-a2bd-5600-bf6a-e44dbf516f0d',
     ownerUserId: null,
-    name: 'Prensa de piernas',
+    name: 'Leg Press',
+    nameEs: 'Prensa de piernas',
     primaryMuscle: 'quads',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -446,7 +501,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '5bdb57e5-3d1e-52cb-b87e-d5443cd25a42',
     ownerUserId: null,
-    name: 'Extensión de cuádriceps',
+    name: 'Leg Extension',
+    nameEs: 'Extensión de cuádriceps',
     primaryMuscle: 'quads',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -454,7 +510,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '07522d42-f6c8-5541-864a-6c87df54984a',
     ownerUserId: null,
-    name: 'Sentadilla búlgara',
+    name: 'Bulgarian Split Squat',
+    nameEs: 'Sentadilla búlgara',
     primaryMuscle: 'quads',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -462,7 +519,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'dd038465-2221-5913-9e9a-f6d834270c79',
     ownerUserId: null,
-    name: 'Zancadas con mancuernas',
+    name: 'Dumbbell Lunge',
+    nameEs: 'Zancadas con mancuernas',
     primaryMuscle: 'quads',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -470,7 +528,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'a3df1b89-2f43-5bf3-b441-d8d9add77da1',
     ownerUserId: null,
-    name: 'Sentadilla goblet',
+    name: 'Goblet Squat',
+    nameEs: 'Sentadilla goblet',
     primaryMuscle: 'quads',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -478,7 +537,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '646aa63f-6083-5eea-a668-088eb7e52295',
     ownerUserId: null,
-    name: 'Peso muerto rumano',
+    name: 'Romanian Deadlift',
+    nameEs: 'Peso muerto rumano',
     primaryMuscle: 'hamstrings',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -486,7 +546,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '4131d0c2-7c1d-57c1-9207-00c57a6cabf4',
     ownerUserId: null,
-    name: 'Peso muerto rumano con mancuernas',
+    name: 'Dumbbell Romanian Deadlift',
+    nameEs: 'Peso muerto rumano con mancuernas',
     primaryMuscle: 'hamstrings',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -494,7 +555,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '7bbed62b-6e52-5a0e-bc32-a2f861fd686f',
     ownerUserId: null,
-    name: 'Curl femoral acostado',
+    name: 'Lying Leg Curl',
+    nameEs: 'Curl femoral acostado',
     primaryMuscle: 'hamstrings',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -502,7 +564,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '507dabab-9864-541f-8981-43e6c35d197f',
     ownerUserId: null,
-    name: 'Curl femoral sentado',
+    name: 'Seated Leg Curl',
+    nameEs: 'Curl femoral sentado',
     primaryMuscle: 'hamstrings',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -510,7 +573,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '1ace48b2-0779-5634-b590-9b4e7966432a',
     ownerUserId: null,
-    name: 'Buenos días',
+    name: 'Good Morning',
+    nameEs: 'Buenos días',
     primaryMuscle: 'hamstrings',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -518,7 +582,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '35579d4d-c45e-5532-8ccb-6729edaaf33e',
     ownerUserId: null,
-    name: 'Hip thrust con barra',
+    name: 'Barbell Hip Thrust',
+    nameEs: 'Hip thrust con barra',
     primaryMuscle: 'glutes',
     equipment: 'barbell',
     exerciseType: 'weighted',
@@ -526,7 +591,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'ecda6745-05ad-58f9-abad-b4f486c49935',
     ownerUserId: null,
-    name: 'Hip thrust en máquina',
+    name: 'Machine Hip Thrust',
+    nameEs: 'Hip thrust en máquina',
     primaryMuscle: 'glutes',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -534,7 +600,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'b99d1a67-6b29-5d01-b6a9-960c5e1fb79d',
     ownerUserId: null,
-    name: 'Puente de glúteos',
+    name: 'Glute Bridge',
+    nameEs: 'Puente de glúteos',
     primaryMuscle: 'glutes',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -542,7 +609,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '27ddd34b-d372-5d3f-b6a2-22021db82daa',
     ownerUserId: null,
-    name: 'Patada de glúteo en polea',
+    name: 'Cable Glute Kickback',
+    nameEs: 'Patada de glúteo en polea',
     primaryMuscle: 'glutes',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -550,7 +618,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'dc907f3c-f700-59c4-a1fa-aeeb17f77226',
     ownerUserId: null,
-    name: 'Abducción de cadera en máquina',
+    name: 'Hip Abduction Machine',
+    nameEs: 'Abducción de cadera en máquina',
     primaryMuscle: 'glutes',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -558,7 +627,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '06140cbd-4010-557e-859d-89a81ccc9c39',
     ownerUserId: null,
-    name: 'Step-up al cajón',
+    name: 'Box Step-Up',
+    nameEs: 'Step-up al cajón',
     primaryMuscle: 'glutes',
     equipment: 'dumbbell',
     exerciseType: 'weighted',
@@ -566,7 +636,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'fb5bb410-440a-565c-ab8f-0f0bf1be14ff',
     ownerUserId: null,
-    name: 'Elevación de talones de pie',
+    name: 'Standing Calf Raise',
+    nameEs: 'Elevación de talones de pie',
     primaryMuscle: 'calves',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -574,7 +645,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'e61cb903-fb27-561d-89fc-09d206b9aa82',
     ownerUserId: null,
-    name: 'Elevación de talones sentado',
+    name: 'Seated Calf Raise',
+    nameEs: 'Elevación de talones sentado',
     primaryMuscle: 'calves',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -582,7 +654,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '1ed8597d-16b5-53c4-bb7e-0424c90f5be3',
     ownerUserId: null,
-    name: 'Elevación de talones en prensa',
+    name: 'Leg Press Calf Raise',
+    nameEs: 'Elevación de talones en prensa',
     primaryMuscle: 'calves',
     equipment: 'machine',
     exerciseType: 'weighted',
@@ -590,7 +663,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '144a354c-da78-5d90-af95-afcc206f9189',
     ownerUserId: null,
-    name: 'Crunch abdominal',
+    name: 'Crunch',
+    nameEs: 'Crunch abdominal',
     primaryMuscle: 'abs',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -598,7 +672,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'a0e1f5f0-5c27-539a-897b-632565a709c1',
     ownerUserId: null,
-    name: 'Crunch en polea',
+    name: 'Cable Crunch',
+    nameEs: 'Crunch en polea',
     primaryMuscle: 'abs',
     equipment: 'cable',
     exerciseType: 'weighted',
@@ -606,7 +681,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '342e7b48-098a-590b-9df2-3ef0015b484e',
     ownerUserId: null,
-    name: 'Elevación de piernas colgado',
+    name: 'Hanging Leg Raise',
+    nameEs: 'Elevación de piernas colgado',
     primaryMuscle: 'abs',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -614,7 +690,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'a9f26568-1871-5002-9e55-514193a73df5',
     ownerUserId: null,
-    name: 'Elevación de piernas en banco',
+    name: 'Lying Leg Raise',
+    nameEs: 'Elevación de piernas en banco',
     primaryMuscle: 'abs',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -622,7 +699,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: 'bdf9628f-a555-5140-b94d-084bc0712efb',
     ownerUserId: null,
-    name: 'Plancha',
+    name: 'Plank',
+    nameEs: 'Plancha',
     primaryMuscle: 'abs',
     equipment: 'bodyweight',
     exerciseType: 'timed',
@@ -630,7 +708,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '297017a9-c970-5fed-a113-c3e507de2bb9',
     ownerUserId: null,
-    name: 'Rueda abdominal',
+    name: 'Ab Wheel Rollout',
+    nameEs: 'Rueda abdominal',
     primaryMuscle: 'abs',
     equipment: 'other',
     exerciseType: 'weighted',
@@ -638,7 +717,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '246dd2f0-ed7b-517f-b907-ea9063b7199d',
     ownerUserId: null,
-    name: 'Russian twist',
+    name: 'Russian Twist',
+    nameEs: 'Russian twist',
     primaryMuscle: 'abs',
     equipment: 'bodyweight',
     exerciseType: 'bodyweight',
@@ -646,7 +726,8 @@ export const GLOBAL_EXERCISES: readonly Exercise[] = [
   {
     id: '31718b59-6226-5d01-95fa-a05c459c482d',
     ownerUserId: null,
-    name: 'Pallof press',
+    name: 'Pallof Press',
+    nameEs: 'Pallof press',
     primaryMuscle: 'abs',
     equipment: 'cable',
     exerciseType: 'weighted',

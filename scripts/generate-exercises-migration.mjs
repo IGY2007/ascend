@@ -1,5 +1,6 @@
 // Convierte ejercicios-base.csv en la migración de ejercicios globales.
-// Cada ejercicio recibe un UUID determinístico (v5 a partir del nombre) para que su id no cambie
+// Nombre visible en inglés (nombre_en); el español queda para buscar.
+// Cada ejercicio recibe un UUID determinístico (v5 a partir del nombre en español) para que su id no cambie
 // aunque se regenere el archivo: así las rutinas y el historial nunca pierden la referencia.
 // Uso: npm run seed:exercises
 import { createHash } from 'node:crypto'
@@ -58,13 +59,13 @@ const sql = (s) => `'${s.replace(/'/g, "''")}'`
 
 const lines = readFileSync(CSV, 'utf8').trim().split(/\r?\n/)
 const header = lines.shift()
-if (header !== 'nombre,grupo,equipamiento') throw new Error(`Encabezado inesperado: ${header}`)
+if (header !== 'nombre,grupo,equipamiento,nombre_en') throw new Error(`Encabezado inesperado: ${header}`)
 
 const seen = new Set()
 const items = []
 const rows = lines.map((line, i) => {
-  const [name, group, equipment, ...rest] = line.split(',').map((s) => s.trim())
-  if (rest.length || !name) throw new Error(`Línea ${i + 2} inválida: ${line}`)
+  const [name, group, equipment, nameEn, ...rest] = line.split(',').map((s) => s.trim())
+  if (rest.length || !name || !nameEn) throw new Error(`Línea ${i + 2} inválida: ${line}`)
   const muscle = MUSCLES[group.toLowerCase()]
   const equip = EQUIPMENT[equipment.toLowerCase()]
   if (!muscle) throw new Error(`Grupo desconocido en línea ${i + 2}: ${group}`)
@@ -74,8 +75,8 @@ const rows = lines.map((line, i) => {
   seen.add(key)
   const type = TIMED.has(key) ? 'timed' : equip === 'bodyweight' ? 'bodyweight' : 'weighted'
   const id = uuidv5(key, NAMESPACE)
-  items.push({ id, name, primaryMuscle: muscle, equipment: equip, exerciseType: type })
-  return `  (${sql(id)}, ${sql(name)}, ${sql(muscle)}, ${sql(equip)}, ${sql(type)})`
+  items.push({ id, name: nameEn, nameEs: name, primaryMuscle: muscle, equipment: equip, exerciseType: type })
+  return `  (${sql(id)}, ${sql(nameEn)}, ${sql(muscle)}, ${sql(equip)}, ${sql(type)})`
 })
 
 const out = `-- =============================================================================
@@ -104,7 +105,7 @@ const ts = `// Biblioteca global de ejercicios, generada desde ejercicios-base.c
 import type { Exercise } from '@/types/models'
 
 export const GLOBAL_EXERCISES: readonly Exercise[] = [
-${items.map((e) => `  { id: '${e.id}', ownerUserId: null, name: ${JSON.stringify(e.name)}, primaryMuscle: '${e.primaryMuscle}', equipment: '${e.equipment}', exerciseType: '${e.exerciseType}' },`).join('\n')}
+${items.map((e) => `  { id: '${e.id}', ownerUserId: null, name: ${JSON.stringify(e.name)}, nameEs: ${JSON.stringify(e.nameEs)}, primaryMuscle: '${e.primaryMuscle}', equipment: '${e.equipment}', exerciseType: '${e.exerciseType}' },`).join('\n')}
 ]
 `
 mkdirSync(dirname(OUT_TS), { recursive: true })

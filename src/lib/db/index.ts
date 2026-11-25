@@ -2,9 +2,12 @@ import Dexie, { type EntityTable } from 'dexie'
 import type {
   BodyWeight,
   Exercise,
+  ExerciseSet,
   NutritionGoal,
   Profile,
+  SessionExercise,
   TemplateExercise,
+  WorkoutSession,
   WorkoutTemplate,
 } from '@/types/models'
 
@@ -19,6 +22,9 @@ export class AscendDB extends Dexie {
   exercises!: EntityTable<Exercise, 'id'>
   templates!: EntityTable<WorkoutTemplate, 'id'>
   templateExercises!: EntityTable<TemplateExercise, 'id'>
+  sessions!: EntityTable<WorkoutSession, 'id'>
+  sessionExercises!: EntityTable<SessionExercise, 'id'>
+  exerciseSets!: EntityTable<ExerciseSet, 'id'>
 
   constructor(name = 'ascend') {
     super(name)
@@ -31,6 +37,34 @@ export class AscendDB extends Dexie {
       templates: 'id, position',
       templateExercises: 'id, templateId, exerciseId',
     })
+
+    // v2: entrenamientos + rutinas en rotación (sin días fijos) + días por semana en el perfil.
+    this.version(2)
+      .stores({
+        sessions: 'id, status, startedAt, templateId',
+        sessionExercises: 'id, sessionId, exerciseId',
+        exerciseSets: 'id, sessionId, sessionExerciseId',
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table('profile')
+          .toCollection()
+          .modify((p: Record<string, unknown>) => {
+            if (typeof p.daysPerWeek !== 'number') {
+              const days = Array.isArray(p.trainingDays) ? p.trainingDays.length : 3
+              p.daysPerWeek = Math.min(6, Math.max(2, days))
+              p.split = 'upper_lower'
+              p.easeLegs = false
+              delete p.trainingDays
+            }
+          })
+        await tx
+          .table('templates')
+          .toCollection()
+          .modify((t: Record<string, unknown>) => {
+            if (t.source === 'generated') t.weekdays = []
+          })
+      })
   }
 }
 

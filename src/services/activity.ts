@@ -5,7 +5,9 @@ import { toDateKey } from '@/domain/dates'
 import type { CardioLog, WaterLog } from '@/types/models'
 import { bodyWeightService, nutritionService } from './local-data'
 
-const now = () => new Date().toISOString()
+import { monotonicNowIso } from '@/lib/time'
+
+const now = monotonicNowIso
 const uuid = () => crypto.randomUUID()
 
 async function currentWeight(): Promise<number> {

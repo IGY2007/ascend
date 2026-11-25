@@ -30,11 +30,20 @@ const initialUrlHadCode =
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
-  const [state, setState] = useState<InternalState>({
-    status: 'loading',
-    user: null,
-    session: null,
-    isOfflineSession: false,
+  // Arranque instantáneo: si hay una sesión guardada en el dispositivo, se entra sin esperar a
+  // Supabase. Con el token vencido y sin red, supabase-js reintenta renovarlo durante ~30 s antes
+  // de emitir INITIAL_SESSION; esperar eso dejaría la app trabada en el gimnasio sin señal.
+  // Si la sesión resulta inválida, Supabase emite SIGNED_OUT y se vuelve al login.
+  const [state, setState] = useState<InternalState>(() => {
+    const stored = parseStoredUser(localStorage.getItem(AUTH_STORAGE_KEY))
+    return stored
+      ? {
+          status: 'authenticated',
+          user: toAuthUser(stored),
+          session: null,
+          isOfflineSession: false,
+        }
+      : { status: 'loading', user: null, session: null, isOfflineSession: false }
   })
   const [isRecovery, setIsRecovery] = useState(false)
 

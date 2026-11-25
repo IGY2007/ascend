@@ -73,6 +73,21 @@ describe('app (smoke)', () => {
     expect(screen.getByText(t.home.emptyTitle)).toBeInTheDocument()
   })
 
+  it('con sesión guardada entra al instante, sin esperar la respuesta de Supabase', async () => {
+    localStorage.setItem(
+      'ascend-auth',
+      JSON.stringify({
+        refresh_token: 'r',
+        user: { id: 'u1', user_metadata: { display_name: 'Julian' } },
+      }),
+    )
+    await renderApp('#/')
+    // Ningún evento de auth: simula a supabase-js reintentando renovar el token sin red.
+    expect(
+      await screen.findByRole('heading', { name: t.home.greeting('Julian') }),
+    ).toBeInTheDocument()
+  })
+
   it('sin conexión y con la sesión guardada, el usuario sigue logueado', async () => {
     localStorage.setItem(
       'ascend-auth',

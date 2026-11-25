@@ -26,3 +26,9 @@ export function formatDecimal(value: number, maxFractionDigits = 2): string {
     useGrouping: true,
   }).format(value)
 }
+
+/** Con signo explícito y el signo menos tipográfico (−), ej.: "+0,4" / "−1,2" / "0". */
+export function formatSigned(value: number, maxFractionDigits = 1): string {
+  const sign = value > 0 ? '+' : value < 0 ? '−' : ''
+  return sign + formatDecimal(Math.abs(value), maxFractionDigits)
+}

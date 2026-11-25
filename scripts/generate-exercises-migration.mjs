@@ -3,13 +3,15 @@
 // aunque se regenere el archivo: así las rutinas y el historial nunca pierden la referencia.
 // Uso: npm run seed:exercises
 import { createHash } from 'node:crypto'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const CSV = join(ROOT, 'ejercicios-base.csv')
 const OUT = join(ROOT, 'supabase/migrations/0002_global_exercises.sql')
+// Copia para la app (modo local / offline): mismos ids que en la base.
+const OUT_TS = join(ROOT, 'src/data/global-exercises.ts')
 
 // Namespace propio de ASCEND para los UUID v5 de los ejercicios globales. No cambiar.
 const NAMESPACE = 'c0a1e7d4-5b2f-4f3e-9a61-8d2b7e4f1a90'
@@ -59,6 +61,7 @@ const header = lines.shift()
 if (header !== 'nombre,grupo,equipamiento') throw new Error(`Encabezado inesperado: ${header}`)
 
 const seen = new Set()
+const items = []
 const rows = lines.map((line, i) => {
   const [name, group, equipment, ...rest] = line.split(',').map((s) => s.trim())
   if (rest.length || !name) throw new Error(`Línea ${i + 2} inválida: ${line}`)
@@ -70,7 +73,9 @@ const rows = lines.map((line, i) => {
   if (seen.has(key)) throw new Error(`Ejercicio duplicado: ${name}`)
   seen.add(key)
   const type = TIMED.has(key) ? 'timed' : equip === 'bodyweight' ? 'bodyweight' : 'weighted'
-  return `  (${sql(uuidv5(key, NAMESPACE))}, ${sql(name)}, ${sql(muscle)}, ${sql(equip)}, ${sql(type)})`
+  const id = uuidv5(key, NAMESPACE)
+  items.push({ id, name, primaryMuscle: muscle, equipment: equip, exerciseType: type })
+  return `  (${sql(id)}, ${sql(name)}, ${sql(muscle)}, ${sql(equip)}, ${sql(type)})`
 })
 
 const out = `-- =============================================================================
@@ -93,3 +98,15 @@ on conflict (id) do update set
 
 writeFileSync(OUT, out)
 console.log(`✓ ${rows.length} ejercicios → ${OUT.replace(ROOT + '/', '')}`)
+
+const ts = `// Biblioteca global de ejercicios, generada desde ejercicios-base.csv con
+// scripts/generate-exercises-migration.mjs. NO editar a mano. Mismos ids que la migración 0002.
+import type { Exercise } from '@/types/models'
+
+export const GLOBAL_EXERCISES: readonly Exercise[] = [
+${items.map((e) => `  { id: '${e.id}', ownerUserId: null, name: ${JSON.stringify(e.name)}, primaryMuscle: '${e.primaryMuscle}', equipment: '${e.equipment}', exerciseType: '${e.exerciseType}' },`).join('\n')}
+]
+`
+mkdirSync(dirname(OUT_TS), { recursive: true })
+writeFileSync(OUT_TS, ts)
+console.log(`✓ ${items.length} ejercicios → ${OUT_TS.replace(ROOT + '/', '')}`)

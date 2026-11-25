@@ -62,10 +62,26 @@ async function renderApp(path: string) {
 }
 
 describe('app con cuentas (smoke)', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetModules()
     listeners.length = 0
     localStorage.clear()
+    // Perfil local ya completo: estos tests cubren el login, no el cuestionario.
+    const { profileService } = await import('@/services/local-data')
+    await profileService.completeOnboarding({
+      name: 'Julian',
+      sex: 'male',
+      age: 25,
+      heightCm: 178,
+      weightKg: 75,
+      goal: 'muscle',
+      targetWeightKg: null,
+      activity: 'sedentary',
+      experience: 'intermediate',
+      trainingDays: [1, 3, 5],
+      sessionMinutes: 60,
+      place: 'gym',
+    })
   })
 
   it('sin sesión, una ruta protegida lleva al login', async () => {
@@ -81,7 +97,7 @@ describe('app con cuentas (smoke)', () => {
       await screen.findByRole('heading', { name: t.home.greeting('Julius') }),
     ).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: t.nav.workouts }).length).toBeGreaterThan(0)
-    expect(screen.getByText(t.home.emptyTitle)).toBeInTheDocument()
+    expect(await screen.findByText(t.home.nutrition)).toBeInTheDocument()
   })
 
   it('con sesión guardada entra al instante, sin esperar la respuesta de Supabase', async () => {

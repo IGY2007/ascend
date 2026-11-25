@@ -11,6 +11,9 @@ import { HomePage } from '@/features/home/HomePage'
 import { WorkoutsPage } from '@/features/templates/WorkoutsPage'
 import { ProgressPage } from '@/features/history/ProgressPage'
 import { ProfilePage } from '@/features/profile/ProfilePage'
+import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
+import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding'
+import { WorkoutDetailPage } from '@/features/templates/WorkoutDetailPage'
 
 // HashRouter: GitHub Pages no puede resolver rutas del lado del servidor.
 export const router = createHashRouter([
@@ -30,13 +33,20 @@ export const router = createHashRouter([
         element: <RequireAuth />,
         children: [
           { path: '/reset-password', element: <ResetPasswordPage /> },
+          { path: '/onboarding', element: <OnboardingPage /> },
           {
-            element: <AppLayout />,
+            element: <RequireOnboarding />,
             children: [
-              { path: '/', element: <HomePage /> },
-              { path: '/workouts', element: <WorkoutsPage /> },
-              { path: '/progress', element: <ProgressPage /> },
-              { path: '/profile', element: <ProfilePage /> },
+              {
+                element: <AppLayout />,
+                children: [
+                  { path: '/', element: <HomePage /> },
+                  { path: '/workouts', element: <WorkoutsPage /> },
+                  { path: '/workouts/:id', element: <WorkoutDetailPage /> },
+                  { path: '/progress', element: <ProgressPage /> },
+                  { path: '/profile', element: <ProfilePage /> },
+                ],
+              },
             ],
           },
         ],

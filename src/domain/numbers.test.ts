@@ -40,3 +40,12 @@ describe('formatDecimal', () => {
     expect(formatDecimal(2.125, 2)).toBe('2,13')
   })
 })
+
+describe('formatSigned', () => {
+  it('usa + y el signo menos tipográfico', async () => {
+    const { formatSigned } = await import('./numbers')
+    expect(formatSigned(0.4)).toBe('+0,4')
+    expect(formatSigned(-1.25, 1)).toBe('−1,3')
+    expect(formatSigned(0)).toBe('0')
+  })
+})

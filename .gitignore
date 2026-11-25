@@ -12,3 +12,4 @@ supabase/.temp
 supabase/.branches
 .vscode/*
 !.vscode/extensions.json
+design/referencia.*

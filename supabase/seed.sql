@@ -1,0 +1,9 @@
+-- =============================================================================
+-- ASCEND — seed (solo desarrollo local con `supabase db reset`)
+--
+-- La biblioteca global de ejercicios NO está acá: vive en
+-- migrations/0002_global_exercises.sql para que también llegue al proyecto remoto con
+-- `supabase db push` (el seed no se aplica en remoto).
+--
+-- Este archivo queda para datos de prueba locales. Nunca datos inventados en producción.
+-- =============================================================================

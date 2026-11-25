@@ -35,10 +35,15 @@ const GOAL_ADJUSTMENT: Record<Goal, number> = {
   fat_loss: -0.2,
 }
 
-const PROTEIN_PER_KG: Record<Goal, number> = {
-  muscle: 1.8,
-  strength: 1.8,
-  recomp: 2.0,
+/**
+ * Protein per kg of body weight. Morton et al. 2018 (BJSM meta-analysis): gains plateau around
+ * 1.6 g/kg with an upper bound near 2.2 g/kg; ISSN recommends 1.4–2.0 g/kg and more during a
+ * deficit. We aim at 2.0 to build and 2.2 when losing fat or recomposing (protects muscle).
+ */
+export const PROTEIN_PER_KG: Record<Goal, number> = {
+  muscle: 2.0,
+  strength: 2.0,
+  recomp: 2.2,
   fat_loss: 2.2,
 }
 

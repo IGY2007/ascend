@@ -45,9 +45,12 @@ const MINUTES = [15, 30, 45, 60, 90]
 export function CardioSheet({
   open,
   onOpenChange,
+  date,
 }: {
   open: boolean
   onOpenChange: (o: boolean) => void
+  /** Día al que se suma (por defecto, hoy). */
+  date?: string
 }) {
   const latest = useLatestWeight()
   const profile = useLocalProfile()
@@ -60,7 +63,12 @@ export function CardioSheet({
 
   const save = async () => {
     if (!valid) return
-    const saved = await cardioService.log({ activity, intensity, minutes: minutes! })
+    const saved = await cardioService.log({
+      date,
+      activity,
+      intensity,
+      minutes: minutes!,
+    })
     toast.success(c.saved(formatDecimal(saved, 0)))
     onOpenChange(false)
   }

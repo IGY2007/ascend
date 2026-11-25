@@ -1,4 +1,4 @@
-import { Dumbbell, House, TrendingUp, UserRound, type LucideIcon } from 'lucide-react'
+import { Apple, Dumbbell, House, TrendingUp, UserRound, type LucideIcon } from 'lucide-react'
 import { t } from '@/i18n'
 
 export interface NavItem {
@@ -7,10 +7,11 @@ export interface NavItem {
   icon: LucideIcon
 }
 
-/** Solo secciones que existen. Nutrición se suma en la Fase 4. */
+/** Solo secciones que existen. */
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: t.nav.home, icon: House },
   { to: '/workouts', label: t.nav.workouts, icon: Dumbbell },
   { to: '/progress', label: t.nav.progress, icon: TrendingUp },
+  { to: '/nutrition', label: t.nav.nutrition, icon: Apple },
   { to: '/profile', label: t.nav.profile, icon: UserRound },
 ]

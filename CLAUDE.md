@@ -63,7 +63,7 @@ src/
   domain/         # lógica pura: volumen, e1RM, récords, comparaciones (testeada)
   schemas/        # Zod
   types/          # tipos, incluido database.types.ts generado por Supabase
-  i18n/           # textos en español centralizados (preparado para otros idiomas)
+  i18n/           # textos centralizados (inglés: en.ts; preparado para otros idiomas)
 supabase/
   migrations/
   seed.sql
@@ -72,7 +72,7 @@ supabase/
 Reglas:
 - Los componentes no llaman a Supabase directamente: usan hooks → services.
 - La lógica de cálculo vive en `src/domain/` como funciones puras con tests.
-- Textos visibles en `src/i18n/es.ts`, no hardcodeados en componentes.
+- Textos visibles en `src/i18n/en.ts` (la app está en inglés desde el 25/11/2026), no hardcodeados en componentes.
 - Tipos de DB generados con `supabase gen types typescript`.
 
 ## Offline y sincronización (crítico)
@@ -116,7 +116,7 @@ Navegación: barra inferior en móvil (Home, Workouts, Progress, Nutrition, Prof
 
 ## Datos
 
-- Unidades base: kg y cm. Idioma inicial: español.
+- Unidades base: kg y cm. Idioma de la app: inglés (Julian habla español en el chat).
 - Volumen = peso × reps, solo para series completadas de ejercicios con carga.
 - e1RM con fórmula de Epley (`peso × (1 + reps/30)`), indicando que es una estimación.
 - Nunca datos inventados en la app. Los datos de demo solo en un modo preview claramente identificado.

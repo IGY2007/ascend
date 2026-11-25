@@ -8,6 +8,7 @@ import { NumberInput } from '@/components/ui/number-input'
 import { ExerciseThumbnail } from '@/features/exercises/ExerciseThumbnail'
 import { ExercisePicker } from '@/features/exercises/ExercisePicker'
 import { exercisesService, templatesService, type TemplateItem } from '@/services/local-data'
+import { formatDecimal } from '@/domain/numbers'
 import { t } from '@/i18n'
 
 const w = t.workouts
@@ -155,8 +156,8 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
 
             <div className="grid grid-cols-4 gap-2.5">
               {field(w.sets, sets, setSets)}
-              {field(timed ? `${w.seconds} mín.` : w.repsMin, min, setMin)}
-              {field(timed ? `${w.seconds} máx.` : w.repsMax, max, setMax)}
+              {field(timed ? w.secondsMin : w.repsMin, min, setMin)}
+              {field(timed ? w.secondsMax : w.repsMax, max, setMax)}
               {field(w.targetRir, rir, setRir)}
             </div>
 
@@ -187,9 +188,7 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
                       <NumberInput
                         value={weights[i] ?? null}
                         onValueChange={(v) => setWeight(i, v)}
-                        placeholder={
-                          weights[i - 1] != null ? String(weights[i - 1]).replace('.', ',') : '—'
-                        }
+                        placeholder={weights[i - 1] != null ? formatDecimal(weights[i - 1]!) : '—'}
                         aria-label={`${t.workout.kg} ${t.workout.set} ${i + 1}`}
                         className="h-14 pt-3 pr-8 text-lg"
                       />

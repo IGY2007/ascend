@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { motion } from 'motion/react'
-import { Check, ChevronLeft, Trash2, TrendingDown, TrendingUp, Trophy } from 'lucide-react'
+import { Check, ChevronLeft, Pencil, Trash2, TrendingDown, TrendingUp, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -24,7 +24,11 @@ export function SummaryPage() {
   const view = useSessionView(id)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
-  const close = () => navigate(fresh ? '/' : '/progress', { replace: fresh })
+  const close = () => {
+    if (fresh) navigate('/', { replace: true })
+    else if ((window.history.state as { idx?: number } | null)?.idx) navigate(-1)
+    else navigate('/progress')
+  }
 
   if (summary === undefined) {
     return (
@@ -52,7 +56,7 @@ export function SummaryPage() {
           className="mt-3 -ml-2 inline-flex h-11 items-center gap-1 pr-3 pl-1 font-medium text-muted"
         >
           <ChevronLeft className="size-5" />
-          {t.progress.title}
+          {t.common.back}
         </button>
       )}
 
@@ -176,6 +180,15 @@ export function SummaryPage() {
 
       <Button size="lg" block className="mt-8" onClick={close}>
         {wk.ok}
+      </Button>
+      <Button
+        variant="secondary"
+        block
+        className="mt-3"
+        onClick={() => navigate(`/workout/${session.id}/edit`)}
+      >
+        <Pencil />
+        {wk.edit}
       </Button>
       {!fresh && (
         <Button

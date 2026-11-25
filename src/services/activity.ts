@@ -67,6 +67,17 @@ export const waterService = {
   byDate: (date: string): Promise<WaterLog[]> =>
     db.waterLogs.where('date').equals(date).sortBy('createdAt'),
   all: (): Promise<WaterLog[]> => db.waterLogs.orderBy('date').toArray(),
+  /** Ajusta el total del día a `ml` (para corregir días anteriores). */
+  async setTotal(date: string, ml: number) {
+    const target = Math.max(0, Math.round(ml))
+    const logs = await waterService.byDate(date)
+    const total = logs.reduce((s, w) => s + w.ml, 0)
+    if (target === total) return
+    await db.transaction('rw', db.waterLogs, async () => {
+      await db.waterLogs.bulkDelete(logs.map((l) => l.id))
+      if (target > 0) await waterService.add(target, date)
+    })
+  },
   /** Deshace el último vaso del día. */
   async undoLast(date = toDateKey(new Date())) {
     const last = (await waterService.byDate(date)).at(-1)
@@ -85,7 +96,7 @@ export interface TodayEnergy {
 
 /** Objetivo de calorías del día = objetivo base + lo gastado en cardio hoy. */
 export async function todayEnergy(date = toDateKey(new Date())): Promise<TodayEnergy | null> {
-  const goal = await nutritionService.current()
+  const goal = await nutritionService.at(date)
   if (!goal) return null
   const cardio = (await cardioService.byDate(date)).reduce((s, c) => s + c.kcal, 0)
   return { baseKcal: goal.kcal, cardioKcal: cardio, totalKcal: goal.kcal + cardio }

@@ -12,6 +12,10 @@ import type {
   WorkoutSession,
   WorkoutTemplate,
 } from '@/types/models'
+import { EASE_LEGS_NOTE } from '@/domain/routine-generator'
+
+const LEGACY_EASE_LEGS_NOTE =
+  'Piernas: arrancá liviano y con margen. Cuando completes todas las series cómodo, subí de a poco.'
 
 /**
  * Base local (IndexedDB). En modo local es la única fuente de datos; con Supabase activo será la
@@ -75,6 +79,17 @@ export class AscendDB extends Dexie {
       cardioLogs: 'id, date',
       waterLogs: 'id, date',
     })
+
+    // v4: the app switched to English. Translate the note the generator used to write in Spanish.
+    this.version(4)
+      .stores({ sessions: 'id, status, startedAt, templateId' })
+      .upgrade(async (tx) => {
+        const fix = (row: Record<string, unknown>) => {
+          if (row.notes === LEGACY_EASE_LEGS_NOTE) row.notes = EASE_LEGS_NOTE
+        }
+        await tx.table('templates').toCollection().modify(fix)
+        await tx.table('sessions').toCollection().modify(fix)
+      })
   }
 }
 

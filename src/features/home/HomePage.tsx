@@ -1,6 +1,19 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { Check, ChevronRight, Play, Plus, TrendingDown, TrendingUp } from 'lucide-react'
+import {
+  Check,
+  ChevronRight,
+  Droplet,
+  Dumbbell,
+  Play,
+  Plus,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
+import { ProgressRing } from '@/components/ui/progress-ring'
+import { LearnCard } from '@/features/learn/LearnCard'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -22,6 +35,8 @@ import {
   useTemplates,
   useTodayCardio,
   useTodayEnergy,
+  useTodayWater,
+  useWaterTarget,
 } from '@/features/profile/hooks'
 import { useDisplayName } from '@/features/profile/use-profile'
 import { weightStats } from '@/domain/body-weight'
@@ -58,6 +73,9 @@ export function HomePage() {
   const trainedToday = trainedDays.has(todayKey)
   const energy = useTodayEnergy(todayKey)
   const cardioToday = useTodayCardio(todayKey)
+  const waterToday = useTodayWater(todayKey)
+  const waterTarget = useWaterTarget()
+  const cardioMinutes = (cardioToday ?? []).reduce((n, c) => n + c.minutes, 0)
   const stats = weights ? weightStats(weights, todayKey, profile?.targetWeightKg ?? null) : null
 
   return (
@@ -98,62 +116,89 @@ export function HomePage() {
         </Card>
       ) : null}
 
-      {/* Semana: días entrenados de verdad */}
+      {/* Tu semana: anillo de progreso (violeta → verde) + hoy */}
       <section className="mt-6">
-        <div className="mb-3 flex items-baseline justify-between px-1">
-          <h2 className="text-sm font-medium text-muted">{h.thisWeek}</h2>
-          {weekGoal > 0 && (
-            <p
-              className={cn(
-                'num text-xs',
-                thisWeek.length >= weekGoal ? 'text-success' : 'text-subtle',
-              )}
-            >
-              {thisWeek.length >= weekGoal ? h.weekDone : h.weekProgress(thisWeek.length, weekGoal)}
-            </p>
-          )}
-        </div>
-        <div className="grid grid-cols-7 gap-1.5">
-          {Array.from({ length: 7 }, (_, i) => {
-            const date = addDays(weekStart, i)
-            const key = toDateKey(date)
-            const dow = date.getDay() as Weekday
-            const isToday = key === todayKey
-            const trained = trainedDays.has(key)
-            return (
-              <div
-                key={i}
-                className={cn(
-                  'flex flex-col items-center gap-1.5 rounded-2xl border py-2.5',
-                  isToday ? 'border-accent/60 bg-accent/10' : 'border-transparent',
-                )}
-              >
-                <span className="text-[0.7rem] font-medium text-subtle">
-                  {t.labels.weekdayLetter[dow]}
-                </span>
-                <span
-                  className={cn('num text-sm font-semibold', isToday ? 'text-fg' : 'text-muted')}
-                >
-                  {date.getDate()}
-                </span>
-                <span
-                  aria-hidden
-                  className={cn(
-                    'grid size-4 place-items-center rounded-full',
-                    trained
-                      ? 'bg-success text-bg'
-                      : key < todayKey
-                        ? 'bg-card-2'
-                        : 'bg-transparent',
-                  )}
-                >
-                  {trained && <Check className="size-2.5" strokeWidth={4} />}
-                </span>
+        <h2 className="mb-3 px-1 text-sm font-medium text-muted">{h.thisWeek}</h2>
+        <Card>
+          <div className="flex items-center gap-5">
+            <ProgressRing value={weekGoal ? thisWeek.length / weekGoal : 0}>
+              <div>
+                <p className="num text-2xl leading-none font-bold">
+                  {weekGoal ? Math.min(100, Math.round((thisWeek.length / weekGoal) * 100)) : 0}%
+                </p>
+                <p className="mt-1 text-[0.7rem] text-muted">{h.completed}</p>
               </div>
-            )
-          })}
-        </div>
+            </ProgressRing>
+            <ul className="min-w-0 flex-1 space-y-3">
+              <Stat
+                icon={Dumbbell}
+                label={h.ringWorkout}
+                value={`${thisWeek.length} / ${weekGoal}`}
+                done={weekGoal > 0 && thisWeek.length >= weekGoal}
+              />
+              <Stat
+                icon={Droplet}
+                label={h.ringWater}
+                value={`${formatDecimal((waterToday ?? 0) / 1000, 2)} / ${formatDecimal((waterTarget ?? 0) / 1000, 2)} L`}
+                done={!!waterTarget && (waterToday ?? 0) >= waterTarget}
+              />
+              <Stat
+                icon={Zap}
+                label={h.ringCardio}
+                value={`${cardioMinutes} ${t.charts.min}`}
+                done={cardioMinutes > 0}
+              />
+            </ul>
+          </div>
+
+          {/* Días de la semana: tocá uno para ver el reporte del día */}
+          <div className="mt-5 grid grid-cols-7 gap-1.5 border-t border-border pt-4">
+            {Array.from({ length: 7 }, (_, i) => {
+              const date = addDays(weekStart, i)
+              const key = toDateKey(date)
+              const dow = date.getDay() as Weekday
+              const isToday = key === todayKey
+              const trained = trainedDays.has(key)
+              const future = key > todayKey
+              const cell = (
+                <>
+                  <span className="text-[0.7rem] font-medium text-subtle">
+                    {t.labels.weekdayLetter[dow]}
+                  </span>
+                  <span
+                    className={cn(
+                      'grid size-8 place-items-center rounded-full num text-sm font-semibold',
+                      trained
+                        ? 'bg-success text-bg'
+                        : isToday
+                          ? 'text-fg ring-1 ring-accent-2'
+                          : 'text-muted',
+                    )}
+                  >
+                    {trained ? <Check className="size-4" strokeWidth={3.5} /> : date.getDate()}
+                  </span>
+                </>
+              )
+              return future ? (
+                <span key={key} className="flex flex-col items-center gap-1.5 py-1 opacity-50">
+                  {cell}
+                </span>
+              ) : (
+                <Link
+                  key={key}
+                  to={`/day/${key}`}
+                  aria-label={t.calendar.openDay(formatLongDate(date))}
+                  className="flex flex-col items-center gap-1.5 rounded-xl py-1 active:bg-card-2"
+                >
+                  {cell}
+                </Link>
+              )
+            })}
+          </div>
+        </Card>
       </section>
+
+      <LearnCard className="mt-6" />
 
       <InsightsCard limit={2} className="mt-6" />
 
@@ -192,7 +237,13 @@ export function HomePage() {
       {/* Nutrición */}
       {goal && (
         <section className="mt-6">
-          <h2 className="mb-3 px-1 text-sm font-medium text-muted">{h.nutrition}</h2>
+          <Link
+            to="/nutrition"
+            className="mb-3 flex items-center justify-between px-1 text-sm font-medium text-muted"
+          >
+            {h.nutrition}
+            <ChevronRight className="size-4" />
+          </Link>
           <Card>
             <p className="flex items-baseline gap-1.5">
               <AnimatedNumber
@@ -262,5 +313,34 @@ export function HomePage() {
         initial={stats?.latest?.weightKg ?? null}
       />
     </>
+  )
+}
+
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  done,
+}: {
+  icon: LucideIcon
+  label: string
+  value: string
+  done: boolean
+}) {
+  return (
+    <li className="flex items-center gap-3">
+      <span
+        className={cn(
+          'grid size-8 shrink-0 place-items-center rounded-lg',
+          done ? 'bg-success/15 text-success' : 'bg-card-2 text-success/80',
+        )}
+      >
+        <Icon className="size-4" />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-xs text-muted">{label}</span>
+        <span className="block truncate num text-sm font-semibold">{value}</span>
+      </span>
+    </li>
   )
 }

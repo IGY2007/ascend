@@ -85,7 +85,7 @@ describe('app con cuentas (smoke)', () => {
       await screen.findByRole('heading', { name: t.home.greeting('Julius') }),
     ).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: t.nav.workouts }).length).toBeGreaterThan(0)
-    expect(await screen.findByText(t.home.nutrition)).toBeInTheDocument()
+    expect((await screen.findAllByText(t.home.nutrition)).length).toBeGreaterThan(1)
   })
 
   it('con sesión guardada entra al instante, sin esperar la respuesta de Supabase', async () => {

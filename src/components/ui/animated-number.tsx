@@ -12,7 +12,7 @@ interface AnimatedNumberProps {
 /** Número que se anima al cambiar (volumen, contadores). Respeta prefers-reduced-motion. */
 export function AnimatedNumber({
   value,
-  format = (v) => Math.round(v).toLocaleString('es-AR'),
+  format = (v) => Math.round(v).toLocaleString('en-US'),
   className,
   duration = 0.6,
 }: AnimatedNumberProps) {

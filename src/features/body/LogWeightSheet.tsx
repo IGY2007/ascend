@@ -10,16 +10,18 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   initial: number | null
+  /** Día del registro (por defecto, hoy). */
+  date?: string
 }
 
 /** Registrar el peso de hoy. Si ya había uno hoy, lo reemplaza. */
-export function LogWeightSheet({ open, onOpenChange, initial }: Props) {
+export function LogWeightSheet({ open, onOpenChange, initial, date }: Props) {
   const [value, setValue] = useState<number | null>(initial)
   const valid = value !== null && value >= 30 && value <= 300
 
   const save = async () => {
     if (!valid) return
-    await bodyWeightService.log(Math.round(value * 10) / 10)
+    await bodyWeightService.log(Math.round(value * 10) / 10, date)
     toast.success(t.progress.weightSaved)
     onOpenChange(false)
   }
@@ -42,7 +44,7 @@ export function LogWeightSheet({ open, onOpenChange, initial }: Props) {
         className="space-y-5 pt-2"
       >
         <UnitField
-          label={t.progress.todayWeight}
+          label={date ? t.progress.dayWeight : t.progress.todayWeight}
           unit={t.units.kg}
           value={value}
           onChange={setValue}

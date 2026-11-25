@@ -39,7 +39,7 @@ describe('nutrición', () => {
 
   it('macros coherentes con las calorías y la proteína por kg', () => {
     const m = calculateMacros(base)
-    expect(m.proteinG).toBe(135) // 75 × 1,8 = 135
+    expect(m.proteinG).toBe(150) // 75 × 2.0 = 150
     expect(m.fatG * 9).toBeGreaterThanOrEqual(m.kcal * 0.24)
     expect(Math.abs(kcalFromMacros(m) - m.kcal)).toBeLessThan(40)
     expect(calculateMacros({ ...base, goal: 'fat_loss' }).proteinG).toBe(165)

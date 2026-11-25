@@ -11,6 +11,7 @@ import {
 } from '@/domain/workout'
 import type { Exercise, ExerciseSet, SessionExercise, WorkoutSession } from '@/types/models'
 import { exercisesService } from './local-data'
+import { fromDateKey, toDateKey } from '@/domain/dates'
 
 /**
  * Entrenamiento activo y su historial. Todo se escribe primero en el dispositivo (Dexie): registrar
@@ -350,6 +351,87 @@ export const workoutService = {
     await workoutService.discard(sessionId)
   },
 
+  /**
+   * Registra un entrenamiento de un día anterior (o de hoy, ya hecho). Queda como "completed" con las
+   * series precargadas sin marcar: en la pantalla de edición se marcan las que hizo.
+   */
+  async logPast(date: string, templateId: string | null): Promise<string> {
+    const tpl = templateId ? await db.templates.get(templateId) : undefined
+    const items = tpl
+      ? await db.templateExercises.where('templateId').equals(tpl.id).sortBy('position')
+      : []
+    const exercises = await exercisesService.mapByIds(items.map((i) => i.exerciseId))
+    const start = fromDateKey(date)
+    start.setHours(18, 0, 0, 0)
+    const durationSeconds = 60 * 60
+    const id = uuid()
+    await db.transaction('rw', [db.sessions, db.sessionExercises, db.exerciseSets], async () => {
+      await db.sessions.add({
+        id,
+        ...base(),
+        templateId: tpl?.id ?? null,
+        name: tpl?.name ?? 'Workout',
+        startedAt: start.toISOString(),
+        completedAt: new Date(start.getTime() + durationSeconds * 1000).toISOString(),
+        durationSeconds,
+        status: 'completed',
+        notes: tpl?.notes ?? null,
+      })
+      let position = 0
+      for (const item of items) {
+        const exercise = exercises.get(item.exerciseId)
+        if (exercise) await createSessionExercise(id, exercise, position++, item)
+      }
+    })
+    return id
+  },
+
+  /**
+   * Guarda la edición de un entrenamiento ya terminado: fecha y duración, y limpia las series sin
+   * marcar y los ejercicios vacíos. Si no queda nada, lo borra. Devuelve si sigue existiendo.
+   */
+  async saveEdits(
+    sessionId: string,
+    patch: { date?: string; durationMinutes?: number | null } = {},
+  ): Promise<boolean> {
+    const session = await db.sessions.get(sessionId)
+    if (!session) return false
+    let alive = true
+    await db.transaction('rw', [db.sessions, db.sessionExercises, db.exerciseSets], async () => {
+      const sets = await db.exerciseSets.where('sessionId').equals(sessionId).toArray()
+      await db.exerciseSets.bulkDelete(sets.filter((s) => !s.isCompleted).map((s) => s.id))
+      const kept = new Set(sets.filter((s) => s.isCompleted).map((s) => s.sessionExerciseId))
+      const ses = await db.sessionExercises.where('sessionId').equals(sessionId).sortBy('position')
+      await db.sessionExercises.bulkDelete(ses.filter((s) => !kept.has(s.id)).map((s) => s.id))
+      if (kept.size === 0) {
+        await db.sessions.delete(sessionId)
+        alive = false
+        return
+      }
+      const survivors = ses.filter((s) => kept.has(s.id))
+      for (const [i, se] of survivors.entries()) {
+        if (se.position !== i) await db.sessionExercises.update(se.id, { position: i })
+        await renumberSets(se.id)
+      }
+      const start = new Date(session.startedAt)
+      if (patch.date) {
+        const day = fromDateKey(patch.date)
+        start.setFullYear(day.getFullYear(), day.getMonth(), day.getDate())
+      }
+      const durationSeconds =
+        patch.durationMinutes != null
+          ? Math.max(1, Math.round(patch.durationMinutes)) * 60
+          : session.durationSeconds
+      await db.sessions.update(sessionId, {
+        startedAt: start.toISOString(),
+        durationSeconds,
+        completedAt: new Date(start.getTime() + (durationSeconds ?? 0) * 1000).toISOString(),
+        updatedAt: now(),
+      })
+    })
+    return alive
+  },
+
   /** Rutina que toca en la rotación (la que sigue a la última completada). */
   async nextTemplateId(): Promise<string | null> {
     const templates = await db.templates.orderBy('position').toArray()
@@ -408,6 +490,13 @@ export const historyService = {
       })
     }
     return out
+  },
+
+  /** Entrenamientos terminados de un día (fecha local). */
+  async byDate(date: string) {
+    return (await historyService.list())
+      .filter((s) => toDateKey(new Date(s.startedAt)) === date)
+      .reverse()
   },
 
   async summary(sessionId: string): Promise<SessionSummary | undefined> {

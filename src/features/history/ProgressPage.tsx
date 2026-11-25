@@ -34,11 +34,12 @@ import { pctChange, type WeekBucket } from '@/domain/progress-stats'
 import { formatDuration } from '@/domain/workout'
 import { cn } from '@/lib/utils'
 import { locale, t } from '@/i18n'
+import { CalendarView } from '@/features/calendar/CalendarView'
 import type { BodyWeight, CardioLog } from '@/types/models'
 
 const p = t.progress
 const ch = t.charts
-const TABS = ['summary', 'strength', 'weight', 'cardio'] as const
+const TABS = ['summary', 'calendar', 'strength', 'weight', 'cardio'] as const
 type Tab = (typeof TABS)[number]
 
 const entryDate = new Intl.DateTimeFormat(locale, {
@@ -54,7 +55,7 @@ const weekBars = (buckets: WeekBucket[]): Bar[] =>
     const d = fromDateKey(b.weekStart)
     return {
       key: b.weekStart,
-      label: `${d.getDate()}/${d.getMonth() + 1}`,
+      label: `${d.getMonth() + 1}/${d.getDate()}`,
       title: ch.weekOf(dayMonth.format(d)),
       value: b.value,
     }
@@ -93,6 +94,12 @@ export function ProgressPage() {
         </div>
       </div>
       {tab === 'summary' && <SummaryTab />}
+      {tab === 'calendar' && (
+        <>
+          <CalendarView />
+          <p className="mt-3 text-center text-xs text-subtle">{t.calendar.tapHint}</p>
+        </>
+      )}
       {tab === 'strength' && <StrengthTab />}
       {tab === 'weight' && <WeightTab />}
       {tab === 'cardio' && <CardioWaterTab />}

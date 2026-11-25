@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useState, type InputHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
-import { formatDecimal, parseDecimal, parseInteger } from '@/domain/numbers'
+import { parseDecimal, parseInteger } from '@/domain/numbers'
 import { inputClassName } from './input-styles'
 
 export interface NumberInputProps extends Omit<
@@ -20,7 +20,7 @@ export interface NumberInputProps extends Omit<
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
   ({ value, onValueChange, kind = 'decimal', className, onBlur, ...props }, ref) => {
     const format = (v: number | null) =>
-      v === null ? '' : kind === 'decimal' ? formatDecimal(v) : String(v)
+      v === null ? '' : kind === 'decimal' ? String(Math.round(v * 100) / 100) : String(v)
     const [text, setText] = useState(() => format(value))
 
     // Sincroniza cuando el valor cambia desde afuera (ej.: botones +/-), sin pisar lo que se escribe.

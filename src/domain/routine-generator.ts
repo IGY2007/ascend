@@ -396,7 +396,7 @@ export interface GeneratedTemplate {
 }
 
 export const EASE_LEGS_NOTE =
-  'Piernas: arrancá liviano y con margen. Cuando completes todas las series cómodo, subí de a poco.'
+  'Legs: start light and leave reps in reserve. Once every set feels easy, add weight gradually.'
 
 export function generateRoutines(
   input: GeneratorInput,

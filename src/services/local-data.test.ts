@@ -20,7 +20,7 @@ describe('datos locales', () => {
   it('el cuestionario prepara perfil, macros, rutinas en rotación y peso inicial', async () => {
     await profileService.completeOnboarding(ANSWERS)
     expect((await profileService.get())?.name).toBe('Julian')
-    expect((await nutritionService.current())?.proteinG).toBe(135)
+    expect((await nutritionService.current())?.proteinG).toBe(150)
     const templates = await templatesService.list()
     expect(templates.map((t) => t.name)).toEqual(['Upper A', 'Lower A', 'Upper B', 'Lower B'])
     expect(
@@ -55,7 +55,7 @@ describe('datos locales', () => {
   it('registrar peso recalcula los macros, salvo que estén editados a mano', async () => {
     await profileService.completeOnboarding(ANSWERS)
     await bodyWeightService.log(80)
-    expect((await nutritionService.current())?.proteinG).toBe(145) // 80 × 1,8 = 144 → 145
+    expect((await nutritionService.current())?.proteinG).toBe(160) // 80 × 2.0 = 160
     await nutritionService.setManual({ proteinG: 150, carbsG: 300, fatG: 70 })
     await bodyWeightService.log(82)
     expect(await nutritionService.current()).toMatchObject({ kcal: 2430, source: 'manual' })

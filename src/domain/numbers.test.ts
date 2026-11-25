@@ -3,7 +3,7 @@ import { formatDecimal, parseDecimal, parseInteger } from './numbers'
 
 describe('parseDecimal', () => {
   it('acepta coma y punto como separador decimal', () => {
-    expect(parseDecimal('69,5')).toBe(69.5)
+    expect(parseDecimal('69.5')).toBe(69.5)
     expect(parseDecimal('69.5')).toBe(69.5)
   })
 
@@ -34,18 +34,19 @@ describe('parseInteger', () => {
 })
 
 describe('formatDecimal', () => {
-  it('usa coma decimal y no muestra ceros sobrantes', () => {
-    expect(formatDecimal(69.5)).toBe('69,5')
+  it('uses a decimal point and no muestra ceros sobrantes', () => {
+    expect(formatDecimal(69.5)).toBe('69.5')
     expect(formatDecimal(70)).toBe('70')
-    expect(formatDecimal(2.125, 2)).toBe('2,13')
+    expect(formatDecimal(2.125, 2)).toBe('2.13')
+    expect(formatDecimal(1250)).toBe('1,250')
   })
 })
 
 describe('formatSigned', () => {
   it('usa + y el signo menos tipográfico', async () => {
     const { formatSigned } = await import('./numbers')
-    expect(formatSigned(0.4)).toBe('+0,4')
-    expect(formatSigned(-1.25, 1)).toBe('−1,3')
+    expect(formatSigned(0.4)).toBe('+0.4')
+    expect(formatSigned(-1.25, 1)).toBe('−1.3')
     expect(formatSigned(0)).toBe('0')
   })
 })

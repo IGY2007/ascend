@@ -45,7 +45,16 @@ export function WaterCard({ date }: { date: string }) {
         />
       </div>
       {done && <p className="mt-2 text-sm text-success">{w.done}</p>}
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-4 grid grid-cols-4 gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={total === 0}
+          onClick={() => void waterService.setTotal(date, total - 250)}
+          aria-label={w.remove(250)}
+        >
+          {w.remove(250)}
+        </Button>
         {[250, 500, 750].map((ml) => (
           <Button
             key={ml}

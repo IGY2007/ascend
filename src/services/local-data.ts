@@ -251,6 +251,27 @@ export const nutritionService = {
     )[0]
   },
 
+  /** Objetivo que regía ese día (para ver días anteriores en el calendario). */
+  async at(date: string): Promise<NutritionGoal | undefined> {
+    const all = (await db.nutritionGoals.toArray()).filter((g) => g.effectiveFrom <= date)
+    if (all.length === 0) return nutritionService.current()
+    return all.sort(
+      (a, b) =>
+        b.effectiveFrom.localeCompare(a.effectiveFrom) || b.createdAt.localeCompare(a.createdAt),
+    )[0]
+  },
+
+  /**
+   * Al abrir la app: si cambió la fórmula (ej.: más proteína por kg), recalcula con el último peso.
+   * No toca los macros editados a mano. Idempotente.
+   */
+  async refresh(): Promise<boolean> {
+    const profile = await db.profile.get('me')
+    if (!profile) return false
+    const latest = await db.bodyWeights.orderBy('date').last()
+    return nutritionService.recalcFromWeight(latest?.weightKg ?? profile.weightKg)
+  },
+
   /** Guarda macros editados a mano. Las calorías se calculan de los macros. */
   async setManual(macros: Omit<MacroTargets, 'kcal'>) {
     const ts = now()

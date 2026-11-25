@@ -9,6 +9,8 @@ import {
 import { historyService, workoutService } from '@/services/workout'
 import { cardioService, todayEnergy, waterService } from '@/services/activity'
 import { statsService } from '@/services/stats'
+import { calendarService } from '@/services/calendar'
+import { db } from '@/lib/db'
 
 /** undefined = cargando · null = todavía no hizo el cuestionario */
 export function useLocalProfile() {
@@ -101,4 +103,20 @@ export function useExerciseHistory(exerciseId: string | null) {
 
 export function useCardioLogs() {
   return useLiveQuery(async () => (await cardioService.all()).reverse())
+}
+
+export function useDaySessions(date: string) {
+  return useLiveQuery(() => historyService.byDate(date), [date])
+}
+
+/** Peso registrado ese día (null si no hay). */
+export function useDayWeight(date: string) {
+  return useLiveQuery(
+    async () => (await db.bodyWeights.where('date').equals(date).first()) ?? null,
+    [date],
+  )
+}
+
+export function useCalendarRange(from: string, to: string) {
+  return useLiveQuery(() => calendarService.range(from, to), [from, to])
 }

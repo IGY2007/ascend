@@ -1,8 +1,8 @@
-import { es } from './es'
+import { en } from './en'
 
-/** Idioma activo. Por ahora solo español; el resto de la app consume `t`. */
-export const t = es
-export const locale = 'es-AR'
+/** Active language. The rest of the app consumes `t`. */
+export const t = en
+export const locale = 'en-US'
 
 const dateFormatter = new Intl.DateTimeFormat(locale, {
   weekday: 'long',
@@ -11,12 +11,12 @@ const dateFormatter = new Intl.DateTimeFormat(locale, {
 })
 const monthYearFormatter = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
 
-/** "martes 25 de noviembre" */
+/** "Tuesday, November 25" */
 export function formatLongDate(date: Date) {
   return dateFormatter.format(date)
 }
 
-/** "noviembre de 2026" */
+/** "November 2026" */
 export function formatMonthYear(date: Date) {
   return monthYearFormatter.format(date)
 }

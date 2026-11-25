@@ -19,9 +19,9 @@ export function parseInteger(input: string): number | null {
   return Number.isSafeInteger(value) ? value : null
 }
 
-/** Formatea un número para mostrarlo en español (coma decimal), sin ceros sobrantes. */
+/** Formatea un número para mostrarlo in English (decimal point), sin ceros sobrantes. */
 export function formatDecimal(value: number, maxFractionDigits = 2): string {
-  return new Intl.NumberFormat('es-AR', {
+  return new Intl.NumberFormat('en-US', {
     maximumFractionDigits: maxFractionDigits,
     useGrouping: true,
   }).format(value)

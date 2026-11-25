@@ -1,0 +1,82 @@
+nombre,grupo,equipamiento
+Press banca plano con barra,pecho,barra
+Press banca inclinado con barra,pecho,barra
+Press banca declinado con barra,pecho,barra
+Press plano con mancuernas,pecho,mancuernas
+Press inclinado con mancuernas,pecho,mancuernas
+Aperturas con mancuernas,pecho,mancuernas
+Press de pecho en máquina,pecho,máquina
+Pec deck (contractora),pecho,máquina
+Cruces en polea alta,pecho,polea
+Cruces en polea baja,pecho,polea
+Fondos en paralelas (pecho),pecho,peso corporal
+Flexiones de brazos,pecho,peso corporal
+Dominadas,espalda,peso corporal
+Dominadas supinas (chin-ups),espalda,peso corporal
+Jalón al pecho,espalda,polea
+Jalón con agarre estrecho,espalda,polea
+Remo con barra,espalda,barra
+Remo con mancuerna a una mano,espalda,mancuernas
+Remo en polea baja (gironda),espalda,polea
+Remo en máquina,espalda,máquina
+Remo en barra T,espalda,barra
+Pullover en polea alta,espalda,polea
+Peso muerto convencional,espalda,barra
+Hiperextensiones lumbares,espalda,peso corporal
+Press militar con barra,hombros,barra
+Press de hombros con mancuernas,hombros,mancuernas
+Press de hombros en máquina,hombros,máquina
+Press Arnold,hombros,mancuernas
+Elevaciones laterales con mancuernas,hombros,mancuernas
+Elevaciones laterales en polea,hombros,polea
+Elevaciones frontales,hombros,mancuernas
+Pájaros (vuelos posteriores),hombros,mancuernas
+Reverse pec deck,hombros,máquina
+Face pull,hombros,polea
+Encogimientos con mancuernas,hombros,mancuernas
+Curl con barra,bíceps,barra
+Curl con barra Z,bíceps,barra
+Curl con mancuernas alterno,bíceps,mancuernas
+Curl martillo,bíceps,mancuernas
+Curl inclinado con mancuernas,bíceps,mancuernas
+Curl predicador (banco Scott),bíceps,máquina
+Curl en polea,bíceps,polea
+Curl concentrado,bíceps,mancuernas
+Extensión de tríceps en polea con cuerda,tríceps,polea
+Extensión de tríceps en polea con barra,tríceps,polea
+Press francés,tríceps,barra
+Extensión de tríceps sobre la cabeza con mancuerna,tríceps,mancuernas
+Extensión de tríceps sobre la cabeza en polea,tríceps,polea
+Fondos en paralelas (tríceps),tríceps,peso corporal
+Press banca agarre cerrado,tríceps,barra
+Patada de tríceps,tríceps,mancuernas
+Sentadilla con barra,cuádriceps,barra
+Sentadilla frontal,cuádriceps,barra
+Sentadilla hack,cuádriceps,máquina
+Prensa de piernas,cuádriceps,máquina
+Extensión de cuádriceps,cuádriceps,máquina
+Sentadilla búlgara,cuádriceps,mancuernas
+Zancadas con mancuernas,cuádriceps,mancuernas
+Sentadilla goblet,cuádriceps,mancuernas
+Peso muerto rumano,isquiotibiales,barra
+Peso muerto rumano con mancuernas,isquiotibiales,mancuernas
+Curl femoral acostado,isquiotibiales,máquina
+Curl femoral sentado,isquiotibiales,máquina
+Buenos días,isquiotibiales,barra
+Hip thrust con barra,glúteos,barra
+Hip thrust en máquina,glúteos,máquina
+Puente de glúteos,glúteos,peso corporal
+Patada de glúteo en polea,glúteos,polea
+Abducción de cadera en máquina,glúteos,máquina
+Step-up al cajón,glúteos,mancuernas
+Elevación de talones de pie,gemelos,máquina
+Elevación de talones sentado,gemelos,máquina
+Elevación de talones en prensa,gemelos,máquina
+Crunch abdominal,abdominales,peso corporal
+Crunch en polea,abdominales,polea
+Elevación de piernas colgado,abdominales,peso corporal
+Elevación de piernas en banco,abdominales,peso corporal
+Plancha,abdominales,peso corporal
+Rueda abdominal,abdominales,otro
+Russian twist,abdominales,peso corporal
+Pallof press,abdominales,polea

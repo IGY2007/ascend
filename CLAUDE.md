@@ -10,6 +10,12 @@ App web (PWA) de seguimiento de entrenamiento de fuerza y progreso físico. La u
 
 Principios: simplicidad, consistencia, datos reales, progreso visible. Nada de pantallas sobrecargadas ni funciones a medias.
 
+## Etapa actual: modo local (decisión del 25/11/2026)
+
+Por ahora ASCEND es de **un solo usuario y sin login**: si no hay variables de Supabase, la app arranca en *modo local* (`isLocalMode` en `src/lib/env.ts`) y guarda todo en el dispositivo (Dexie). El login, el esquema SQL y RLS ya están hechos y se activan cuando Julian diga "siguiente nivel": se configura Supabase y los datos locales se suben con sus mismos UUID.
+
+Mientras tanto: toda funcionalidad se construye local-first (Dexie como fuente de verdad), con UUID de cliente y `user_id` en cada registro, para que la sincronización se sume después sin rehacer nada. La exportación JSON es la red de seguridad de los datos.
+
 ## Restricciones que mandan sobre todo lo demás
 
 1. **Gratis.** Hosting en **GitHub Pages** (estático) + **Supabase Free**. Sin servidores propios ni servicios pagos.

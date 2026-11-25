@@ -5,7 +5,7 @@ import { useDisplayName, useProfile } from '@/features/profile/use-profile'
 import { formatLongDate, t } from '@/i18n'
 
 export function HomePage() {
-  const { isPending } = useProfile()
+  const { isLoading } = useProfile()
   const name = useDisplayName()
   const today = formatLongDate(new Date())
 
@@ -13,7 +13,7 @@ export function HomePage() {
     <>
       <header className="mb-8">
         <p className="text-sm font-medium text-muted first-letter:uppercase">{today}</p>
-        {isPending && !name ? (
+        {isLoading && !name ? (
           <Skeleton className="mt-2 h-9 w-44" />
         ) : (
           <h1 className="mt-1 text-[1.75rem] leading-tight font-bold tracking-tight">

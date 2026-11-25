@@ -117,19 +117,17 @@ export const es = {
     memberSince: (date: string) => `Desde ${date}`,
     version: (v: string) => `Versión ${v}`,
     offlineSession: 'Sin conexión: usando la sesión guardada en el dispositivo.',
+    nameLabel: 'Tu nombre',
+    namePlaceholder: 'Cómo querés que te salude',
+    nameSaved: 'Nombre guardado.',
+    localModeTitle: 'Modo local',
+    localModeBody:
+      'Tus datos se guardan solo en este dispositivo. Si borrás ASCEND de la pantalla de inicio, se borran con la app. Más adelante vas a poder guardarlos en la nube.',
   },
   pwa: {
     updateAvailable: 'Hay una versión nueva de ASCEND.',
     update: 'Actualizar',
     offlineReady: 'ASCEND ya funciona sin conexión.',
-  },
-  config: {
-    title: 'Falta configurar Supabase',
-    body: 'La app necesita estas variables de entorno para conectarse a la base de datos:',
-    local: 'En local: copiá .env.example como .env.local, completalo y reiniciá npm run dev.',
-    deploy:
-      'En GitHub Pages: cargalas en Settings → Secrets and variables → Actions del repo y volvé a correr el deploy.',
-    where: 'Los valores están en Supabase → Project Settings → API.',
   },
   notFound: {
     title: 'Esta pantalla no existe',

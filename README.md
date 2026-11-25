@@ -8,6 +8,10 @@ desde el iPhone. Funciona sin conexión durante el entrenamiento.
 **Stack:** Vite + React + TypeScript · Tailwind CSS v4 · Radix · TanStack Query · Dexie ·
 Supabase (Auth + Postgres con RLS) · vite-plugin-pwa · Vitest · GitHub Pages.
 
+**Modo local:** sin variables de Supabase, la app funciona para un solo usuario, sin login, con los
+datos guardados en el dispositivo. Así se publica hoy. Para pasar a cuentas y nube, seguir el
+checklist de abajo (pasos 2 a 4) y cargar los secrets.
+
 El contexto completo del proyecto (producto, arquitectura, reglas) está en [`CLAUDE.md`](CLAUDE.md).
 
 ---
@@ -18,7 +22,7 @@ Requisitos: Node 22 o superior.
 
 ```bash
 npm install
-cp .env.example .env.local   # completar con los datos de Supabase (ver paso 2)
+cp .env.example .env.local   # opcional: sin esto la app corre en modo local
 npm run dev                  # http://localhost:5173
 ```
 

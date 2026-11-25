@@ -20,6 +20,9 @@ export interface AuthState {
   clearRecovery: () => void
 }
 
+/** Id del usuario único del modo local. Al pasar a cuentas, los datos se reasignan al usuario real. */
+export const LOCAL_USER_ID = 'local'
+
 export const AuthContext = createContext<AuthState | null>(null)
 
 export function useAuth(): AuthState {

@@ -16,3 +16,9 @@ export const missingEnv: string[] = [
   ...(url ? [] : ['VITE_SUPABASE_URL']),
   ...(anonKey ? [] : ['VITE_SUPABASE_ANON_KEY']),
 ]
+
+/**
+ * Modo local (un solo usuario, sin login): se activa cuando no hay Supabase configurado.
+ * Los datos quedan solo en el dispositivo. Al configurar Supabase se pasa al modo con cuentas.
+ */
+export const isLocalMode = missingEnv.length > 0

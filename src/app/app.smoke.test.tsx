@@ -7,6 +7,17 @@ import { t } from '@/i18n'
 type Listener = (event: AuthChangeEvent, session: Session | null) => void
 const listeners: Listener[] = []
 
+// Estos tests cubren el modo con cuentas (Supabase configurado).
+vi.mock('@/lib/env', () => ({
+  env: {
+    supabaseUrl: 'https://test.supabase.co',
+    supabaseAnonKey: 'k',
+    appUrl: 'http://localhost/',
+  },
+  missingEnv: [],
+  isLocalMode: false,
+}))
+
 vi.mock('@/lib/supabase', () => ({
   AUTH_STORAGE_KEY: 'ascend-auth',
   supabase: {
@@ -50,7 +61,7 @@ async function renderApp(path: string) {
   )
 }
 
-describe('app (smoke)', () => {
+describe('app con cuentas (smoke)', () => {
   beforeEach(() => {
     vi.resetModules()
     listeners.length = 0

@@ -11,6 +11,7 @@ import { cardioService, todayEnergy, waterService } from '@/services/activity'
 import { statsService } from '@/services/stats'
 import { calendarService } from '@/services/calendar'
 import { gameState } from '@/services/gamification'
+import { sanitizeAvatar } from '@/domain/avatar'
 import { db } from '@/lib/db'
 
 /** undefined = cargando · null = todavía no hizo el cuestionario */
@@ -124,4 +125,12 @@ export function useCalendarRange(from: string, to: string) {
 
 export function useGameState() {
   return useLiveQuery(() => gameState())
+}
+
+/** El personaje del perfil (o uno por defecto si todavía no lo creó). */
+export function useAvatar() {
+  return useLiveQuery(async () => {
+    const p = await profileService.get()
+    return sanitizeAvatar(p?.avatar, p?.sex)
+  })
 }

@@ -7,12 +7,16 @@ import {
   laggingStat,
   physiqueLevel,
   setsForMuscleLevel,
-  type MuscleStat,
   type Readiness,
 } from '@/domain/gamification'
+import { Link } from 'react-router'
+import { Pencil } from 'lucide-react'
+import { useAvatar } from '@/features/profile/hooks'
+import { AvatarFigure } from '@/features/avatar/AvatarFigure'
+import { bodyComment } from '@/features/avatar/body-comment'
 import { formatDecimal } from '@/domain/numbers'
 import { cn } from '@/lib/utils'
-import { t } from '@/i18n'
+import { formatMonthYear, t } from '@/i18n'
 
 const m = t.game.muscles
 
@@ -29,25 +33,42 @@ const READY_STYLE: Record<Readiness, string> = {
  */
 export function PhysiqueTab() {
   const game = useGameState()
-  if (!game) return <Skeleton className="h-96 rounded-[var(--radius-card)]" />
+  const avatar = useAvatar()
+  if (!game || !avatar) return <Skeleton className="h-96 rounded-[var(--radius-card)]" />
   const stats = game.muscles
   const lagging = laggingStat(stats)
+  const month = formatMonthYear(new Date()).split(' ')[0]!
 
   return (
     <>
-      <Card highlight className="pb-3">
-        <p className="text-sm text-muted">{m.subtitle}</p>
-        <p className="mt-1 text-xl font-bold">
+      <Card highlight className="pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xl font-bold first-letter:uppercase">{t.avatar.monthBody(month)}</p>
+            <p className="mt-0.5 text-xs text-muted">{t.avatar.resetHint}</p>
+          </div>
+          <Link
+            to="/avatar"
+            aria-label={t.avatar.edit}
+            className="grid size-11 shrink-0 place-items-center rounded-xl border border-border text-muted hover:text-fg"
+          >
+            <Pencil className="size-4" />
+          </Link>
+        </div>
+        <AvatarFigure
+          avatar={avatar}
+          body={game.monthBody}
+          className="mx-auto mt-2 h-80 w-auto"
+          title={t.avatar.title}
+        />
+        <p className="text-center text-sm font-medium text-muted">
           {m.overall(formatDecimal(physiqueLevel(stats), 1))}
         </p>
-        <Radar stats={stats} />
       </Card>
 
-      {lagging ? (
-        <Tip className="mt-4">{m.lagging(m.stats[lagging.stat])}</Tip>
-      ) : stats.some((s) => s.sets > 0) ? (
-        <Tip className="mt-4">{m.balanced}</Tip>
-      ) : null}
+      <Tip className="mt-4" mood={lagging ? 'wow' : 'happy'}>
+        {bodyComment(game.monthBody, game.monthSets)}
+      </Tip>
 
       <ul className="mt-5 space-y-2.5">
         {stats.map((s) => {
@@ -74,12 +95,12 @@ export function PhysiqueTab() {
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-card-2">
                       <div
                         className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-success transition-transform duration-700"
-                        style={{ transform: `scaleX(${Math.max(0.02, s.progress)})` }}
+                        style={{ transform: `scaleX(${Math.max(0.02, game.monthBody[s.stat])})` }}
                       />
                     </div>
                     <p className="mt-1.5 flex justify-between gap-2 num text-xs text-muted">
                       <span>{m.setsToNext(toNext)}</span>
-                      <span>{m.weekSets(s.weekSets)}</span>
+                      <span>{t.avatar.monthSets(game.monthSets[s.stat])}</span>
                     </p>
                   </div>
                 </div>
@@ -96,86 +117,5 @@ export function PhysiqueTab() {
         </span>
       </p>
     </>
-  )
-}
-
-/** Radar de una sola serie: el nivel de cada grupo, como la carta de un jugador. */
-function Radar({ stats }: { stats: MuscleStat[] }) {
-  const size = 300
-  const c = size / 2
-  const r = 92
-  // Nivel continuo (con el avance hacia el próximo) para que se note la forma desde el principio
-  const value = (s: MuscleStat) => (s.sets > 0 ? s.level - 1 + s.progress : 0)
-  const max = Math.max(3, ...stats.map((s) => Math.ceil(value(s))))
-  const angle = (i: number) => (Math.PI * 2 * i) / stats.length - Math.PI / 2
-  const point = (i: number, v: number) => [
-    c + Math.cos(angle(i)) * r * v,
-    c + Math.sin(angle(i)) * r * v,
-  ]
-  const poly = stats.map((s, i) => point(i, Math.max(0.03, value(s) / max)).join(',')).join(' ')
-
-  return (
-    <svg
-      viewBox={`0 0 ${size} ${size}`}
-      className="mx-auto mt-1 block w-full max-w-[320px]"
-      role="img"
-      aria-label={stats.map((s) => `${m.stats[s.stat]} ${m.level(s.level)}`).join(', ')}
-    >
-      <defs>
-        <linearGradient id="radar-fill" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.45" />
-          <stop offset="100%" stopColor="var(--color-success)" stopOpacity="0.35" />
-        </linearGradient>
-      </defs>
-      {[0.25, 0.5, 0.75, 1].map((k) => (
-        <polygon
-          key={k}
-          points={stats.map((_, i) => point(i, k).join(',')).join(' ')}
-          fill="none"
-          className="stroke-border"
-          strokeDasharray={k === 1 ? undefined : '2 4'}
-        />
-      ))}
-      {stats.map((_, i) => {
-        const [x, y] = point(i, 1)
-        return <line key={i} x1={c} y1={c} x2={x} y2={y} className="stroke-border" />
-      })}
-      <polygon
-        points={poly}
-        fill="url(#radar-fill)"
-        stroke="var(--color-accent-2)"
-        strokeWidth={2}
-        strokeLinejoin="round"
-      />
-      {stats.map((s, i) => {
-        const [x, y] = point(i, Math.max(0.03, value(s) / max))
-        return (
-          <circle
-            key={s.stat}
-            cx={x}
-            cy={y}
-            r={4}
-            fill={s.readiness === 'ready' ? 'var(--color-success)' : 'var(--color-accent-2)'}
-            className="stroke-card"
-            strokeWidth={2}
-          />
-        )
-      })}
-      {stats.map((s, i) => {
-        const [x, y] = point(i, 1.22)
-        return (
-          <text
-            key={s.stat}
-            x={x}
-            y={y}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            className="fill-muted text-[11px] font-medium"
-          >
-            {m.stats[s.stat]} {s.level}
-          </text>
-        )
-      })}
-    </svg>
   )
 }

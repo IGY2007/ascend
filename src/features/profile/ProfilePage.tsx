@@ -19,6 +19,7 @@ import { isLocalMode } from '@/lib/env'
 import { formatMonthYear, lang, LANGS, setLanguage, t } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { LevelCard } from '@/features/game/LevelCard'
+import { AvatarCard } from '@/features/avatar/AvatarCard'
 import { AchievementsGrid } from '@/features/game/AchievementsGrid'
 import { useDisplayName } from './use-profile'
 import { useLatestWeight, useLocalProfile, useNutritionGoal } from './hooks'
@@ -103,6 +104,7 @@ export function ProfilePage() {
       </Card>
 
       <LevelCard className="mt-4" />
+      <AvatarCard />
       <SectionTitle>{t.game.achievementsTitle}</SectionTitle>
       <AchievementsGrid />
 

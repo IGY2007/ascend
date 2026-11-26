@@ -17,6 +17,7 @@ import {
 } from '@/domain/gamification'
 import { startOfWeek } from '@/domain/dates'
 import { exercisesService } from './local-data'
+import { bodyFromSets, monthSets, type Body } from '@/domain/avatar'
 
 /**
  * Junta los datos reales del dispositivo en un solo objeto (`Facts`) para la gamificación.
@@ -115,17 +116,24 @@ export interface GameState {
   achievements: ReturnType<typeof achievements>
   challenges: ReturnType<typeof weeklyChallenges>
   muscles: ReturnType<typeof muscleStats>
+  /** Series de cada grupo en el mes actual y cuánto creció el personaje (0–1). */
+  monthSets: Body
+  monthBody: Body
 }
 
 export async function gameState(today = toDateKey(new Date())): Promise<GameState> {
   const facts = await loadFacts()
   const xp = totalXp(facts, completedChallenges(facts, today))
+  const now = new Date()
+  const sets = monthSets(facts, now.getFullYear(), now.getMonth())
   return {
     facts,
     level: levelFromXp(xp.total),
     achievements: achievements(totalsOf(facts)),
     challenges: weeklyChallenges(facts, toDateKey(startOfWeek(new Date()))),
     muscles: muscleStats(facts, today),
+    monthSets: sets,
+    monthBody: bodyFromSets(sets),
   }
 }
 

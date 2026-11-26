@@ -19,6 +19,7 @@ import { SummaryPage } from '@/features/workout/SummaryPage'
 import { EditSessionPage } from '@/features/workout/EditSessionPage'
 import { DayPage } from '@/features/calendar/DayPage'
 import { NutritionPage } from '@/features/nutrition/NutritionPage'
+import { AvatarEditorPage } from '@/features/avatar/AvatarEditorPage'
 
 // HashRouter: GitHub Pages no puede resolver rutas del lado del servidor.
 export const router = createHashRouter([
@@ -54,6 +55,7 @@ export const router = createHashRouter([
                   { path: '/progress', element: <ProgressPage /> },
                   { path: '/day/:date', element: <DayPage /> },
                   { path: '/nutrition', element: <NutritionPage /> },
+                  { path: '/avatar', element: <AvatarEditorPage /> },
                   { path: '/profile', element: <ProfilePage /> },
                 ],
               },

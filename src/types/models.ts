@@ -1,4 +1,5 @@
 import type { CardioActivity, Intensity } from '@/domain/cardio'
+import type { AvatarConfig } from '@/domain/avatar'
 
 /**
  * Modelos de la app (camelCase). Se guardan en Dexie y, cuando se active Supabase, se mapean a las
@@ -76,6 +77,8 @@ export interface OnboardingAnswers {
   easeLegs: boolean
   sessionMinutes: number
   place: TrainingPlace
+  /** El personaje (opcional: los perfiles viejos no lo tienen y usan uno por defecto). */
+  avatar?: AvatarConfig
 }
 
 export interface Profile extends OnboardingAnswers {

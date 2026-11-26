@@ -3,7 +3,8 @@ import { Sparkles } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { ProgressRing } from '@/components/ui/progress-ring'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useGameState } from '@/features/profile/hooks'
+import { useAvatar, useGameState } from '@/features/profile/hooks'
+import { AvatarFigure } from '@/features/avatar/AvatarFigure'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
 
@@ -37,7 +38,8 @@ export function LevelCard({ className }: { className?: string }) {
 /** Chip compacto para el encabezado de Inicio. */
 export function LevelChip() {
   const game = useGameState()
-  if (!game) return null
+  const avatar = useAvatar()
+  if (!game || !avatar) return null
   const { level } = game
   return (
     <Link
@@ -45,10 +47,15 @@ export function LevelChip() {
       className="flex h-11 items-center gap-2 rounded-full border border-border bg-card py-1 pr-3 pl-1"
       aria-label={`${g.level(level.level)} · ${g.titles[level.title]}`}
     >
-      <ProgressRing value={level.into / level.needed} size={34} stroke={3.5}>
-        <span className="num text-xs font-bold">{level.level}</span>
+      <ProgressRing value={level.into / level.needed} size={38} stroke={3}>
+        <span className="size-[30px] overflow-hidden rounded-full bg-card-2">
+          <AvatarFigure avatar={avatar} variant="head" className="size-full" />
+        </span>
       </ProgressRing>
-      <span className="text-xs font-semibold text-fg">{g.titles[level.title]}</span>
+      <span className="leading-tight">
+        <span className="block num text-[0.65rem] text-muted">{g.levelShort(level.level)}</span>
+        <span className="block text-xs font-semibold text-fg">{g.titles[level.title]}</span>
+      </span>
     </Link>
   )
 }

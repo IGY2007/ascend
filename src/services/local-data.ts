@@ -10,6 +10,7 @@ import {
 import { generateRoutines } from '@/domain/routine-generator'
 import { bmi, bodyFatEstimate } from '@/domain/body-metrics'
 import { toDateKey } from '@/domain/dates'
+import type { AvatarConfig } from '@/domain/avatar'
 import type {
   BodyWeight,
   Equipment,
@@ -149,6 +150,11 @@ export const profileService = {
    * peso de hoy. Si se rehace, reemplaza solo las rutinas generadas (las propias se mantienen) y
    * nunca toca el historial de peso ni los entrenamientos.
    */
+  /** Guarda el personaje. */
+  async updateAvatar(avatar: AvatarConfig) {
+    await db.profile.update('me', { avatar, updatedAt: now() })
+  },
+
   async completeOnboarding(answers: OnboardingAnswers): Promise<void> {
     const plan = previewPlan(answers)
     const ts = now()

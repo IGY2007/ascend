@@ -36,6 +36,10 @@ import { recommendedSplit } from '@/domain/routine-generator'
 import { bmi } from '@/domain/body-metrics'
 import { formatDecimal } from '@/domain/numbers'
 import { Tip } from '@/components/ui/tip'
+import { Mascot } from '@/features/avatar/Mascot'
+import { AvatarFigure } from '@/features/avatar/AvatarFigure'
+import { AvatarEditor } from '@/features/avatar/AvatarEditor'
+import { defaultAvatar } from '@/domain/avatar'
 import { useLocalProfile } from '@/features/profile/hooks'
 import type {
   ActivityLevel,
@@ -57,6 +61,7 @@ const STEPS = [
   'welcome',
   'name',
   'sex',
+  'avatar',
   'body',
   'goal',
   'target',
@@ -144,6 +149,7 @@ export function OnboardingPage() {
   }
 
   const next = () => {
+    if (step === 'avatar' && !draft.avatar) set('avatar', defaultAvatar(draft.sex))
     const problem = validate(step, draft)
     if (problem !== null) {
       setError(problem || null)
@@ -177,6 +183,8 @@ export function OnboardingPage() {
             (draft.targetWeightKg > draft.weightKg ? 0.35 : draft.weightKg * 0.0075),
         )
       : null
+
+  const avatar = draft.avatar ?? defaultAvatar(draft.sex)
 
   const plan = useMemo(() => (isComplete(draft) ? previewPlan(draft) : null), [draft])
 
@@ -258,12 +266,41 @@ export function OnboardingPage() {
           >
             {step === 'welcome' && (
               <div className="flex flex-1 flex-col justify-center">
-                <Logo className="mb-10 size-14" />
-                <h1 className="text-[2.1rem] leading-tight font-bold tracking-tight">
+                <Logo className="mb-8 size-11" />
+                <div className="flex items-end gap-3">
+                  <motion.div
+                    initial={{ scale: 0.6, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+                  >
+                    <Mascot size={96} wave mood="happy" />
+                  </motion.div>
+                  <motion.p
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 }}
+                    className="mb-6 min-w-0 flex-1 rounded-2xl rounded-bl-md border border-accent/30 bg-accent/10 px-4 py-3 text-[0.95rem] leading-relaxed"
+                  >
+                    {t.mascot.welcome}
+                  </motion.p>
+                </div>
+                <h1 className="mt-10 text-[2.1rem] leading-tight font-bold tracking-tight">
                   {o.welcomeTitle}
                 </h1>
                 <p className="mt-4 text-[1.05rem] leading-relaxed text-muted">{o.welcomeBody}</p>
               </div>
+            )}
+
+            {step === 'avatar' && (
+              <Question title={o.avatarQ}>
+                <div className="-mt-3 rounded-[var(--radius-card)] border border-border bg-card py-2">
+                  <AvatarFigure avatar={avatar} className="mx-auto h-56 w-auto" />
+                </div>
+                <Tip className="mt-4">{t.mascot.avatarIntro}</Tip>
+                <div className="mt-6">
+                  <AvatarEditor value={avatar} onChange={(v) => set('avatar', v)} />
+                </div>
+              </Question>
             )}
 
             {step === 'name' && (

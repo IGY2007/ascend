@@ -62,6 +62,11 @@ describe('app en modo local', () => {
     await heading(o.sexQ)
     await radio(t.labels.sex.male)
 
+    // Personaje: elige un pelo y sigue
+    await heading(o.avatarQ)
+    await radio(t.avatar.hairStyles.curly)
+    click(o.next)
+
     await heading(o.bodyQ)
     const [age, height, weight] = screen.getAllByRole('textbox')
     fireEvent.change(age!, { target: { value: '25' } })

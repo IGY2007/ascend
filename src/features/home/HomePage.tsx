@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Droplet,
   Dumbbell,
-  Lightbulb,
   Play,
   Plus,
   TrendingDown,
@@ -16,6 +15,7 @@ import {
 import { ProgressRing } from '@/components/ui/progress-ring'
 import { WeeklyChallenges } from '@/features/game/WeeklyChallenges'
 import { LevelChip } from '@/features/game/LevelCard'
+import { Mascot } from '@/features/avatar/Mascot'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -116,10 +116,12 @@ export function HomePage() {
             <ChevronRight className="size-6 shrink-0 text-muted" />
           </Link>
           {!trainedToday && (
-            <p className="mt-3 flex gap-2 text-sm leading-relaxed text-muted">
-              <Lightbulb className="mt-0.5 size-4 shrink-0 text-success" />
-              {h.coachTips[dayIndex % h.coachTips.length]}
-            </p>
+            <div className="mt-3 flex items-center gap-2.5">
+              <Mascot size={34} mood="wink" />
+              <p className="min-w-0 flex-1 rounded-2xl rounded-bl-md bg-bg-2/70 px-3 py-2 text-sm leading-snug text-muted">
+                {h.coachTips[dayIndex % h.coachTips.length]}
+              </p>
+            </div>
           )}
           <Button size="lg" block className="mt-4" onClick={() => void start(next.id)}>
             <Play />

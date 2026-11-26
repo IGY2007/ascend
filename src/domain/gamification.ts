@@ -345,6 +345,9 @@ const STAT_OF: Partial<Record<MuscleGroup, Stat>> = {
   abs: 'core',
 }
 
+/** Grupo de la ficha al que pertenece un músculo (null si no suma a ninguno). */
+export const statOf = (m: MuscleGroup): Stat | null => STAT_OF[m] ?? null
+
 export type Readiness = 'recovering' | 'ready' | 'cold' | 'untrained'
 
 export interface MuscleStat {

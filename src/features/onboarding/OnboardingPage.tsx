@@ -46,7 +46,7 @@ import { Tip } from '@/components/ui/tip'
 import { Mascot, type MascotMood, type MascotPose } from '@/features/avatar/Mascot'
 import { AvatarFigure } from '@/features/avatar/AvatarFigure'
 import { AvatarEditor } from '@/features/avatar/AvatarEditor'
-import { defaultAvatar } from '@/domain/avatar'
+import { sanitizeAvatar } from '@/domain/avatar'
 import { useAvatarProgress, useLocalProfile } from '@/features/profile/hooks'
 import type {
   ActivityLevel,
@@ -179,7 +179,10 @@ export function OnboardingPage() {
 
   if (existing && !loadedExisting) {
     setLoadedExisting(true)
-    setDraft({ ...existing })
+    setDraft({
+      ...existing,
+      avatar: existing.avatar ? sanitizeAvatar(existing.avatar, existing.sex) : undefined,
+    })
     setIndex(1)
   }
 
@@ -196,7 +199,7 @@ export function OnboardingPage() {
   }
 
   const next = () => {
-    if (step === 'avatar' && !draft.avatar) set('avatar', defaultAvatar(draft.sex))
+    if (step === 'avatar') set('avatar', avatar)
     if (step === 'injuries' && !draft.injuries) set('injuries', [])
     const problem = validate(
       step,
@@ -235,7 +238,8 @@ export function OnboardingPage() {
         )
       : null
 
-  const avatar = draft.avatar ?? defaultAvatar(draft.sex)
+  // Normalizado: los perfiles viejos guardaban el personaje en otro formato
+  const avatar = sanitizeAvatar(draft.avatar, draft.sex)
 
   const plan = useMemo(() => (isComplete(draft) ? previewPlan(draft) : null), [draft])
 

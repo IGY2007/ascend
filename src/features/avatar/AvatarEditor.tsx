@@ -58,7 +58,7 @@ export function AvatarEditor({
     }
     const next = { ...value, [key]: v }
     // Al cambiar de cuerpo, la ropa tiene que existir para ese cuerpo
-    if (key === 'body' && !OUTFITS_BY_BODY[next.body].includes(next.outfit)) next.outfit = 'tank'
+    if (key === 'body' && !OUTFITS_BY_BODY[next.body]?.includes(next.outfit)) next.outfit = 'tank'
     if (key === 'body' && next.body === 'female') next.facial = 'none'
     onChange(next)
   }
@@ -102,7 +102,7 @@ export function AvatarEditor({
       {value.hair !== 'bald' && swatch('hairColor', av.hairColor, HAIR_COLORS)}
       {chips('eyes', av.eyes, EYES, av.eyeStyles)}
       {value.body === 'male' && chips('facial', av.facial, FACIAL, av.facials)}
-      {chips('outfit', av.outfit, OUTFITS_BY_BODY[value.body], av.outfits)}
+      {chips('outfit', av.outfit, OUTFITS_BY_BODY[value.body] ?? OUTFITS_BY_BODY.male, av.outfits)}
       {(value.outfit !== 'shirtless' || value.headwear === 'cap' || value.headwear === 'beanie') &&
         swatch('shirtColor', av.color, SHIRT_COLORS)}
       {swatch('shortsColor', av.shorts, SHORTS_COLORS)}

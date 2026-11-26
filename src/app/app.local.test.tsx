@@ -130,3 +130,35 @@ describe('app en modo local', () => {
     expect(within(list).getAllByRole('listitem')).toHaveLength(5) // 45 min → 4 ejercicios + plancha
   })
 })
+
+describe('rehacer el cuestionario con un perfil viejo', () => {
+  it('no se rompe si el personaje estaba guardado en el formato anterior', async () => {
+    const { profileService } = await import('@/services/local-data')
+    const { db } = await import('@/lib/db')
+    await profileService.completeOnboarding(ANSWERS)
+    // Personaje como lo guardaba la versión 0.6 (un solo "accessory", sin cuerpo)
+    await db.profile.update('me', {
+      avatar: {
+        skin: 1,
+        hair: 'curly',
+        hairColor: 1,
+        facial: 'none',
+        outfit: 'tank',
+        shirtColor: 0,
+        accessory: 'headband',
+      } as never,
+    })
+    await renderApp('#/onboarding')
+    const o = t.onboarding
+    // Arranca en el nombre; avanzar hasta el personaje
+    await screen.findByRole('heading', { name: o.nameQ })
+    fireEvent.click(screen.getByRole('button', { name: o.next }))
+    await screen.findByRole('heading', { name: o.sexQ })
+    fireEvent.click(screen.getByRole('button', { name: o.next }))
+    await screen.findByRole('heading', { name: o.bodyQ })
+    fireEvent.click(screen.getByRole('button', { name: o.next }))
+    expect(await screen.findByRole('heading', { name: o.avatarQ })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: t.avatar.outfits.tank })).toBeInTheDocument()
+    expect(screen.queryByText(t.error.title)).not.toBeInTheDocument()
+  }, 15000)
+})

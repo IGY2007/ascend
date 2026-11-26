@@ -17,6 +17,7 @@ import { WorkoutDetailPage } from '@/features/templates/WorkoutDetailPage'
 import { ActiveWorkoutPage } from '@/features/workout/ActiveWorkoutPage'
 import { SummaryPage } from '@/features/workout/SummaryPage'
 import { EditSessionPage } from '@/features/workout/EditSessionPage'
+import { SharePage } from '@/features/share/SharePage'
 import { DayPage } from '@/features/calendar/DayPage'
 import { NutritionPage } from '@/features/nutrition/NutritionPage'
 import { AvatarEditorPage } from '@/features/avatar/AvatarEditorPage'
@@ -46,6 +47,7 @@ export const router = createHashRouter([
               { path: '/workout/:id', element: <ActiveWorkoutPage /> },
               { path: '/workout/:id/summary', element: <SummaryPage /> },
               { path: '/workout/:id/edit', element: <EditSessionPage /> },
+              { path: '/workout/:id/share', element: <SharePage /> },
               {
                 element: <AppLayout />,
                 children: [

@@ -52,6 +52,9 @@ function Arm({ side, angles }: { side: -1 | 1; angles: Angles }) {
     <g strokeLinecap="round">
       <line x1={s.x} y1={s.y} x2={e.x} y2={e.y} stroke={ARM} strokeWidth={13} />
       <circle cx={b.x} cy={b.y} r={9.4} fill={ARM} />
+      {/* Hombro */}
+      <circle cx={s.x} cy={s.y} r={8.5} fill="#8b5cf6" />
+      <circle cx={s.x - 2} cy={s.y - 2.5} r={2.6} fill="#fff" opacity={0.2} />
       <circle cx={b.x - 1.5} cy={b.y - 2.5} r={3.2} fill="#fff" opacity={0.18} />
       <line x1={e.x} y1={e.y} x2={w.x} y2={w.y} stroke={ARM} strokeWidth={10.6} />
       <circle cx={band.x} cy={band.y} r={6} fill={LIME} />
@@ -164,7 +167,7 @@ export function Mascot({
   pose = 'idle',
   wave = false,
   bounce = false,
-  look = 'cartoon',
+  look = 'classic',
   className,
 }: {
   size?: number

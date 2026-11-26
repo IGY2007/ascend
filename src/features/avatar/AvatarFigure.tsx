@@ -42,7 +42,7 @@ export const AvatarFigure = memo(function AvatarFigure({
   variant = 'full',
   jerseyNumber = 1,
   heightCm,
-  outlined = true,
+  outlined = false,
   className,
   title,
 }: Props) {

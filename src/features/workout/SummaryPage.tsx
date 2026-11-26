@@ -1,7 +1,16 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { motion } from 'motion/react'
-import { Check, ChevronLeft, Pencil, Trash2, TrendingDown, TrendingUp, Trophy } from 'lucide-react'
+import {
+  Camera,
+  Check,
+  ChevronLeft,
+  Pencil,
+  Trash2,
+  TrendingDown,
+  TrendingUp,
+  Trophy,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -214,6 +223,15 @@ export function SummaryPage() {
 
       <Button size="lg" block className="mt-8" onClick={close}>
         {wk.ok}
+      </Button>
+      <Button
+        block
+        size="lg"
+        className="mt-3 bg-gradient-to-r from-accent to-[#7c3aed]"
+        onClick={() => navigate(`/workout/${session.id}/share`)}
+      >
+        <Camera />
+        {t.share.open}
       </Button>
       <Button
         variant="secondary"

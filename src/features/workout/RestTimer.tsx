@@ -72,6 +72,10 @@ export function RestTimer({
     return () => window.clearTimeout(id)
   }, [rest, remaining, onChange])
 
+  // Un consejo distinto en cada descanso (fijo mientras dura ese descanso)
+  const tips = t.workout.restTips
+  const tip = rest ? tips[Math.floor(rest.endsAt / 1000) % tips.length] : null
+
   const progress = rest ? Math.min(1, Math.max(0, remaining / rest.total)) : 0
 
   return (
@@ -90,6 +94,12 @@ export function RestTimer({
             className="absolute inset-y-0 left-0 w-full origin-left bg-accent/18 transition-transform duration-300 ease-linear"
             style={{ transform: `scaleX(${progress})` }}
           />
+          {!finished && (
+            <p className="relative px-4 pt-2.5 text-xs leading-snug text-muted">
+              <span className="font-semibold text-success">{t.workout.restTipLabel}: </span>
+              {tip}
+            </p>
+          )}
           <div className="relative flex items-center gap-2 px-3 py-2">
             <div className="min-w-0 flex-1 pl-1">
               <p className="text-xs font-medium text-accent-2">

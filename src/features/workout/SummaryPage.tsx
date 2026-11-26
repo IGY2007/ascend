@@ -7,7 +7,9 @@ import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AnimatedNumber } from '@/components/ui/animated-number'
-import { useSessionSummary, useSessionView } from '@/features/profile/hooks'
+import { useGameState, useSessionSummary, useSessionView } from '@/features/profile/hooks'
+import { Confetti } from '@/components/ui/confetti'
+import { sessionXp } from '@/domain/gamification'
 import { workoutService } from '@/services/workout'
 import { formatDuration } from '@/domain/workout'
 import { formatDecimal, formatSigned } from '@/domain/numbers'
@@ -22,6 +24,7 @@ export function SummaryPage() {
   const fresh = (useLocation().state as { fresh?: boolean } | null)?.fresh === true
   const summary = useSessionSummary(id)
   const view = useSessionView(id)
+  const game = useGameState()
   const [deleteOpen, setDeleteOpen] = useState(false)
 
   const close = () => {
@@ -79,6 +82,36 @@ export function SummaryPage() {
         </h1>
         {fresh && <p className="mt-1 text-muted">{session.name}</p>}
       </header>
+
+      {fresh && summary.records.length > 0 && <Confetti burstKey={session.id} />}
+      {fresh && game && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mt-6 rounded-2xl border border-success/30 bg-success/8 px-4 py-3"
+        >
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="num text-lg font-bold text-success">
+              {t.game.xpEarned(sessionXp(summary.sets, summary.records.length))}
+            </p>
+            <p className="text-sm font-medium">
+              {t.game.level(game.level.level)} · {t.game.titles[game.level.title]}
+            </p>
+          </div>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-card-2">
+            <motion.div
+              className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-success"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: game.level.into / game.level.needed }}
+              transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+          <p className="mt-1.5 num text-xs text-muted">
+            {t.game.xpToGo(game.level.needed - game.level.into)}
+          </p>
+        </motion.div>
+      )}
 
       <Card highlight className="mt-7">
         <p className="text-sm text-muted">{wk.volume}</p>

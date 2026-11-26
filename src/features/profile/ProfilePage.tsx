@@ -16,7 +16,10 @@ import { MetricsGrid } from '@/features/nutrition/MetricsGrid'
 import { formatDecimal } from '@/domain/numbers'
 import { toDateKey } from '@/domain/dates'
 import { isLocalMode } from '@/lib/env'
-import { formatMonthYear, t } from '@/i18n'
+import { formatMonthYear, lang, LANGS, setLanguage, t } from '@/i18n'
+import { cn } from '@/lib/utils'
+import { LevelCard } from '@/features/game/LevelCard'
+import { AchievementsGrid } from '@/features/game/AchievementsGrid'
 import { useDisplayName } from './use-profile'
 import { useLatestWeight, useLocalProfile, useNutritionGoal } from './hooks'
 
@@ -99,6 +102,10 @@ export function ProfilePage() {
         </div>
       </Card>
 
+      <LevelCard className="mt-4" />
+      <SectionTitle>{t.game.achievementsTitle}</SectionTitle>
+      <AchievementsGrid />
+
       {goal && (
         <>
           <SectionTitle>{pr.yourPlan}</SectionTitle>
@@ -159,6 +166,26 @@ export function ProfilePage() {
           </Card>
         </>
       )}
+
+      <SectionTitle>{pr.language}</SectionTitle>
+      <div className="grid grid-cols-2 gap-1 rounded-2xl bg-card p-1" role="radiogroup">
+        {LANGS.map((l) => (
+          <button
+            key={l}
+            type="button"
+            role="radio"
+            aria-checked={lang === l}
+            onClick={() => setLanguage(l)}
+            className={cn(
+              'h-11 rounded-xl text-sm font-semibold transition-colors',
+              lang === l ? 'bg-accent text-accent-fg' : 'text-muted',
+            )}
+          >
+            {pr.languages[l]}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 px-1 text-xs text-subtle">{pr.languageHint}</p>
 
       <div className="mt-4 space-y-3">
         <Button variant="secondary" block onClick={() => setRedoOpen(true)}>

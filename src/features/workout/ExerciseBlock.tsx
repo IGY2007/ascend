@@ -5,7 +5,7 @@ import { NumberInput } from '@/components/ui/number-input'
 import { Tip } from '@/components/ui/tip'
 import { ExerciseThumbnail } from '@/features/exercises/ExerciseThumbnail'
 import { workoutService, type SessionExerciseView } from '@/services/workout'
-import { suggestIncrease } from '@/domain/workout'
+import { e1rm, suggestIncrease } from '@/domain/workout'
 import { formatDecimal } from '@/domain/numbers'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
@@ -24,6 +24,7 @@ export function ExerciseBlock({
   onOpenList,
   onReplace,
   onSetCompleted,
+  onRecord,
   mode = 'live',
 }: {
   se: SessionExerciseView
@@ -32,6 +33,8 @@ export function ExerciseBlock({
   onOpenList?: () => void
   onReplace: () => void
   onSetCompleted?: () => void
+  /** Se llama cuando una serie supera lo mejor de siempre (solo en vivo) */
+  onRecord?: (r: { kind: 'weight' | 'e1rm'; value: number; exercise: string }) => void
   mode?: 'live' | 'edit'
 }) {
   const live = mode === 'live'
@@ -55,6 +58,24 @@ export function ExerciseBlock({
     return null
   }
 
+  /** ¿Esta serie supera lo mejor de siempre (otras sesiones + series ya hechas hoy)? */
+  const checkRecord = (set: ExerciseSet, values: Partial<ExerciseSet>) => {
+    if (!onRecord || se.best.weight <= 0) return // la primera vez no es récord
+    const weight = values.weightKg ?? set.weightKg
+    const reps = values.repetitions ?? set.repetitions
+    if (weight == null || !reps) return
+    const others = se.sets.filter((s) => s.isCompleted && s.id !== set.id && s.weightKg != null)
+    const bestW = Math.max(se.best.weight, ...others.map((s) => s.weightKg!))
+    const bestE = Math.max(
+      se.best.e1rm,
+      ...others.filter((s) => s.repetitions).map((s) => e1rm(s.weightKg!, s.repetitions!)),
+    )
+    const name = se.exerciseNameSnapshot
+    if (weight > bestW) onRecord({ kind: 'weight', value: weight, exercise: name })
+    else if (e1rm(weight, reps) > bestE + 0.05)
+      onRecord({ kind: 'e1rm', value: e1rm(weight, reps), exercise: name })
+  }
+
   const toggle = async (set: ExerciseSet, i: number) => {
     const completing = !set.isCompleted
     const values: Partial<ExerciseSet> = {}
@@ -65,7 +86,10 @@ export function ExerciseBlock({
       if (set.weightKg === null && type === 'weighted') values.weightKg = weightPlaceholder(i)
     }
     await workoutService.toggleSet(set.id, values)
-    if (completing) onSetCompleted?.()
+    if (completing) {
+      onSetCompleted?.()
+      if (live && type === 'weighted') checkRecord(set, values)
+    }
   }
 
   const target =
@@ -130,6 +154,11 @@ export function ExerciseBlock({
             </p>
           )}
         </div>
+      )}
+      {live && !suggestion && !timed && se.targetRepsMax && (
+        <p className="mt-2 text-xs leading-relaxed text-subtle">
+          {wk.progressRule(se.targetRepsMax)}
+        </p>
       )}
       {live && suggestion && <Tip className="mt-3">{wk.suggestion(formatDecimal(suggestion))}</Tip>}
 

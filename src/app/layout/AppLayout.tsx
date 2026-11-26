@@ -2,6 +2,7 @@ import { useLocation, useOutlet } from 'react-router'
 import { motion } from 'motion/react'
 import { BottomNav } from './BottomNav'
 import { Sidebar } from './Sidebar'
+import { AchievementWatcher } from '@/features/game/AchievementWatcher'
 
 /** Layout de las secciones principales: bottom nav en móvil, sidebar en desktop. */
 export function AppLayout() {
@@ -24,6 +25,7 @@ export function AppLayout() {
         </motion.div>
       </main>
       <BottomNav />
+      <AchievementWatcher />
     </div>
   )
 }

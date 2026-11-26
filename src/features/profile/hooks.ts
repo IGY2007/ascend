@@ -10,6 +10,7 @@ import { historyService, workoutService } from '@/services/workout'
 import { cardioService, todayEnergy, waterService } from '@/services/activity'
 import { statsService } from '@/services/stats'
 import { calendarService } from '@/services/calendar'
+import { gameState } from '@/services/gamification'
 import { db } from '@/lib/db'
 
 /** undefined = cargando · null = todavía no hizo el cuestionario */
@@ -119,4 +120,8 @@ export function useDayWeight(date: string) {
 
 export function useCalendarRange(from: string, to: string) {
   return useLiveQuery(() => calendarService.range(from, to), [from, to])
+}
+
+export function useGameState() {
+  return useLiveQuery(() => gameState())
 }

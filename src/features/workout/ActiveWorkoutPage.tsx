@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { ChevronLeft, ChevronRight, CloudCheck, List, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CloudCheck, List, Plus, Trash2, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Sheet } from '@/components/ui/sheet'
@@ -14,6 +14,8 @@ import { formatDuration } from '@/domain/workout'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
 import { RestTimer, type RestState } from './RestTimer'
+import { Confetti } from '@/components/ui/confetti'
+import { formatDecimal } from '@/domain/numbers'
 import { ExerciseBlock } from './ExerciseBlock'
 import { useWakeLock } from './use-wake-lock'
 
@@ -52,7 +54,15 @@ export function ActiveWorkoutPage() {
   const [pickerMode, setPickerMode] = useState<'add' | 'replace' | null>(null)
   const [finishOpen, setFinishOpen] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
+  const [record, setRecord] = useState<{ key: number; text: string; exercise: string } | null>(null)
   useWakeLock(true)
+
+  // El cartel de récord se va solo
+  useEffect(() => {
+    if (!record) return
+    const id = window.setTimeout(() => setRecord(null), 3200)
+    return () => window.clearTimeout(id)
+  }, [record])
 
   useEffect(() => {
     const tick = () => setNow(Date.now())
@@ -144,11 +154,47 @@ export function ActiveWorkoutPage() {
                 onSetCompleted={() =>
                   setRest({ endsAt: Date.now() + REST_SECONDS * 1000, total: REST_SECONDS })
                 }
+                onRecord={(r) =>
+                  setRecord({
+                    key: Date.now(),
+                    exercise: r.exercise,
+                    text:
+                      r.kind === 'weight'
+                        ? wk.recordWeight(formatDecimal(r.value))
+                        : wk.recordE1rm(formatDecimal(r.value, 1)),
+                  })
+                }
               />
             </motion.div>
           </AnimatePresence>
         )}
       </main>
+
+      {/* Festejo de récord */}
+      {record && <Confetti burstKey={record.key} />}
+      <AnimatePresence>
+        {record && (
+          <motion.div
+            key={record.key}
+            initial={{ opacity: 0, y: -24, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+            className="fixed inset-x-4 top-[calc(env(safe-area-inset-top)+4.5rem)] z-50 mx-auto flex max-w-sm items-center gap-3 rounded-2xl border border-success/40 bg-card-2/95 px-4 py-3 shadow-[0_12px_40px_-12px_rgb(163_230_53/0.45)] backdrop-blur"
+            role="status"
+          >
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-success text-bg">
+              <Trophy className="size-5" />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-bold text-success">{wk.newRecord}</span>
+              <span className="block truncate text-sm text-fg">
+                {record.text} · {record.exercise}
+              </span>
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Abajo: descanso + navegación entre ejercicios, al alcance del pulgar */}
       <footer className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-bg/90 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur-xl">

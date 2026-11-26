@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
 import { cn } from '@/lib/utils'
+import { locale } from '@/i18n'
 
 interface AnimatedNumberProps {
   value: number
@@ -12,7 +13,7 @@ interface AnimatedNumberProps {
 /** Número que se anima al cambiar (volumen, contadores). Respeta prefers-reduced-motion. */
 export function AnimatedNumber({
   value,
-  format = (v) => Math.round(v).toLocaleString('en-US'),
+  format = (v) => Math.round(v).toLocaleString(locale),
   className,
   duration = 0.6,
 }: AnimatedNumberProps) {

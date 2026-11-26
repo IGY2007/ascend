@@ -1,15 +1,5 @@
 import { useState } from 'react'
-import {
-  BookOpen,
-  ChevronDown,
-  Droplet,
-  Dumbbell,
-  Moon,
-  Pencil,
-  Pill,
-  Sun,
-  Sunrise,
-} from 'lucide-react'
+import { Droplet, Dumbbell, Moon, Pencil, Sun, Sunrise } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -148,6 +138,7 @@ export function NutritionPage() {
             {n.proteinWhy(String(goal.proteinG), perKg)}
           </p>
         )}
+        {perKg && <p className="mt-2 text-sm leading-relaxed text-muted">{n.carbsWhy}</p>}
       </Card>
 
       {/* Reparto de comidas */}
@@ -227,10 +218,6 @@ export function NutritionPage() {
         </Card>
       )}
 
-      {/* Lo básico */}
-      <Learn icon={BookOpen} title={n.learnTitle} items={n.lessons} />
-      <Learn icon={Pill} title={n.supplementsTitle} items={n.supplements} />
-
       <p className="mt-8 px-1 text-xs leading-relaxed text-subtle">{n.disclaimer}</p>
       <details className="mt-2 px-1 text-xs text-subtle">
         <summary className="cursor-pointer py-2 font-medium">{n.sources}</summary>
@@ -252,35 +239,5 @@ export function NutritionPage() {
 
       {goal && <EditMacrosSheet open={editOpen} onOpenChange={setEditOpen} current={goal} />}
     </>
-  )
-}
-
-function Learn({
-  icon: Icon,
-  title,
-  items,
-}: {
-  icon: LucideIcon
-  title: string
-  items: readonly { title: string; body: string }[]
-}) {
-  return (
-    <section className="mt-8">
-      <h2 className="mb-3 flex items-center gap-2 px-1 text-lg font-semibold tracking-tight">
-        <Icon className="size-5 text-accent-2" />
-        {title}
-      </h2>
-      <div className="divide-y divide-border overflow-hidden rounded-[var(--radius-card)] border border-border bg-card">
-        {items.map((it) => (
-          <details key={it.title} className="group">
-            <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 py-3 font-medium [&::-webkit-details-marker]:hidden">
-              <span className="min-w-0 flex-1">{it.title}</span>
-              <ChevronDown className="size-4 shrink-0 text-muted transition-transform group-open:rotate-180" />
-            </summary>
-            <p className="px-4 pb-4 text-sm leading-relaxed text-muted">{it.body}</p>
-          </details>
-        ))}
-      </div>
-    </section>
   )
 }

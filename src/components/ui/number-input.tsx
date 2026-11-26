@@ -2,6 +2,10 @@ import { forwardRef, useEffect, useState, type InputHTMLAttributes } from 'react
 import { cn } from '@/lib/utils'
 import { parseDecimal, parseInteger } from '@/domain/numbers'
 import { inputClassName } from './input-styles'
+import { locale } from '@/i18n'
+
+// Sin separador de miles: el texto tiene que poder volver a leerse como número.
+const inputFormat = new Intl.NumberFormat(locale, { maximumFractionDigits: 2, useGrouping: false })
 
 export interface NumberInputProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -20,7 +24,7 @@ export interface NumberInputProps extends Omit<
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
   ({ value, onValueChange, kind = 'decimal', className, onBlur, ...props }, ref) => {
     const format = (v: number | null) =>
-      v === null ? '' : kind === 'decimal' ? String(Math.round(v * 100) / 100) : String(v)
+      v === null ? '' : kind === 'decimal' ? inputFormat.format(v) : String(v)
     const [text, setText] = useState(() => format(value))
 
     // Sincroniza cuando el valor cambia desde afuera (ej.: botones +/-), sin pisar lo que se escribe.

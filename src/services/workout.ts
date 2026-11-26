@@ -1,6 +1,8 @@
 import { db } from '@/lib/db'
 import { LOCAL_USER_ID } from '@/features/auth/auth-context'
 import {
+  bestSet,
+  maxWeight,
   compareSessions,
   detectRecords,
   isWorkingSet,
@@ -27,6 +29,8 @@ export interface SessionExerciseView extends SessionExercise {
   sets: ExerciseSet[]
   /** Series de la última vez que hizo este ejercicio (en otra sesión) */
   previous: ExerciseSet[]
+  /** Lo mejor de siempre en otras sesiones (0 si nunca lo hizo): para festejar récords en vivo */
+  best: { weight: number; e1rm: number }
 }
 
 export interface SessionView extends WorkoutSession {
@@ -47,6 +51,23 @@ async function lastSetsFor(exerciseId: string, excludeSessionId: string): Promis
   return (await db.exerciseSets.where('sessionExerciseId').anyOf(se).toArray())
     .filter((s) => s.isCompleted)
     .sort((a, b) => a.setNumber - b.setNumber)
+}
+
+async function bestFor(
+  exerciseId: string,
+  excludeSessionId: string,
+): Promise<{ weight: number; e1rm: number }> {
+  const ses = (await db.sessionExercises.where('exerciseId').equals(exerciseId).toArray()).filter(
+    (s) => s.sessionId !== excludeSessionId,
+  )
+  if (ses.length === 0) return { weight: 0, e1rm: 0 }
+  const sessions = await db.sessions.bulkGet([...new Set(ses.map((s) => s.sessionId))])
+  const done = new Set(sessions.filter((s) => s?.status === 'completed').map((s) => s!.id))
+  const ids = ses.filter((s) => done.has(s.sessionId)).map((s) => s.id)
+  const sets = (await db.exerciseSets.where('sessionExerciseId').anyOf(ids).toArray()).filter(
+    isWorkingSet,
+  )
+  return { weight: maxWeight(sets), e1rm: bestSet(sets)?.e1rm ?? 0 }
 }
 
 async function renumberSets(sessionExerciseId: string) {
@@ -185,6 +206,7 @@ export const workoutService = {
           .filter((s) => s.sessionExerciseId === se.id)
           .sort((a, b) => a.setNumber - b.setNumber),
         previous: se.exerciseId ? await lastSetsFor(se.exerciseId, sessionId) : [],
+        best: se.exerciseId ? await bestFor(se.exerciseId, sessionId) : { weight: 0, e1rm: 0 },
       })
     }
     return { ...session, exercises: views }

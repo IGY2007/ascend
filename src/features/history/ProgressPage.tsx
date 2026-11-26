@@ -35,11 +35,12 @@ import { formatDuration } from '@/domain/workout'
 import { cn } from '@/lib/utils'
 import { locale, t } from '@/i18n'
 import { CalendarView } from '@/features/calendar/CalendarView'
+import { PhysiqueTab } from '@/features/game/PhysiqueTab'
 import type { BodyWeight, CardioLog } from '@/types/models'
 
 const p = t.progress
 const ch = t.charts
-const TABS = ['summary', 'calendar', 'strength', 'weight', 'cardio'] as const
+const TABS = ['summary', 'calendar', 'muscles', 'strength', 'weight', 'cardio'] as const
 type Tab = (typeof TABS)[number]
 
 const entryDate = new Intl.DateTimeFormat(locale, {
@@ -96,10 +97,11 @@ export function ProgressPage() {
       {tab === 'summary' && <SummaryTab />}
       {tab === 'calendar' && (
         <>
+          <p className="mb-3 px-1 text-sm text-muted">{t.calendar.tapHint}</p>
           <CalendarView />
-          <p className="mt-3 text-center text-xs text-subtle">{t.calendar.tapHint}</p>
         </>
       )}
+      {tab === 'muscles' && <PhysiqueTab />}
       {tab === 'strength' && <StrengthTab />}
       {tab === 'weight' && <WeightTab />}
       {tab === 'cardio' && <CardioWaterTab />}

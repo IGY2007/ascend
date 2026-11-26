@@ -5,6 +5,7 @@ import {
   ChevronRight,
   Droplet,
   Dumbbell,
+  Lightbulb,
   Play,
   Plus,
   TrendingDown,
@@ -13,7 +14,8 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { ProgressRing } from '@/components/ui/progress-ring'
-import { LearnCard } from '@/features/learn/LearnCard'
+import { WeeklyChallenges } from '@/features/game/WeeklyChallenges'
+import { LevelChip } from '@/features/game/LevelCard'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -63,6 +65,7 @@ export function HomePage() {
 
   const now = new Date()
   const todayKey = toDateKey(now)
+  const dayIndex = Math.floor(now.getTime() / 86_400_000)
   const weekStart = startOfWeek(now)
   const weekStartKey = toDateKey(weekStart)
 
@@ -80,13 +83,16 @@ export function HomePage() {
 
   return (
     <>
-      <header className="mb-6">
-        <p className="text-sm font-medium text-muted first-letter:uppercase">
-          {formatLongDate(now)}
-        </p>
-        <h1 className="mt-1 text-[1.75rem] leading-tight font-bold tracking-tight">
-          {h.greeting(name)}
-        </h1>
+      <header className="mb-6 flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-muted first-letter:uppercase">
+            {formatLongDate(now)}
+          </p>
+          <h1 className="mt-1 truncate text-[1.75rem] leading-tight font-bold tracking-tight">
+            {h.greeting(name)}
+          </h1>
+        </div>
+        <LevelChip />
       </header>
 
       <ActiveWorkoutBanner />
@@ -109,6 +115,12 @@ export function HomePage() {
             </div>
             <ChevronRight className="size-6 shrink-0 text-muted" />
           </Link>
+          {!trainedToday && (
+            <p className="mt-3 flex gap-2 text-sm leading-relaxed text-muted">
+              <Lightbulb className="mt-0.5 size-4 shrink-0 text-success" />
+              {h.coachTips[dayIndex % h.coachTips.length]}
+            </p>
+          )}
           <Button size="lg" block className="mt-4" onClick={() => void start(next.id)}>
             <Play />
             {h.startWorkout}
@@ -198,7 +210,7 @@ export function HomePage() {
         </Card>
       </section>
 
-      <LearnCard className="mt-6" />
+      <WeeklyChallenges className="mt-6" />
 
       <InsightsCard limit={2} className="mt-6" />
 

@@ -1,3 +1,5 @@
+import { locale } from '@/i18n'
+
 /**
  * Convierte un texto ingresado por el usuario en número.
  * Acepta coma o punto como separador decimal ("69,5" y "69.5").
@@ -21,7 +23,7 @@ export function parseInteger(input: string): number | null {
 
 /** Formatea un número para mostrarlo in English (decimal point), sin ceros sobrantes. */
 export function formatDecimal(value: number, maxFractionDigits = 2): string {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(locale, {
     maximumFractionDigits: maxFractionDigits,
     useGrouping: true,
   }).format(value)

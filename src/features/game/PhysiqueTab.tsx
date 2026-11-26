@@ -2,7 +2,7 @@ import { Info } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tip } from '@/components/ui/tip'
-import { useGameState } from '@/features/profile/hooks'
+import { useGameState, useLocalProfile } from '@/features/profile/hooks'
 import {
   laggingStat,
   physiqueLevel,
@@ -34,6 +34,7 @@ const READY_STYLE: Record<Readiness, string> = {
 export function PhysiqueTab() {
   const game = useGameState()
   const avatar = useAvatar()
+  const heightCm = useLocalProfile()?.heightCm
   if (!game || !avatar) return <Skeleton className="h-96 rounded-[var(--radius-card)]" />
   const stats = game.muscles
   const lagging = laggingStat(stats)
@@ -56,6 +57,7 @@ export function PhysiqueTab() {
           </Link>
         </div>
         <AvatarFigure
+          heightCm={heightCm}
           avatar={avatar}
           body={game.monthBody}
           jerseyNumber={game.level.level}

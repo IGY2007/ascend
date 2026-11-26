@@ -11,6 +11,7 @@ import { generateRoutines } from '@/domain/routine-generator'
 import { bmi, bodyFatEstimate } from '@/domain/body-metrics'
 import { toDateKey } from '@/domain/dates'
 import type { AvatarConfig } from '@/domain/avatar'
+import type { LibraryRoutine } from '@/domain/routine-library'
 import type {
   BodyWeight,
   Equipment,
@@ -415,6 +416,54 @@ export const templatesService = {
       updatedAt: ts,
     })
     return id
+  },
+
+  /** Agrega una rutina de la biblioteca (como extra, fuera de la rotación). */
+  async addFromLibrary(routine: LibraryRoutine): Promise<string> {
+    const ts = now()
+    const id = uuid()
+    const byName = new Map(GLOBAL_EXERCISES.map((e) => [e.name, e]))
+    await db.transaction('rw', [db.templates, db.templateExercises], async () => {
+      await db.templates.add({
+        id,
+        userId: LOCAL_USER_ID,
+        name: routine.name,
+        description: routine.description,
+        weekdays: [],
+        notes: null,
+        position: await db.templates.count(),
+        source: 'manual',
+        inRotation: false,
+        createdAt: ts,
+        updatedAt: ts,
+      })
+      let position = 0
+      for (const item of routine.exercises) {
+        const ex = byName.get(item.name)
+        if (!ex) continue
+        await db.templateExercises.add({
+          id: uuid(),
+          userId: LOCAL_USER_ID,
+          templateId: id,
+          exerciseId: ex.id,
+          position: position++,
+          targetSets: item.sets,
+          targetRepsMin: item.min,
+          targetRepsMax: item.max,
+          targetRestSeconds: 120,
+          targetRir: item.rir,
+          notes: null,
+          createdAt: ts,
+          updatedAt: ts,
+        })
+      }
+    })
+    return id
+  },
+
+  /** Sacar o poner una rutina en la rotación. */
+  async setInRotation(id: string, inRotation: boolean) {
+    await db.templates.update(id, { inRotation, updatedAt: now() })
   },
 
   async update(

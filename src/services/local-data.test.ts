@@ -108,3 +108,22 @@ describe('datos locales', () => {
     expect(all).toHaveLength(GLOBAL_EXERCISES.length + 1)
   })
 })
+
+describe('biblioteca de rutinas', () => {
+  it('agrega una rutina extra que no entra en la rotación', async () => {
+    const { ROUTINE_LIBRARY } = await import('@/domain/routine-library')
+    const { workoutService } = await import('./workout')
+    await db.delete()
+    await db.open()
+    await profileService.completeOnboarding(ANSWERS)
+    const nextBefore = await workoutService.nextTemplateId()
+    for (const r of ROUTINE_LIBRARY) {
+      const id = await templatesService.addFromLibrary(r)
+      const tpl = (await templatesService.list()).find((x) => x.id === id)!
+      // Todos los ejercicios de la biblioteca existen
+      expect(tpl.items).toHaveLength(r.exercises.length)
+      expect(tpl.inRotation).toBe(false)
+    }
+    expect(await workoutService.nextTemplateId()).toBe(nextBefore)
+  })
+})

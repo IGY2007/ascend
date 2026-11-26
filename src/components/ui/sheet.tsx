@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { Dialog } from 'radix-ui'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -11,10 +11,29 @@ interface SheetProps {
   description?: string
   children: ReactNode
   className?: string
+  /** Se llama cada vez que el panel se abre (para reiniciar su estado interno). */
+  onOpen?: () => void
 }
 
 /** Panel que sube desde abajo en móvil y se centra en desktop. */
-export function Sheet({ open, onOpenChange, title, description, children, className }: SheetProps) {
+export function Sheet({
+  open,
+  onOpenChange,
+  title,
+  description,
+  children,
+  className,
+  onOpen,
+}: SheetProps) {
+  // Se abre desde afuera (prop `open`): Radix no avisa, así que lo detectamos acá.
+  const onOpenRef = useRef(onOpen)
+  useLayoutEffect(() => {
+    onOpenRef.current = onOpen
+  })
+  useEffect(() => {
+    if (open) onOpenRef.current?.()
+  }, [open])
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>

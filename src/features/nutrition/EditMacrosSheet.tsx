@@ -41,13 +41,11 @@ export function EditMacrosSheet({
   return (
     <Sheet
       open={open}
-      onOpenChange={(o) => {
-        if (o) {
-          setP(current.proteinG)
-          setC(current.carbsG)
-          setF(current.fatG)
-        }
-        onOpenChange(o)
+      onOpenChange={onOpenChange}
+      onOpen={() => {
+        setP(current.proteinG)
+        setC(current.carbsG)
+        setF(current.fatG)
       }}
       title={pr.editMacros}
       description={pr.editMacrosHint}

@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { motion } from 'motion/react'
-import { Check, Minus, Plus, Repeat, X } from 'lucide-react'
+import { TechniqueSheet } from '@/features/exercises/TechniqueSheet'
+import { Check, Minus, PlayCircle, Plus, Repeat, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { NumberInput } from '@/components/ui/number-input'
 import { Tip } from '@/components/ui/tip'
@@ -39,6 +41,7 @@ export function ExerciseBlock({
   mode?: 'live' | 'edit'
 }) {
   const live = mode === 'live'
+  const [technique, setTechnique] = useState(false)
 
   const type = se.exercise?.exerciseType ?? 'weighted'
   const timed = type === 'timed'
@@ -108,7 +111,16 @@ export function ExerciseBlock({
         <p className="text-sm font-medium text-muted">{wk.exerciseOf(position + 1, total)}</p>
       )}
       <div className="mt-2 flex items-start gap-3.5">
-        {se.exercise && <ExerciseThumbnail exercise={se.exercise} className="size-14" />}
+        {se.exercise && (
+          <button
+            type="button"
+            onClick={() => setTechnique(true)}
+            aria-label={t.technique.open}
+            className="shrink-0 rounded-xl transition-transform active:scale-95"
+          >
+            <ExerciseThumbnail exercise={se.exercise} className="size-16" />
+          </button>
+        )}
         <div className="min-w-0 flex-1">
           <h1 className="text-[1.45rem] leading-tight font-bold tracking-tight">
             {exerciseName(se.exercise, se.exerciseNameSnapshot)}
@@ -121,6 +133,16 @@ export function ExerciseBlock({
               .filter(Boolean)
               .join(' · ')}
           </p>
+          {se.exercise && (
+            <button
+              type="button"
+              onClick={() => setTechnique(true)}
+              className="mt-1 -ml-0.5 flex h-8 items-center gap-1 text-sm font-medium text-accent-2"
+            >
+              <PlayCircle className="size-4" />
+              {t.technique.open}
+            </button>
+          )}
         </div>
         <button
           type="button"
@@ -289,6 +311,10 @@ export function ExerciseBlock({
           {wk.remove}
         </button>
       </div>
+      <TechniqueSheet
+        exercise={technique ? (se.exercise ?? null) : null}
+        onClose={() => setTechnique(false)}
+      />
     </section>
   )
 }

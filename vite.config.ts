@@ -84,6 +84,17 @@ export default defineConfig(({ command, mode }) => {
           globIgnores: ['splash/**', '**/inter-{cyrillic,greek,vietnamese}*'],
           navigateFallback: 'index.html',
           cleanupOutdatedCaches: true,
+          // Fotos de técnica (jpg, no se precachean): se guardan a medida que se miran.
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) => url.pathname.includes('/exercises/'),
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'exercise-images',
+                expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              },
+            },
+          ],
         },
         devOptions: { enabled: false },
       }),

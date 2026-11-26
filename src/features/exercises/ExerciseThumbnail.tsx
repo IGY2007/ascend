@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Dumbbell } from 'lucide-react'
+import { exerciseImages } from './exercise-media'
 import { cn } from '@/lib/utils'
 import type { Exercise, MuscleGroup } from '@/types/models'
 
@@ -19,21 +21,26 @@ const TINT: Record<MuscleGroup, string> = {
   other: '146 146 158',
 }
 
-/** Miniatura del ejercicio: la imagen si existe; si no, una pesa con el tinte del grupo muscular. */
+/** Miniatura del ejercicio: la foto si existe; si no, una pesa con el tinte del grupo muscular. */
 export function ExerciseThumbnail({
   exercise,
   className,
 }: {
-  exercise: Pick<Exercise, 'primaryMuscle' | 'name'> & { imageUrl?: string | null }
+  exercise: Pick<Exercise, 'id' | 'ownerUserId' | 'primaryMuscle' | 'name'>
   className?: string
 }) {
+  const [failed, setFailed] = useState(false)
   const rgb = TINT[exercise.primaryMuscle ?? 'other']
-  if (exercise.imageUrl) {
+  const img = exerciseImages(exercise)?.[1]
+  if (img && !failed) {
     return (
       <img
-        src={exercise.imageUrl}
+        src={img}
         alt=""
-        className={cn('size-12 shrink-0 rounded-xl object-cover', className)}
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+        className={cn('size-12 shrink-0 rounded-xl bg-card-2 object-cover', className)}
       />
     )
   }

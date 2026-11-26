@@ -416,21 +416,34 @@ export const workoutService = {
   async saveEdits(
     sessionId: string,
     patch: { date?: string; durationMinutes?: number | null } = {},
-  ): Promise<boolean> {
+    opts: { discardIfEmpty?: boolean } = {},
+  ): Promise<'saved' | 'deleted' | 'empty'> {
     const session = await db.sessions.get(sessionId)
-    if (!session) return false
-    let alive = true
+    if (!session) return 'deleted'
+    let result: 'saved' | 'deleted' | 'empty' = 'saved'
     await db.transaction('rw', [db.sessions, db.sessionExercises, db.exerciseSets], async () => {
       const sets = await db.exerciseSets.where('sessionId').equals(sessionId).toArray()
-      await db.exerciseSets.bulkDelete(sets.filter((s) => !s.isCompleted).map((s) => s.id))
-      const kept = new Set(sets.filter((s) => s.isCompleted).map((s) => s.sessionExerciseId))
-      const ses = await db.sessionExercises.where('sessionId').equals(sessionId).sortBy('position')
-      await db.sessionExercises.bulkDelete(ses.filter((s) => !kept.has(s.id)).map((s) => s.id))
-      if (kept.size === 0) {
-        await db.sessions.delete(sessionId)
-        alive = false
+      // Corrigiendo un día anterior: una serie con reps (o segundos) cargadas cuenta como hecha
+      // aunque no hayan tocado el tilde.
+      const done = (s: ExerciseSet) =>
+        s.isCompleted || (s.repetitions ?? 0) > 0 || (s.durationSeconds ?? 0) > 0
+      const keep = sets.filter(done)
+      if (keep.length === 0) {
+        if (opts.discardIfEmpty) {
+          await db.exerciseSets.where('sessionId').equals(sessionId).delete()
+          await db.sessionExercises.where('sessionId').equals(sessionId).delete()
+          await db.sessions.delete(sessionId)
+          result = 'deleted'
+        } else result = 'empty'
         return
       }
+      for (const s of keep)
+        if (!s.isCompleted)
+          await db.exerciseSets.update(s.id, { isCompleted: true, completedAt: session.startedAt })
+      await db.exerciseSets.bulkDelete(sets.filter((s) => !done(s)).map((s) => s.id))
+      const kept = new Set(keep.map((s) => s.sessionExerciseId))
+      const ses = await db.sessionExercises.where('sessionId').equals(sessionId).sortBy('position')
+      await db.sessionExercises.bulkDelete(ses.filter((s) => !kept.has(s.id)).map((s) => s.id))
       const survivors = ses.filter((s) => kept.has(s.id))
       for (const [i, se] of survivors.entries()) {
         if (se.position !== i) await db.sessionExercises.update(se.id, { position: i })
@@ -452,12 +465,40 @@ export const workoutService = {
         updatedAt: now(),
       })
     })
-    return alive
+    return result
+  },
+
+  /** "Lo hice como en la rutina": completa todas las series con lo planeado (o lo de la última vez). */
+  async completeAll(sessionId: string) {
+    const view = await workoutService.view(sessionId)
+    if (!view) return
+    for (const se of view.exercises) {
+      const timed = se.exercise?.exerciseType === 'timed'
+      const weighted = (se.exercise?.exerciseType ?? 'weighted') === 'weighted'
+      for (const [i, set] of se.sets.entries()) {
+        if (set.isCompleted) continue
+        const prev = se.previous[i] ?? se.previous.at(-1)
+        await db.exerciseSets.update(set.id, {
+          weightKg: weighted ? (set.weightKg ?? prev?.weightKg ?? null) : set.weightKg,
+          repetitions: timed
+            ? null
+            : (set.repetitions ?? prev?.repetitions ?? se.targetRepsMax ?? 10),
+          durationSeconds: timed
+            ? (set.durationSeconds ?? prev?.durationSeconds ?? se.targetRepsMax ?? 30)
+            : null,
+          isCompleted: true,
+          completedAt: view.startedAt,
+          updatedAt: now(),
+        })
+      }
+    }
   },
 
   /** Rutina que toca en la rotación (la que sigue a la última completada). */
   async nextTemplateId(): Promise<string | null> {
-    const templates = await db.templates.orderBy('position').toArray()
+    const templates = (await db.templates.orderBy('position').toArray()).filter(
+      (t) => t.inRotation !== false,
+    )
     const last = (await db.sessions.where('status').equals('completed').toArray())
       .filter((s) => s.templateId && templates.some((t) => t.id === s.templateId))
       .sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0]

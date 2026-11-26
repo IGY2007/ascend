@@ -66,13 +66,11 @@ export function ExercisePicker({ open, onOpenChange, onPick, title = t.picker.ti
   return (
     <Sheet
       open={open}
-      onOpenChange={(o) => {
-        if (o) {
-          setQuery('')
-          setMuscle(null)
-          setCreating(false)
-        }
-        onOpenChange(o)
+      onOpenChange={onOpenChange}
+      onOpen={() => {
+        setQuery('')
+        setMuscle(null)
+        setCreating(false)
       }}
       title={creating ? t.picker.createTitle : title}
       className="h-[92dvh]"

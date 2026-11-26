@@ -1,12 +1,13 @@
 import { Link } from 'react-router'
 import { ChevronRight } from 'lucide-react'
-import { useAvatar, useGameState } from '@/features/profile/hooks'
+import { useAvatar, useGameState, useLocalProfile } from '@/features/profile/hooks'
 import { t } from '@/i18n'
 import { AvatarFigure } from './AvatarFigure'
 
 /** Tu personaje en el perfil, con acceso al editor. */
 export function AvatarCard() {
   const avatar = useAvatar()
+  const heightCm = useLocalProfile()?.heightCm
   const game = useGameState()
   if (!avatar) return null
   return (
@@ -16,6 +17,7 @@ export function AvatarCard() {
     >
       <span className="grid h-24 w-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-bg-2/80">
         <AvatarFigure
+          heightCm={heightCm}
           avatar={avatar}
           body={game?.monthBody}
           jerseyNumber={game?.level.level}

@@ -62,16 +62,16 @@ describe('app en modo local', () => {
     await heading(o.sexQ)
     await radio(t.labels.sex.male)
 
-    // Personaje: elige un pelo y sigue
-    await heading(o.avatarQ)
-    await radio(t.avatar.hairStyles.curly)
-    click(o.next)
-
     await heading(o.bodyQ)
     const [age, height, weight] = screen.getAllByRole('textbox')
     fireEvent.change(age!, { target: { value: '25' } })
     fireEvent.change(height!, { target: { value: '178' } })
     fireEvent.change(weight!, { target: { value: '75,5' } })
+    click(o.next)
+
+    // Personaje: elige un pelo y sigue
+    await heading(o.avatarQ)
+    await radio(t.avatar.hairStyles.curly)
     click(o.next)
 
     await heading(o.goalQ)
@@ -89,6 +89,11 @@ describe('app en modo local', () => {
     await radio(t.labels.split.upper_lower.replace('/', '\\/'))
     await heading(o.legsQ)
     await radio(o.legsNo)
+    await heading(o.injuriesQ)
+    await radio(t.labels.injury.knee)
+    click(o.next)
+    await heading(o.prefQ)
+    await radio(t.labels.equipmentPref.mixed)
 
     await heading(o.durationQ)
     await radio(o.minutes(60))

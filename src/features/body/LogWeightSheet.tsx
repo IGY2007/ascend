@@ -29,10 +29,8 @@ export function LogWeightSheet({ open, onOpenChange, initial, date }: Props) {
   return (
     <Sheet
       open={open}
-      onOpenChange={(o) => {
-        if (o) setValue(initial)
-        onOpenChange(o)
-      }}
+      onOpenChange={onOpenChange}
+      onOpen={() => setValue(initial)}
       title={t.progress.logWeight}
       description={t.progress.logWeightHint}
     >

@@ -29,7 +29,7 @@ describe('calendario y edición de días anteriores', () => {
     const [a, b] = view.exercises[0]!.sets
     await workoutService.toggleSet(a!.id, { weightKg: 60, repetitions: 8 })
     await workoutService.toggleSet(b!.id, { weightKg: 60, repetitions: 8 })
-    expect(await workoutService.saveEdits(id, { durationMinutes: 50 })).toBe(true)
+    expect(await workoutService.saveEdits(id, { durationMinutes: 50 })).toBe('saved')
 
     const saved = (await workoutService.view(id))!
     expect(saved.exercises).toHaveLength(1)
@@ -52,8 +52,31 @@ describe('calendario y edición de días anteriores', () => {
     expect(await historyService.byDate(threeDaysAgo)).toHaveLength(0)
 
     await workoutService.toggleSet(set.id)
-    expect(await workoutService.saveEdits(id)).toBe(false)
+    await workoutService.updateSet(set.id, { repetitions: null })
+    // Sin series: no se borra a escondidas…
+    expect(await workoutService.saveEdits(id)).toBe('empty')
+    expect(await db.sessions.get(id)).toBeDefined()
+    // …salvo que sea uno recién cargado y se vaya sin cargar nada
+    expect(await workoutService.saveEdits(id, {}, { discardIfEmpty: true })).toBe('deleted')
     expect(await db.sessions.get(id)).toBeUndefined()
+  })
+
+  it('cargar reps sin tocar el tilde cuenta, y "lo hice como en la rutina" completa todo', async () => {
+    const tpl = (await templatesService.list())[0]!
+    const id = await workoutService.logPast(threeDaysAgo, tpl.id)
+    const set = (await workoutService.view(id))!.exercises[0]!.sets[0]!
+    await workoutService.updateSet(set.id, { weightKg: 50, repetitions: 8 }) // sin tilde
+    expect(await workoutService.saveEdits(id)).toBe('saved')
+    expect((await workoutService.view(id))!.exercises[0]!.sets[0]!.isCompleted).toBe(true)
+
+    const id2 = await workoutService.logPast(threeDaysAgo, tpl.id)
+    await workoutService.completeAll(id2)
+    const v = (await workoutService.view(id2))!
+    expect(
+      v.exercises.every((e) =>
+        e.sets.every((x) => x.isCompleted && (x.repetitions ?? x.durationSeconds ?? 0) > 0),
+      ),
+    ).toBe(true)
   })
 
   it('corregir el agua y el cardio de un día anterior', async () => {

@@ -2,6 +2,13 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import {
+  Activity,
+  Cog,
+  Dumbbell,
+  Hand,
+  ShieldCheck,
+  Shuffle,
+  type LucideIcon,
   Armchair,
   BicepsFlexed,
   Building2,
@@ -49,6 +56,8 @@ import type {
   Sex,
   TrainingPlace,
   SplitStyle,
+  Injury,
+  EquipmentPref,
 } from '@/types/models'
 import { OptionCard } from './OptionCard'
 import { UnitField } from './UnitField'
@@ -62,8 +71,8 @@ const STEPS = [
   'welcome',
   'name',
   'sex',
-  'avatar',
   'body',
+  'avatar',
   'goal',
   'target',
   'activity',
@@ -71,6 +80,8 @@ const STEPS = [
   'days',
   'split',
   'legs',
+  'injuries',
+  'preference',
   'duration',
   'place',
   'summary',
@@ -78,6 +89,17 @@ const STEPS = [
 type Step = (typeof STEPS)[number]
 
 const o = t.onboarding
+const INJURIES: [Injury, LucideIcon][] = [
+  ['shoulder', PersonStanding],
+  ['knee', Footprints],
+  ['lower_back', Activity],
+  ['wrist_elbow', Hand],
+]
+const PREFS: [EquipmentPref, LucideIcon][] = [
+  ['free', Dumbbell],
+  ['machines', Cog],
+  ['mixed', Shuffle],
+]
 
 /** La pose y la cara de Volt en cada pregunta. */
 const POSE: Partial<Record<Step, [MascotPose, MascotMood]>> = {
@@ -92,6 +114,8 @@ const POSE: Partial<Record<Step, [MascotPose, MascotMood]>> = {
   days: ['point', 'happy'],
   split: ['think', 'happy'],
   legs: ['flex', 'wink'],
+  injuries: ['think', 'wow'],
+  preference: ['lift', 'happy'],
   duration: ['idle', 'happy'],
   place: ['point', 'proud'],
 }
@@ -126,6 +150,10 @@ function validate(step: Step, d: Draft): string | null {
       return d.split ? null : ''
     case 'legs':
       return d.easeLegs === undefined ? '' : null
+    case 'injuries':
+      return d.injuries ? null : ''
+    case 'preference':
+      return d.equipmentPref ? null : ''
     case 'duration':
       return d.sessionMinutes ? null : ''
     case 'place':
@@ -169,7 +197,11 @@ export function OnboardingPage() {
 
   const next = () => {
     if (step === 'avatar' && !draft.avatar) set('avatar', defaultAvatar(draft.sex))
-    const problem = validate(step, draft)
+    if (step === 'injuries' && !draft.injuries) set('injuries', [])
+    const problem = validate(
+      step,
+      step === 'injuries' ? { ...draft, injuries: draft.injuries ?? [] } : draft,
+    )
     if (problem !== null) {
       setError(problem || null)
       return
@@ -236,6 +268,7 @@ export function OnboardingPage() {
     'days',
     'split',
     'legs',
+    'preference',
     'duration',
     'place',
   ].includes(step)
@@ -313,7 +346,11 @@ export function OnboardingPage() {
             {step === 'avatar' && (
               <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.avatarQ}>
                 <div className="-mt-3 rounded-[var(--radius-card)] border border-border bg-card py-2">
-                  <AvatarFigure avatar={avatar} className="mx-auto h-56 w-auto" />
+                  <AvatarFigure
+                    avatar={avatar}
+                    heightCm={draft.heightCm}
+                    className="mx-auto h-56 w-auto"
+                  />
                 </div>
                 <Tip bare className="mt-4">
                   {t.mascot.avatarIntro}
@@ -583,6 +620,57 @@ export function OnboardingPage() {
                 <Tip bare className="mt-5">
                   {o.tips.legs}
                 </Tip>
+              </Question>
+            )}
+
+            {step === 'injuries' && (
+              <Question
+                pose={POSE[step]?.[0]}
+                mood={POSE[step]?.[1]}
+                title={o.injuriesQ}
+                hint={o.injuriesHint}
+              >
+                <div role="group" className="space-y-3">
+                  {INJURIES.map(([v, Icon]) => (
+                    <OptionCard
+                      key={v}
+                      icon={Icon}
+                      title={L.injury[v]}
+                      description={L.injuryHint[v]}
+                      selected={!!draft.injuries?.includes(v)}
+                      onSelect={() => {
+                        const cur = draft.injuries ?? []
+                        set('injuries', cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v])
+                      }}
+                    />
+                  ))}
+                  <OptionCard
+                    icon={ShieldCheck}
+                    title={L.injuryNone}
+                    selected={draft.injuries !== undefined && draft.injuries.length === 0}
+                    onSelect={() => set('injuries', [])}
+                  />
+                </div>
+                <Tip bare className="mt-5">
+                  {o.tips.injuries}
+                </Tip>
+              </Question>
+            )}
+
+            {step === 'preference' && (
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.prefQ}>
+                <Options>
+                  {PREFS.map(([v, Icon]) => (
+                    <OptionCard
+                      key={v}
+                      icon={Icon}
+                      title={L.equipmentPref[v]}
+                      description={L.equipmentPrefHint[v]}
+                      selected={draft.equipmentPref === v}
+                      onSelect={() => choose('equipmentPref', v)}
+                    />
+                  ))}
+                </Options>
               </Question>
             )}
 

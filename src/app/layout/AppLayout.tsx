@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { BottomNav } from './BottomNav'
 import { Sidebar } from './Sidebar'
 import { AchievementWatcher } from '@/features/game/AchievementWatcher'
+import { VoltBuddy } from '@/features/avatar/VoltBuddy'
 
 /** Layout de las secciones principales: bottom nav en móvil, sidebar en desktop. */
 export function AppLayout() {
@@ -26,6 +27,7 @@ export function AppLayout() {
       </main>
       <BottomNav />
       <AchievementWatcher />
+      <VoltBuddy />
     </div>
   )
 }

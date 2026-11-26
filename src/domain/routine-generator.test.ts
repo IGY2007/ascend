@@ -152,3 +152,52 @@ describe('generador de rutinas', () => {
     expect(sortWeekdays([0, 3, 1, 3])).toEqual([1, 3, 0])
   })
 })
+
+describe('lesiones y preferencias', () => {
+  const base = {
+    daysPerWeek: 4,
+    split: 'upper_lower' as const,
+    easeLegs: false,
+    sessionMinutes: 60,
+    place: 'gym' as const,
+    goal: 'muscle' as const,
+    experience: 'intermediate' as const,
+  }
+  const names = (r: ReturnType<typeof generateRoutines>) => {
+    const byId = new Map(GLOBAL_EXERCISES.map((e) => [e.id, e.name]))
+    return r.flatMap((d) => d.exercises.map((e) => byId.get(e.exerciseId)!))
+  }
+
+  it('con lesiones evita los ejercicios de riesgo y los reemplaza', () => {
+    const r = generateRoutines(
+      { ...base, injuries: ['knee', 'lower_back', 'shoulder'] },
+      GLOBAL_EXERCISES,
+    )
+    const all = names(r)
+    for (const bad of [
+      'Barbell Back Squat',
+      'Romanian Deadlift',
+      'Barbell Row',
+      'Barbell Overhead Press',
+      'Barbell Bench Press',
+    ])
+      expect(all).not.toContain(bad)
+    expect(all).toContain('Leg Press')
+    // Ninguna rutina queda vacía
+    for (const d of r) expect(d.exercises.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('la preferencia por máquinas cambia la elección', () => {
+    const free = names(generateRoutines({ ...base, equipmentPref: 'free' }, GLOBAL_EXERCISES))
+    const machines = names(
+      generateRoutines({ ...base, equipmentPref: 'machines' }, GLOBAL_EXERCISES),
+    )
+    expect(machines).not.toEqual(free)
+  })
+
+  it('sin lesiones ni preferencia, no cambia nada', () => {
+    expect(names(generateRoutines(base, GLOBAL_EXERCISES))).toEqual(
+      names(generateRoutines({ ...base, injuries: [], equipmentPref: 'mixed' }, GLOBAL_EXERCISES)),
+    )
+  })
+})

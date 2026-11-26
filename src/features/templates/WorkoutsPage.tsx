@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { ChevronRight, Clock, ListChecks, Play, Plus } from 'lucide-react'
+import { ChevronRight, Clock, ListChecks, Play, Plus, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -62,6 +62,8 @@ export function WorkoutsPage() {
   }
 
   const next = templates?.find((x) => x.id === nextId)
+  const rotation = (templates ?? []).filter((x) => x.inRotation !== false)
+  const extras = (templates ?? []).filter((x) => x.inRotation === false)
   const goal = profile?.daysPerWeek ?? 0
 
   return (
@@ -136,7 +138,7 @@ export function WorkoutsPage() {
           {/* Todas las rutinas, en el orden de la rotación */}
           <h2 className="mt-7 mb-3 px-1 text-sm font-medium text-muted">{w.allRoutines}</h2>
           <ol className="space-y-2.5">
-            {templates.map((tpl, i) => {
+            {rotation.map((tpl, i) => {
               const isNext = tpl.id === nextId
               return (
                 <li key={tpl.id}>
@@ -177,6 +179,39 @@ export function WorkoutsPage() {
               )
             })}
           </ol>
+
+          {extras.length > 0 && (
+            <>
+              <h2 className="mt-7 px-1 text-sm font-medium text-muted">{w.extras}</h2>
+              <p className="mb-3 px-1 text-xs text-subtle">{w.extrasHint}</p>
+              <ul className="space-y-2.5">
+                {extras.map((tpl) => (
+                  <li key={tpl.id}>
+                    <Link
+                      to={`/workouts/${tpl.id}`}
+                      className="flex items-center gap-4 rounded-[var(--radius-card)] border border-border bg-card p-4 transition-transform active:scale-[0.99]"
+                    >
+                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-success/12 text-success">
+                        <Sparkles className="size-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold">{routineText(tpl.name)}</p>
+                        <p className="truncate text-sm text-muted">
+                          {musclesOf(tpl)
+                            .map((m) => t.labels.muscle[m])
+                            .join(' · ')}
+                        </p>
+                        <p className="mt-0.5 text-xs text-subtle">
+                          {t.home.exercises(tpl.items.length)} · {lastLabel(tpl.id)}
+                        </p>
+                      </div>
+                      <ChevronRight className="size-5 shrink-0 text-muted" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
       <AddSheet open={addOpen} onOpenChange={setAddOpen} onCardio={() => setCardioOpen(true)} />

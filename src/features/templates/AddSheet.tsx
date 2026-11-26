@@ -1,6 +1,18 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Activity, ListPlus, Play, Plus, Shuffle, Zap } from 'lucide-react'
+import {
+  Activity,
+  Check,
+  ChevronLeft,
+  Library,
+  ListPlus,
+  Play,
+  Plus,
+  Shuffle,
+  Zap,
+} from 'lucide-react'
+import { toast } from 'sonner'
+import { ROUTINE_LIBRARY } from '@/domain/routine-library'
 import type { LucideIcon } from 'lucide-react'
 import { Sheet } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
@@ -28,7 +40,7 @@ export function AddSheet({
   const nextId = useNextTemplateId()
   const start = useStartWorkout()
   const navigate = useNavigate()
-  const [mode, setMode] = useState<'menu' | 'pick' | 'create'>('menu')
+  const [mode, setMode] = useState<'menu' | 'pick' | 'create' | 'library'>('menu')
   const [name, setName] = useState('')
   const next = templates?.find((x) => x.id === nextId)
 
@@ -40,14 +52,20 @@ export function AddSheet({
   return (
     <Sheet
       open={open}
-      onOpenChange={(o) => {
-        if (o) {
-          setMode('menu')
-          setName('')
-        }
-        onOpenChange(o)
+      onOpenChange={onOpenChange}
+      onOpen={() => {
+        setMode('menu')
+        setName('')
       }}
-      title={mode === 'create' ? w.createRoutine : mode === 'pick' ? w.startOther : w.addTitle}
+      title={
+        mode === 'create'
+          ? w.createRoutine
+          : mode === 'pick'
+            ? w.startOther
+            : mode === 'library'
+              ? w.library
+              : w.addTitle
+      }
     >
       {mode === 'menu' && (
         <div className="space-y-2.5 pt-1">
@@ -75,6 +93,12 @@ export function AddSheet({
             onClick={() => void go(null)}
           />
           <Action
+            icon={Library}
+            title={w.library}
+            hint={w.libraryHint}
+            onClick={() => setMode('library')}
+          />
+          <Action
             icon={ListPlus}
             title={w.createRoutine}
             hint={w.createRoutineHint}
@@ -90,6 +114,17 @@ export function AddSheet({
             }}
           />
         </div>
+      )}
+
+      {mode !== 'menu' && (
+        <button
+          type="button"
+          onClick={() => setMode('menu')}
+          className="-mt-1 mb-2 flex h-11 items-center gap-1 pr-3 text-sm font-medium text-muted hover:text-fg"
+        >
+          <ChevronLeft className="size-4" />
+          {t.common.back}
+        </button>
       )}
 
       {mode === 'pick' && (
@@ -111,6 +146,44 @@ export function AddSheet({
               </button>
             </li>
           ))}
+        </ul>
+      )}
+
+      {mode === 'library' && (
+        <ul className="space-y-2 pt-1">
+          {ROUTINE_LIBRARY.map((r) => {
+            const added = templates?.some((tpl) => tpl.name === r.name)
+            return (
+              <li key={r.id}>
+                <button
+                  type="button"
+                  disabled={added}
+                  onClick={async () => {
+                    const id = await templatesService.addFromLibrary(r)
+                    toast.success(w.libraryAdded)
+                    onOpenChange(false)
+                    navigate(`/workouts/${id}`)
+                  }}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5 text-left transition-transform active:scale-[0.99] disabled:opacity-50"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold">{routineText(r.name)}</span>
+                    <span className="block truncate text-sm text-muted">
+                      {routineText(r.description)}
+                    </span>
+                    <span className="block num text-xs text-subtle">
+                      {t.home.exercises(r.exercises.length)} · {t.home.approxMinutes(r.minutes)}
+                    </span>
+                  </span>
+                  {added ? (
+                    <Check className="size-5 shrink-0 text-success" />
+                  ) : (
+                    <Plus className="size-5 shrink-0 text-accent-2" />
+                  )}
+                </button>
+              </li>
+            )
+          })}
         </ul>
       )}
 

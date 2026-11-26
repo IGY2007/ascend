@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { NumberInput } from '@/components/ui/number-input'
 import { ExerciseThumbnail } from '@/features/exercises/ExerciseThumbnail'
 import { ExercisePicker } from '@/features/exercises/ExercisePicker'
+import { TechniqueSheet } from '@/features/exercises/TechniqueSheet'
 import { exercisesService, templatesService, type TemplateItem } from '@/services/local-data'
 import { formatDecimal } from '@/domain/numbers'
 import { t } from '@/i18n'
@@ -32,6 +33,7 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
   const [notes, setNotes] = useState('')
   const [renaming, setRenaming] = useState<string | null>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [techniqueOpen, setTechniqueOpen] = useState(false)
   const [loadedId, setLoadedId] = useState<string | null>(null)
 
   if (item && item.id !== loadedId) {
@@ -110,7 +112,16 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
         {item && (
           <div className="space-y-5 pt-1">
             <div className="flex items-center gap-3">
-              {item.exercise && <ExerciseThumbnail exercise={item.exercise} />}
+              {item.exercise && (
+                <button
+                  type="button"
+                  onClick={() => setTechniqueOpen(true)}
+                  aria-label={t.technique.open}
+                  className="shrink-0 rounded-xl"
+                >
+                  <ExerciseThumbnail exercise={item.exercise} className="size-14" />
+                </button>
+              )}
               {renaming === null ? (
                 <p className="min-w-0 flex-1 text-lg leading-snug font-semibold">
                   {exerciseName(item.exercise)}
@@ -254,6 +265,10 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
           </div>
         )}
       </Sheet>
+      <TechniqueSheet
+        exercise={techniqueOpen ? (item?.exercise ?? null) : null}
+        onClose={() => setTechniqueOpen(false)}
+      />
       <ExercisePicker
         open={pickerOpen}
         onOpenChange={setPickerOpen}

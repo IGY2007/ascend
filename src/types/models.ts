@@ -60,6 +60,9 @@ export type SplitStyle = 'full_body' | 'upper_lower' | 'ppl' | 'classic'
 /** 0 = domingo … 6 = sábado (igual que Date.getDay()) */
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
+export type Injury = 'shoulder' | 'knee' | 'lower_back' | 'wrist_elbow'
+export type EquipmentPref = 'free' | 'machines' | 'mixed'
+
 export interface OnboardingAnswers {
   name: string
   sex: Sex
@@ -77,6 +80,10 @@ export interface OnboardingAnswers {
   easeLegs: boolean
   sessionMinutes: number
   place: TrainingPlace
+  /** Lesiones o molestias: el generador evita los ejercicios de riesgo (opcional). */
+  injuries?: Injury[]
+  /** Preferencia de equipamiento (opcional). */
+  equipmentPref?: EquipmentPref
   /** El personaje (opcional: los perfiles viejos no lo tienen y usan uno por defecto). */
   avatar?: AvatarConfig
 }
@@ -134,6 +141,8 @@ export interface WorkoutTemplate {
   source: 'generated' | 'manual'
   createdAt: string
   updatedAt: string
+  /** false = rutina extra (biblioteca): no entra en la rotación. */
+  inRotation?: boolean
 }
 
 export interface TemplateExercise {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
-import { ChevronLeft, Clock, Copy, Pencil, Play, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, Clock, Copy, Pencil, Play, Plus, Trash2, Repeat2 } from 'lucide-react'
 import { formatDecimal } from '@/domain/numbers'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -179,7 +179,17 @@ export function WorkoutDetailPage() {
             {w.addExercise}
           </Button>
 
-          <div className="mt-8 flex gap-2">
+          <Button
+            variant="ghost"
+            block
+            size="sm"
+            className="mt-6"
+            onClick={() => void templatesService.setInRotation(tpl.id, tpl.inRotation === false)}
+          >
+            <Repeat2 />
+            {tpl.inRotation === false ? w.addToRotation : w.removeFromRotation}
+          </Button>
+          <div className="mt-2 flex gap-2">
             <Button
               variant="ghost"
               size="sm"

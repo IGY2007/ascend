@@ -6,7 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tip } from '@/components/ui/tip'
-import { useAvatar, useAvatarProgress, useGameState } from '@/features/profile/hooks'
+import {
+  useAvatar,
+  useAvatarProgress,
+  useGameState,
+  useLocalProfile,
+} from '@/features/profile/hooks'
 import { profileService } from '@/services/local-data'
 import { FULL_BODY, type AvatarConfig } from '@/domain/avatar'
 import { cn } from '@/lib/utils'
@@ -20,6 +25,7 @@ const av = t.avatar
 export function AvatarEditorPage() {
   const navigate = useNavigate()
   const saved = useAvatar()
+  const heightCm = useLocalProfile()?.heightCm
   const game = useGameState()
   const progress = useAvatarProgress()
   const [draft, setDraft] = useState<AvatarConfig | null>(null)
@@ -67,6 +73,7 @@ export function AvatarEditorPage() {
           ))}
         </div>
         <AvatarFigure
+          heightCm={heightCm}
           avatar={value}
           body={preview === 'max' ? FULL_BODY : game?.monthBody}
           jerseyNumber={progress.level}

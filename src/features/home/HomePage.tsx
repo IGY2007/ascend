@@ -14,8 +14,7 @@ import {
 } from 'lucide-react'
 import { ProgressRing } from '@/components/ui/progress-ring'
 import { WeeklyChallenges } from '@/features/game/WeeklyChallenges'
-import { LevelChip } from '@/features/game/LevelCard'
-import { Mascot } from '@/features/avatar/Mascot'
+import { HeroCard } from './HeroCard'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -66,7 +65,6 @@ export function HomePage() {
 
   const now = new Date()
   const todayKey = toDateKey(now)
-  const dayIndex = Math.floor(now.getTime() / 86_400_000)
   const weekStart = startOfWeek(now)
   const weekStartKey = toDateKey(weekStart)
 
@@ -93,16 +91,19 @@ export function HomePage() {
             {h.greeting(name)}
           </h1>
         </div>
-        <LevelChip />
       </header>
 
-      <ActiveWorkoutBanner />
+      <HeroCard trainedToday={trainedToday} />
+
+      <div className="mt-4">
+        <ActiveWorkoutBanner />
+      </div>
 
       {/* Lo que toca en la rotación */}
       {templates === undefined ? (
-        <Skeleton className="h-36 rounded-[var(--radius-card)]" />
+        <Skeleton className="mt-4 h-36 rounded-[var(--radius-card)]" />
       ) : next && !active ? (
-        <Card highlight>
+        <Card className="mt-4">
           <Link to={`/workouts/${next.id}`} className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-accent-2">
@@ -118,14 +119,6 @@ export function HomePage() {
             </div>
             <ChevronRight className="size-6 shrink-0 text-muted" />
           </Link>
-          {!trainedToday && (
-            <div className="mt-3 flex items-center gap-2.5">
-              <Mascot size={34} mood="wink" />
-              <p className="min-w-0 flex-1 rounded-2xl rounded-bl-md bg-bg-2/70 px-3 py-2 text-sm leading-snug text-muted">
-                {h.coachTips[dayIndex % h.coachTips.length]}
-              </p>
-            </div>
-          )}
           <Button size="lg" block className="mt-4" onClick={() => void start(next.id)}>
             <Play />
             {h.startWorkout}

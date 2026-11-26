@@ -1,4 +1,6 @@
 import type {
+  EquipmentPref,
+  Injury,
   Equipment,
   Exercise,
   Experience,
@@ -381,6 +383,8 @@ export interface GeneratorInput {
   place: TrainingPlace
   goal: Goal
   experience: Experience
+  injuries?: readonly Injury[]
+  equipmentPref?: EquipmentPref
 }
 
 export interface GeneratedExercise extends Prescription {
@@ -395,6 +399,89 @@ export interface GeneratedTemplate {
   exercises: GeneratedExercise[]
 }
 
+/** Ejercicios a evitar con cada lesión o molestia. */
+export const AVOID_BY_INJURY: Record<Injury, readonly string[]> = {
+  knee: [
+    'Barbell Back Squat',
+    'Front Squat',
+    'Hack Squat',
+    'Goblet Squat',
+    'Bulgarian Split Squat',
+    'Dumbbell Lunge',
+    'Box Step-Up',
+    'Leg Extension',
+  ],
+  lower_back: [
+    'Barbell Back Squat',
+    'Front Squat',
+    'Conventional Deadlift',
+    'Romanian Deadlift',
+    'Dumbbell Romanian Deadlift',
+    'Good Morning',
+    'Barbell Row',
+    'T-Bar Row',
+    'Barbell Overhead Press',
+    'Back Extension',
+  ],
+  shoulder: [
+    'Barbell Overhead Press',
+    'Dumbbell Shoulder Press',
+    'Arnold Press',
+    'Machine Shoulder Press',
+    'Chest Dips',
+    'Triceps Dips',
+    'Barbell Bench Press',
+    'Incline Barbell Bench Press',
+    'Decline Barbell Bench Press',
+    'Front Raise',
+  ],
+  wrist_elbow: [
+    'Barbell Curl',
+    'Skull Crusher',
+    'Close-Grip Bench Press',
+    'Push-Up',
+    'Triceps Dips',
+    'Preacher Curl',
+  ],
+}
+
+/** Reemplazos seguros cuando un ejercicio queda descartado. */
+const SUBSTITUTES: Record<string, readonly string[]> = {
+  'Barbell Back Squat': ['Leg Press', 'Machine Hip Thrust', 'Glute Bridge'],
+  'Front Squat': ['Leg Press', 'Glute Bridge'],
+  'Hack Squat': ['Leg Press', 'Glute Bridge'],
+  'Goblet Squat': ['Leg Press', 'Glute Bridge'],
+  'Bulgarian Split Squat': ['Leg Press', 'Hip Abduction Machine', 'Glute Bridge'],
+  'Dumbbell Lunge': ['Glute Bridge', 'Leg Press'],
+  'Box Step-Up': ['Glute Bridge'],
+  'Leg Extension': ['Seated Leg Curl', 'Lying Leg Curl'],
+  'Romanian Deadlift': ['Lying Leg Curl', 'Seated Leg Curl', 'Glute Bridge'],
+  'Dumbbell Romanian Deadlift': ['Lying Leg Curl', 'Glute Bridge'],
+  'Conventional Deadlift': ['Leg Press', 'Glute Bridge'],
+  'Good Morning': ['Seated Leg Curl', 'Glute Bridge'],
+  'Barbell Row': ['Seated Cable Row', 'Machine Row', 'One-Arm Dumbbell Row'],
+  'T-Bar Row': ['Seated Cable Row', 'Machine Row'],
+  'Back Extension': ['Glute Bridge'],
+  'Barbell Overhead Press': ['Dumbbell Lateral Raise', 'Cable Lateral Raise'],
+  'Dumbbell Shoulder Press': ['Dumbbell Lateral Raise', 'Cable Lateral Raise'],
+  'Arnold Press': ['Cable Lateral Raise', 'Dumbbell Lateral Raise'],
+  'Machine Shoulder Press': ['Cable Lateral Raise', 'Dumbbell Lateral Raise'],
+  'Chest Dips': ['Machine Chest Press', 'Pec Deck Fly', 'Dumbbell Fly'],
+  'Triceps Dips': ['Rope Triceps Pushdown', 'Triceps Kickback'],
+  'Barbell Bench Press': ['Dumbbell Bench Press', 'Machine Chest Press'],
+  'Incline Barbell Bench Press': ['Incline Dumbbell Press', 'Machine Chest Press'],
+  'Decline Barbell Bench Press': ['Dumbbell Bench Press', 'Machine Chest Press'],
+  'Front Raise': ['Cable Lateral Raise', 'Dumbbell Lateral Raise'],
+  'Barbell Curl': ['Hammer Curl', 'Cable Curl', 'Alternating Dumbbell Curl'],
+  'Skull Crusher': ['Rope Triceps Pushdown', 'Triceps Kickback'],
+  'Close-Grip Bench Press': ['Rope Triceps Pushdown', 'Triceps Kickback'],
+  'Push-Up': ['Machine Chest Press', 'Dumbbell Bench Press', 'Dumbbell Fly'],
+  'Preacher Curl': ['Hammer Curl', 'Cable Curl'],
+}
+
+const MACHINE_LIKE = new Set(['machine', 'cable', 'smith'])
+const FREE_LIKE = new Set(['barbell', 'dumbbell', 'bodyweight', 'kettlebell'])
+
 export const EASE_LEGS_NOTE =
   'Legs: start light and leave reps in reserve. Once every set feels easy, add weight gradually.'
 
@@ -406,10 +493,28 @@ export function generateRoutines(
   const byName = new Map(library.map((e) => [e.name.toLowerCase(), e]))
   const max = exercisesPerSession(input.sessionMinutes)
 
-  const pick = (slot: Slot, used: Set<string>) =>
-    slot.candidates
+  const avoid = new Set((input.injuries ?? []).flatMap((i) => AVOID_BY_INJURY[i]))
+  const rank = (e: Exercise) => {
+    if (!input.equipmentPref || input.equipmentPref === 'mixed' || !e.equipment) return 0
+    const set = input.equipmentPref === 'machines' ? MACHINE_LIKE : FREE_LIKE
+    return set.has(e.equipment) ? 0 : 1
+  }
+
+  const pick = (slot: Slot, used: Set<string>) => {
+    // Candidatos + reemplazos seguros, sin los que la lesión desaconseja
+    const names = [
+      ...new Set([...slot.candidates, ...slot.candidates.flatMap((n) => SUBSTITUTES[n] ?? [])]),
+    ]
+    const options = names
+      .filter((n) => !avoid.has(n))
       .map((name) => byName.get(name.toLowerCase()))
-      .find((e) => e && !used.has(e.id) && (!e.equipment || allowed.has(e.equipment)))
+      .filter(
+        (e): e is Exercise => !!e && !used.has(e.id) && (!e.equipment || allowed.has(e.equipment)),
+      )
+    // Orden estable: preferencia de equipamiento, después el orden original del slot
+    return options.map((e, i) => ({ e, i })).sort((a, b) => rank(a.e) - rank(b.e) || a.i - b.i)[0]
+      ?.e
+  }
 
   return splitCycle(input.split, input.daysPerWeek).map((day) => {
     const used = new Set<string>()

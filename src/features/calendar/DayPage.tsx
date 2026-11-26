@@ -91,7 +91,7 @@ function DayReport({
   const logWorkout = async (templateId: string | null) => {
     const id = await workoutService.logPast(date, templateId)
     setLogOpen(false)
-    navigate(`/workout/${id}/edit`)
+    navigate(`/workout/${id}/edit`, { state: { fresh: true } })
   }
 
   return (

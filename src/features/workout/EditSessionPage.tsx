@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router'
-import { Check, ChevronLeft, Plus, Trash2 } from 'lucide-react'
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router'
+import { Check, CheckCheck, ChevronLeft, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -26,6 +26,8 @@ export function EditSessionPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const view = useSessionView(id)
+  // Recién cargado desde el día: si se va sin marcar nada, no se guarda.
+  const fresh = (useLocation().state as { fresh?: boolean } | null)?.fresh === true
   const [date, setDate] = useState<string | null>(null)
   const [minutes, setMinutes] = useState<number | null | undefined>(undefined)
   const [picker, setPicker] = useState<{ mode: 'add' } | { mode: 'replace'; seId: string } | null>(
@@ -49,12 +51,17 @@ export function EditSessionPage() {
   const currentMinutes =
     minutes === undefined ? Math.round((view.durationSeconds ?? 0) / 60) || null : minutes
 
-  const save = async () => {
-    const alive = await workoutService.saveEdits(view.id, {
-      date: currentDate,
-      durationMinutes: currentMinutes,
-    })
-    toast.success(alive ? es.saved : es.deleted)
+  const save = async (leaving = false) => {
+    const result = await workoutService.saveEdits(
+      view.id,
+      { date: currentDate, durationMinutes: currentMinutes },
+      { discardIfEmpty: fresh && leaving },
+    )
+    if (result === 'empty') {
+      toast(es.needOne)
+      return
+    }
+    toast.success(result === 'saved' ? es.saved : es.discarded)
     navigate(`/day/${currentDate}`, { replace: true })
   }
 
@@ -64,7 +71,7 @@ export function EditSessionPage() {
         <div className="mx-auto flex max-w-lg items-center gap-2 px-3 py-2">
           <button
             type="button"
-            onClick={() => void save()}
+            onClick={() => void save(true)}
             aria-label={t.common.back}
             className="grid size-11 shrink-0 place-items-center rounded-xl text-muted hover:text-fg"
           >
@@ -104,6 +111,17 @@ export function EditSessionPage() {
           </label>
         </div>
         <p className="mt-3 text-xs leading-relaxed text-subtle">{es.hint}</p>
+        {view.exercises.some((e) => e.sets.some((x) => !x.isCompleted)) && (
+          <Button
+            variant="secondary"
+            block
+            className="mt-4"
+            onClick={() => void workoutService.completeAll(view.id)}
+          >
+            <CheckCheck />
+            {es.completeAll}
+          </Button>
+        )}
 
         {view.exercises.length === 0 ? (
           <p className="py-12 text-center text-muted">{es.empty}</p>

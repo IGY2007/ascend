@@ -6,23 +6,22 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tip } from '@/components/ui/tip'
-import { useAvatar, useGameState } from '@/features/profile/hooks'
+import { useAvatar, useAvatarProgress, useGameState } from '@/features/profile/hooks'
 import { profileService } from '@/services/local-data'
-import { STATS } from '@/domain/gamification'
-import type { AvatarConfig, Body } from '@/domain/avatar'
+import { FULL_BODY, type AvatarConfig } from '@/domain/avatar'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
 import { AvatarFigure } from './AvatarFigure'
 import { AvatarEditor } from './AvatarEditor'
 
 const av = t.avatar
-const FULL: Body = Object.fromEntries(STATS.map((s) => [s, 1])) as Body
 
 /** Crear o cambiar el personaje, viéndolo como está este mes o "a tope". */
 export function AvatarEditorPage() {
   const navigate = useNavigate()
   const saved = useAvatar()
   const game = useGameState()
+  const progress = useAvatarProgress()
   const [draft, setDraft] = useState<AvatarConfig | null>(null)
   const [preview, setPreview] = useState<'month' | 'max'>('month')
 
@@ -69,7 +68,8 @@ export function AvatarEditorPage() {
         </div>
         <AvatarFigure
           avatar={value}
-          body={preview === 'max' ? FULL : game?.monthBody}
+          body={preview === 'max' ? FULL_BODY : game?.monthBody}
+          jerseyNumber={progress.level}
           className="mx-auto mt-2 h-72 w-auto"
         />
       </Card>
@@ -77,7 +77,7 @@ export function AvatarEditorPage() {
       <Tip className="mt-4">{t.mascot.avatarIntro}</Tip>
 
       <div className="mt-6">
-        <AvatarEditor value={value} onChange={setDraft} />
+        <AvatarEditor value={value} onChange={setDraft} progress={progress} />
       </div>
 
       <Button size="lg" block className="mt-8" onClick={() => void save()}>

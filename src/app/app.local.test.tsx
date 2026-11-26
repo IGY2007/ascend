@@ -96,8 +96,8 @@ describe('app en modo local', () => {
     await radio(t.labels.place.gym)
 
     await heading(o.summaryTitle)
-    expect(screen.getByText('Upper A')).toBeInTheDocument()
-    expect(screen.getByText('Lower B')).toBeInTheDocument()
+    expect(screen.getByText('Tren superior A')).toBeInTheDocument()
+    expect(screen.getByText('Tren inferior B')).toBeInTheDocument()
     click(o.createPlan)
 
     expect(
@@ -119,8 +119,8 @@ describe('app en modo local', () => {
       place: 'home',
     })
     await renderApp('#/workouts')
-    fireEvent.click(await screen.findByText('Full Body A'))
-    const first = await screen.findByText('Goblet Squat')
+    fireEvent.click((await screen.findAllByText('Cuerpo completo A')).at(-1)!)
+    const first = await screen.findByText('Sentadilla goblet')
     const list = first.closest('ol')!
     expect(within(list).getAllByRole('listitem')).toHaveLength(5) // 45 min → 4 ejercicios + plancha
   })

@@ -11,10 +11,13 @@ export function Tip({
   children,
   className,
   mood = 'happy',
+  bare = false,
 }: {
   children: ReactNode
   className?: string
   mood?: MascotMood
+  /** Sin la carita de Volt (cuando Volt ya está en pantalla). */
+  bare?: boolean
 }) {
   return (
     <motion.div
@@ -23,7 +26,7 @@ export function Tip({
       transition={{ duration: 0.3, delay: 0.1 }}
       className={cn('flex items-end gap-2.5', className)}
     >
-      <Mascot size={40} mood={mood} className="mb-0.5" />
+      {!bare && <Mascot size={40} mood={mood} className="mb-0.5" />}
       <div className="relative min-w-0 flex-1 rounded-2xl rounded-bl-md border border-accent/25 bg-accent/8 px-4 py-3">
         <p className="text-xs font-semibold text-accent-2">{t.mascot.name}</p>
         <div className="mt-0.5 text-sm leading-relaxed text-muted">{children}</div>

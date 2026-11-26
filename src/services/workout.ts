@@ -14,6 +14,7 @@ import {
 import type { Exercise, ExerciseSet, SessionExercise, WorkoutSession } from '@/types/models'
 import { exercisesService } from './local-data'
 import { fromDateKey, toDateKey } from '@/domain/dates'
+import { exerciseName } from '@/i18n/names'
 
 /**
  * Entrenamiento activo y su historial. Todo se escribe primero en el dispositivo (Dexie): registrar
@@ -552,7 +553,7 @@ export const historyService = {
     }
     const records = detectRecords(current, history).map((r) => ({
       ...r,
-      exerciseName: st.exercises.get(r.exerciseId)?.name ?? '',
+      exerciseName: exerciseName(st.exercises.get(r.exerciseId)),
     }))
 
     // Comparación con la sesión anterior de la misma rutina

@@ -18,6 +18,7 @@ import { Confetti } from '@/components/ui/confetti'
 import { formatDecimal } from '@/domain/numbers'
 import { ExerciseBlock } from './ExerciseBlock'
 import { useWakeLock } from './use-wake-lock'
+import { exerciseName, routineText } from '@/i18n/names'
 
 const wk = t.workout
 /** Descanso recomendado entre series: 2 a 2:30 min. El temporizador cuenta 2:30 (ajustable con ±15). */
@@ -116,7 +117,7 @@ export function ActiveWorkoutPage() {
             <ChevronLeft className="size-6" />
           </button>
           <div className="min-w-0 flex-1 text-center">
-            <p className="truncate text-xs font-medium text-muted">{view.name}</p>
+            <p className="truncate text-xs font-medium text-muted">{routineText(view.name)}</p>
             <p className="num text-xl leading-tight font-bold" aria-label={wk.elapsed}>
               {formatDuration(elapsed)}
             </p>
@@ -258,7 +259,7 @@ export function ActiveWorkoutPage() {
                 >
                   {e.exercise && <ExerciseThumbnail exercise={e.exercise} className="size-10" />}
                   <span className="min-w-0 flex-1 truncate font-medium">
-                    {e.exerciseNameSnapshot}
+                    {exerciseName(e.exercise, e.exerciseNameSnapshot)}
                   </span>
                   <span
                     className={cn(

@@ -22,6 +22,7 @@ import type { MuscleGroup } from '@/types/models'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
 import { AddSheet } from './AddSheet'
+import { routineText } from '@/i18n/names'
 
 const w = t.workouts
 
@@ -103,7 +104,7 @@ export function WorkoutsPage() {
                   </p>
                   <ChevronRight className="size-5 text-muted" />
                 </div>
-                <p className="mt-1 text-2xl font-bold tracking-tight">{next.name}</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight">{routineText(next.name)}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {musclesOf(next, 4).map((m) => (
                     <span
@@ -155,7 +156,7 @@ export function WorkoutsPage() {
                       {i + 1}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold">{tpl.name}</p>
+                      <p className="truncate font-semibold">{routineText(tpl.name)}</p>
                       <p className="truncate text-sm text-muted">
                         {musclesOf(tpl)
                           .map((m) => t.labels.muscle[m])

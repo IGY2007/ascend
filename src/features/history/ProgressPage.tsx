@@ -37,6 +37,7 @@ import { locale, t } from '@/i18n'
 import { CalendarView } from '@/features/calendar/CalendarView'
 import { PhysiqueTab } from '@/features/game/PhysiqueTab'
 import type { BodyWeight, CardioLog } from '@/types/models'
+import { exerciseName, routineText } from '@/i18n/names'
 
 const p = t.progress
 const ch = t.charts
@@ -172,7 +173,7 @@ function SummaryTab() {
                   className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 transition-transform active:scale-[0.99]"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold">{s.name}</span>
+                    <span className="block truncate font-semibold">{routineText(s.name)}</span>
                     <span className="block text-sm text-muted first-letter:uppercase">
                       {entryDate.format(new Date(s.startedAt))} ·{' '}
                       {p.sessionMeta(formatDuration(s.durationSeconds ?? 0), s.sets)}
@@ -232,14 +233,14 @@ function StrengthTab() {
             )}
           >
             <ExerciseThumbnail exercise={d.exercise} className="size-8 rounded-full" />
-            <span className="max-w-44 truncate">{d.exercise.name}</span>
+            <span className="max-w-44 truncate">{exerciseName(d.exercise)}</span>
           </button>
         ))}
       </div>
 
       {summary && (
         <Card className="mt-4 px-4">
-          <p className="truncate px-1 font-semibold">{summary.exercise.name}</p>
+          <p className="truncate px-1 font-semibold">{exerciseName(summary.exercise)}</p>
           <div className="mt-3 grid grid-cols-3 gap-2 px-1">
             <Stat label={ch.bestE1rm} value={formatDecimal(summary.best, 1)} unit={t.units.kg} />
             <Stat

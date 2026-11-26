@@ -11,7 +11,7 @@ import { cardioService, todayEnergy, waterService } from '@/services/activity'
 import { statsService } from '@/services/stats'
 import { calendarService } from '@/services/calendar'
 import { gameState } from '@/services/gamification'
-import { sanitizeAvatar } from '@/domain/avatar'
+import { sanitizeAvatar, type Progress } from '@/domain/avatar'
 import { db } from '@/lib/db'
 
 /** undefined = cargando · null = todavía no hizo el cuestionario */
@@ -133,4 +133,14 @@ export function useAvatar() {
     const p = await profileService.get()
     return sanitizeAvatar(p?.avatar, p?.sex)
   })
+}
+
+/** Lo que el usuario tiene desbloqueado para el personaje (nivel y logros). Pro: todavía no existe. */
+export function useAvatarProgress(): Progress {
+  const game = useGameState()
+  return {
+    level: game?.level.level ?? 1,
+    achievements: new Set(game?.achievements.filter((a) => a.unlocked).map((a) => a.def.id) ?? []),
+    pro: false,
+  }
 }

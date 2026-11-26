@@ -56,7 +56,10 @@ describe('cardio, agua y estadísticas', () => {
     const points = await statsService.exerciseHistory(done[0]!.exercise.id)
     expect(points.map((p) => p.maxWeight)).toEqual([60, 70])
     const insights = await statsService.insights(today)
-    expect(insights.strength).toMatchObject({ exerciseName: 'Barbell Bench Press', pct: 16.7 })
+    expect(insights.strength).toMatchObject({
+      exerciseName: 'Press banca plano con barra',
+      pct: 16.7,
+    })
     expect(insights.recordsThisWeek).toBe(1)
     expect(insights.weekGoal).toEqual({ done: 2, goal: 4 })
   })

@@ -4,6 +4,7 @@ import { ChevronRight, Timer } from 'lucide-react'
 import { useActiveSession } from '@/features/profile/hooks'
 import { formatDuration } from '@/domain/workout'
 import { t } from '@/i18n'
+import { routineText } from '@/i18n/names'
 
 /** Aviso de entrenamiento en curso, con el tiempo corriendo. Toca para retomarlo. */
 export function ActiveWorkoutBanner() {
@@ -26,7 +27,7 @@ export function ActiveWorkoutBanner() {
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-xs font-medium text-accent-2">{t.workouts.activeBanner}</span>
-        <span className="block truncate font-semibold">{active.name}</span>
+        <span className="block truncate font-semibold">{routineText(active.name)}</span>
       </span>
       <span className="num text-lg font-semibold">{formatDuration(elapsed)}</span>
       <ChevronRight className="size-5 text-muted" />

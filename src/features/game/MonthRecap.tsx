@@ -4,6 +4,7 @@ import { useExerciseLibrary, useGameState } from '@/features/profile/hooks'
 import { monthRecap, volumeEquivalent } from '@/domain/gamification'
 import { formatDecimal } from '@/domain/numbers'
 import { formatMonthYear, t } from '@/i18n'
+import { exerciseName } from '@/i18n/names'
 
 const r = t.game.recap
 
@@ -13,7 +14,8 @@ export function MonthRecap({ year, month }: { year: number; month: number }) {
   const library = useExerciseLibrary()
   if (!game) return null
   const rc = monthRecap(game.facts, year, month)
-  const name = (id: string | null) => (id ? library?.find((e) => e.id === id)?.name : undefined)
+  const name = (id: string | null) =>
+    id ? exerciseName(library?.find((e) => e.id === id)) || undefined : undefined
   const eq = volumeEquivalent(rc.volume)
   const monthName = formatMonthYear(new Date(year, month, 1))
 

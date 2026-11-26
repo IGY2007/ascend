@@ -16,6 +16,7 @@ import { useStartWorkout } from '@/features/workout/use-start-workout'
 import { templatesService } from '@/services/local-data'
 import { t } from '@/i18n'
 import { EditItemSheet } from './EditItemSheet'
+import { exerciseName, routineText } from '@/i18n/names'
 
 const w = t.workouts
 
@@ -68,12 +69,12 @@ export function WorkoutDetailPage() {
             {name === null ? (
               <button
                 type="button"
-                onClick={() => setName(tpl.name)}
+                onClick={() => setName(routineText(tpl.name))}
                 className="group mt-3 flex items-center gap-2 text-left"
                 aria-label={w.rename}
               >
                 <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">
-                  {tpl.name}
+                  {routineText(tpl.name)}
                 </h1>
                 <Pencil className="size-4 shrink-0 text-subtle group-hover:text-fg" />
               </button>
@@ -98,7 +99,7 @@ export function WorkoutDetailPage() {
                 </Button>
               </form>
             )}
-            {tpl.description && <p className="mt-1 text-muted">{tpl.description}</p>}
+            {tpl.description && <p className="mt-1 text-muted">{routineText(tpl.description)}</p>}
           </header>
 
           <Button
@@ -112,7 +113,7 @@ export function WorkoutDetailPage() {
             {w.startThis}
           </Button>
 
-          {tpl.notes && <Tip className="mb-4">{tpl.notes}</Tip>}
+          {tpl.notes && <Tip className="mb-4">{routineText(tpl.notes)}</Tip>}
 
           <p className="mb-3 flex items-center gap-2 px-1 text-sm text-muted">
             <Clock className="size-4 shrink-0" />
@@ -140,7 +141,7 @@ export function WorkoutDetailPage() {
                         <div className="min-w-0 flex-1">
                           <p className="leading-snug font-semibold">
                             <span className="mr-1.5 num text-subtle">{i + 1}.</span>
-                            {ex?.name ?? '—'}
+                            {exerciseName(ex, '—')}
                           </p>
                           <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 num text-sm">
                             <span className="font-semibold text-fg">

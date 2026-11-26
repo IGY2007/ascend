@@ -13,6 +13,7 @@ import { workoutService } from '@/services/workout'
 import { toDateKey } from '@/domain/dates'
 import { t } from '@/i18n'
 import { ExerciseBlock } from './ExerciseBlock'
+import { routineText } from '@/i18n/names'
 
 const es = t.editSession
 
@@ -71,7 +72,7 @@ export function EditSessionPage() {
           </button>
           <div className="min-w-0 flex-1 text-center">
             <p className="text-xs font-medium text-muted">{es.title}</p>
-            <p className="truncate font-semibold">{view.name}</p>
+            <p className="truncate font-semibold">{routineText(view.name)}</p>
           </div>
           <Button size="sm" onClick={() => void save()}>
             <Check />

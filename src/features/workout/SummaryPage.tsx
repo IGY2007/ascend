@@ -14,6 +14,7 @@ import { workoutService } from '@/services/workout'
 import { formatDuration } from '@/domain/workout'
 import { formatDecimal, formatSigned } from '@/domain/numbers'
 import { locale, t } from '@/i18n'
+import { exerciseName, routineText } from '@/i18n/names'
 
 const wk = t.workout
 const dateFmt = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' })
@@ -78,9 +79,9 @@ export function SummaryPage() {
           {dateFmt.format(new Date(session.startedAt))}
         </p>
         <h1 className="mt-1 text-[1.75rem] leading-tight font-bold tracking-tight">
-          {fresh ? wk.summaryTitle : session.name}
+          {fresh ? wk.summaryTitle : routineText(session.name)}
         </h1>
-        {fresh && <p className="mt-1 text-muted">{session.name}</p>}
+        {fresh && <p className="mt-1 text-muted">{routineText(session.name)}</p>}
       </header>
 
       {fresh && summary.records.length > 0 && <Confetti burstKey={session.id} />}
@@ -196,7 +197,7 @@ export function SummaryPage() {
         <section className="mt-6 space-y-2.5">
           {view.exercises.map((e) => (
             <Card key={e.id} className="p-4">
-              <p className="font-semibold">{e.exerciseNameSnapshot}</p>
+              <p className="font-semibold">{exerciseName(e.exercise, e.exerciseNameSnapshot)}</p>
               <p className="mt-1 num text-sm text-muted">
                 {e.sets
                   .map((s) =>

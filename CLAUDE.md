@@ -72,7 +72,7 @@ supabase/
 Reglas:
 - Los componentes no llaman a Supabase directamente: usan hooks → services.
 - La lógica de cálculo vive en `src/domain/` como funciones puras con tests.
-- Textos visibles en `src/i18n/es.ts` (por defecto) y `src/i18n/en.ts` (misma forma, `Messages`), no hardcodeados en componentes. El idioma se cambia en Perfil. Los nombres de ejercicios y rutinas quedan en inglés en ambos idiomas (decisión de Julian).
+- Textos visibles en `src/i18n/es.ts` (por defecto) y `src/i18n/en.ts` (misma forma, `Messages`), no hardcodeados en componentes. El idioma se cambia en Perfil. Los nombres de ejercicios y rutinas se traducen al mostrar con `src/i18n/names.ts` (en la base quedan en inglés).
 - Tipos de DB generados con `supabase gen types typescript`.
 
 ## Offline y sincronización (crítico)

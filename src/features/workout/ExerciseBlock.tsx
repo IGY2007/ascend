@@ -10,6 +10,7 @@ import { formatDecimal } from '@/domain/numbers'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
 import type { ExerciseSet } from '@/types/models'
+import { exerciseName } from '@/i18n/names'
 
 const wk = t.workout
 
@@ -70,7 +71,7 @@ export function ExerciseBlock({
       se.best.e1rm,
       ...others.filter((s) => s.repetitions).map((s) => e1rm(s.weightKg!, s.repetitions!)),
     )
-    const name = se.exerciseNameSnapshot
+    const name = exerciseName(se.exercise, se.exerciseNameSnapshot)
     if (weight > bestW) onRecord({ kind: 'weight', value: weight, exercise: name })
     else if (e1rm(weight, reps) > bestE + 0.05)
       onRecord({ kind: 'e1rm', value: e1rm(weight, reps), exercise: name })
@@ -110,7 +111,7 @@ export function ExerciseBlock({
         {se.exercise && <ExerciseThumbnail exercise={se.exercise} className="size-14" />}
         <div className="min-w-0 flex-1">
           <h1 className="text-[1.45rem] leading-tight font-bold tracking-tight">
-            {se.exerciseNameSnapshot}
+            {exerciseName(se.exercise, se.exerciseNameSnapshot)}
           </h1>
           <p className="mt-1 num text-sm text-muted">
             {[

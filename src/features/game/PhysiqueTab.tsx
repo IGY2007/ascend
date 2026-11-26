@@ -58,6 +58,7 @@ export function PhysiqueTab() {
         <AvatarFigure
           avatar={avatar}
           body={game.monthBody}
+          jerseyNumber={game.level.level}
           className="mx-auto mt-2 h-80 w-auto"
           title={t.avatar.title}
         />

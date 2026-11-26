@@ -92,7 +92,7 @@ describe('entrenamiento', () => {
         kind: 'weight',
         value: 62.5,
         previous: 60,
-        exerciseName: 'Barbell Bench Press',
+        exerciseName: 'Press banca plano con barra',
       }),
     ])
     expect(summary.comparison).toMatchObject({ volumeDiff: 60, volumePct: 4.2 })

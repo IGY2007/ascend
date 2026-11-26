@@ -7,6 +7,8 @@ import {
   monthSets,
   randomAvatar,
   sanitizeAvatar,
+  isUnlocked,
+  unlockOf,
 } from './avatar'
 import type { Facts } from './gamification'
 
@@ -78,12 +80,30 @@ describe('personaje', () => {
     expect(gap).toBeGreaterThan(0.5)
   })
 
-  it('el personaje guardado se normaliza y el azar da opciones válidas', () => {
-    expect(defaultAvatar('female').hair).toBe('long')
+  it('el personaje guardado se normaliza y migra el formato viejo', () => {
+    expect(defaultAvatar('female')).toMatchObject({ body: 'female', hair: 'ponytail' })
     expect(sanitizeAvatar({ skin: 99, hair: 'nope' as never }, 'male')).toEqual(
       defaultAvatar('male'),
     )
-    const r = randomAvatar(() => 0.999)
-    expect(sanitizeAvatar(r)).toEqual(r)
+    const old = sanitizeAvatar({ accessory: 'cap', outfit: 'shirtless', body: 'female' } as never)
+    expect(old.headwear).toBe('cap')
+    expect(old.outfit).toBe('sportsbra') // en cuero no existe para el cuerpo femenino
+  })
+
+  it('las opciones se desbloquean por nivel, logros o Pro', () => {
+    const novato = { level: 1, achievements: new Set<string>(), pro: false }
+    const veterano = { level: 6, achievements: new Set(['club_100', 'full_week']), pro: false }
+    expect(isUnlocked(unlockOf('hair', 'short'), novato)).toBe(true)
+    expect(isUnlocked(unlockOf('hair', 'mohawk'), novato)).toBe(false)
+    expect(isUnlocked(unlockOf('hair', 'mohawk'), veterano)).toBe(true)
+    expect(isUnlocked(unlockOf('extra', 'chain'), veterano)).toBe(true)
+    expect(isUnlocked(unlockOf('headwear', 'crown'), veterano)).toBe(false) // solo Pro
+    // El azar nunca da algo bloqueado
+    for (let i = 0; i < 50; i++) {
+      const r = randomAvatar(novato)
+      for (const [k, v] of Object.entries(r)) {
+        expect(isUnlocked(unlockOf(k as never, v as never), novato)).toBe(true)
+      }
+    }
   })
 })

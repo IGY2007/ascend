@@ -11,6 +11,7 @@ import { normalize } from '@/lib/text'
 import { t } from '@/i18n'
 import type { Equipment, Exercise, MuscleGroup } from '@/types/models'
 import { ExerciseThumbnail } from './ExerciseThumbnail'
+import { exerciseName } from '@/i18n/names'
 
 const MUSCLES: MuscleGroup[] = [
   'chest',
@@ -130,7 +131,7 @@ export function ExercisePicker({ open, onOpenChange, onPick, title = t.picker.ti
                   >
                     <ExerciseThumbnail exercise={e} className="size-11" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium">{e.name}</span>
+                      <span className="block truncate font-medium">{exerciseName(e)}</span>
                       <span className="block truncate text-xs text-muted">
                         {[
                           e.primaryMuscle && t.labels.muscle[e.primaryMuscle],

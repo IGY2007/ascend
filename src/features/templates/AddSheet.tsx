@@ -10,6 +10,7 @@ import { useStartWorkout } from '@/features/workout/use-start-workout'
 import { templatesService } from '@/services/local-data'
 import { cn } from '@/lib/utils'
 import { t } from '@/i18n'
+import { routineText } from '@/i18n/names'
 
 const w = t.workouts
 
@@ -54,7 +55,7 @@ export function AddSheet({
             <Action
               icon={Play}
               highlight
-              title={w.startNext(next.name)}
+              title={w.startNext(routineText(next.name))}
               hint={w.startNextHint}
               onClick={() => void go(next.id)}
             />
@@ -101,7 +102,7 @@ export function AddSheet({
                 className="flex w-full items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3.5 text-left transition-transform active:scale-[0.99]"
               >
                 <span className="min-w-0">
-                  <span className="block truncate font-semibold">{tpl.name}</span>
+                  <span className="block truncate font-semibold">{routineText(tpl.name)}</span>
                   <span className="block num text-xs text-muted">
                     {t.home.exercises(tpl.items.length)}
                   </span>

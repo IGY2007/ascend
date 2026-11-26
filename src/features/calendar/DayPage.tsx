@@ -32,6 +32,7 @@ import { formatDuration } from '@/domain/workout'
 import { formatDecimal } from '@/domain/numbers'
 import { cn } from '@/lib/utils'
 import { formatLongDate, t } from '@/i18n'
+import { routineText } from '@/i18n/names'
 
 const d = t.day
 
@@ -177,7 +178,7 @@ function DayReport({
                         <Dumbbell className="size-5" />
                       </span>
                       <span className="min-w-0">
-                        <span className="block truncate font-semibold">{s.name}</span>
+                        <span className="block truncate font-semibold">{routineText(s.name)}</span>
                         <span className="block num text-sm text-muted">
                           {formatDuration(s.durationSeconds ?? 0)} · {d.sets(s.sets)} ·{' '}
                           {formatDecimal(s.volume, 0)} {t.units.kg}
@@ -291,7 +292,7 @@ function DayReport({
             >
               <Dumbbell className="size-5 shrink-0 text-accent-2" />
               <span className="min-w-0 flex-1">
-                <span className="block truncate font-medium">{tpl.name}</span>
+                <span className="block truncate font-medium">{routineText(tpl.name)}</span>
                 <span className="block num text-sm text-muted">
                   {t.home.exercises(tpl.items.length)}
                 </span>

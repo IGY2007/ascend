@@ -47,6 +47,7 @@ import { formatDecimal, formatSigned } from '@/domain/numbers'
 import { cn } from '@/lib/utils'
 import { formatLongDate, t } from '@/i18n'
 import type { Weekday } from '@/types/models'
+import { routineText } from '@/i18n/names'
 
 const h = t.home
 
@@ -107,7 +108,9 @@ export function HomePage() {
               <p className="text-sm font-medium text-accent-2">
                 {trainedToday ? h.trainedToday : h.upNext}
               </p>
-              <p className="mt-1 truncate text-2xl font-bold tracking-tight">{next.name}</p>
+              <p className="mt-1 truncate text-2xl font-bold tracking-tight">
+                {routineText(next.name)}
+              </p>
               <p className="mt-1 num text-sm text-muted">
                 {h.exercises(next.items.length)}
                 {profile && ` · ${h.approxMinutes(profile.sessionMinutes)}`}

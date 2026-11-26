@@ -36,11 +36,11 @@ import { recommendedSplit } from '@/domain/routine-generator'
 import { bmi } from '@/domain/body-metrics'
 import { formatDecimal } from '@/domain/numbers'
 import { Tip } from '@/components/ui/tip'
-import { Mascot } from '@/features/avatar/Mascot'
+import { Mascot, type MascotMood, type MascotPose } from '@/features/avatar/Mascot'
 import { AvatarFigure } from '@/features/avatar/AvatarFigure'
 import { AvatarEditor } from '@/features/avatar/AvatarEditor'
 import { defaultAvatar } from '@/domain/avatar'
-import { useLocalProfile } from '@/features/profile/hooks'
+import { useAvatarProgress, useLocalProfile } from '@/features/profile/hooks'
 import type {
   ActivityLevel,
   Experience,
@@ -54,6 +54,7 @@ import { OptionCard } from './OptionCard'
 import { UnitField } from './UnitField'
 import { MacroTiles } from '@/features/nutrition/MacroTiles'
 import { MetricsGrid } from '@/features/nutrition/MetricsGrid'
+import { routineText } from '@/i18n/names'
 
 type Draft = Partial<Omit<OnboardingAnswers, 'targetWeightKg'>> & { targetWeightKg?: number | null }
 
@@ -77,6 +78,23 @@ const STEPS = [
 type Step = (typeof STEPS)[number]
 
 const o = t.onboarding
+
+/** La pose y la cara de Volt en cada pregunta. */
+const POSE: Partial<Record<Step, [MascotPose, MascotMood]>> = {
+  name: ['wave', 'happy'],
+  sex: ['think', 'happy'],
+  avatar: ['cheer', 'proud'],
+  body: ['point', 'happy'],
+  goal: ['flex', 'proud'],
+  target: ['think', 'wow'],
+  activity: ['idle', 'wink'],
+  experience: ['lift', 'proud'],
+  days: ['point', 'happy'],
+  split: ['think', 'happy'],
+  legs: ['flex', 'wink'],
+  duration: ['idle', 'happy'],
+  place: ['point', 'proud'],
+}
 const L = t.labels
 
 const inRange = (v: number | null | undefined, min: number, max: number) =>
@@ -122,6 +140,7 @@ const isComplete = (d: Draft): d is OnboardingAnswers => STEPS.every((s) => vali
 export function OnboardingPage() {
   const navigate = useNavigate()
   const existing = useLocalProfile()
+  const avatarProgress = useAvatarProgress()
   // Si se rehace el cuestionario, arranca con las respuestas anteriores y sin la bienvenida.
   const [draft, setDraft] = useState<Draft>(() => ({ sessionMinutes: 60, place: 'gym' }))
   const [loadedExisting, setLoadedExisting] = useState(false)
@@ -292,19 +311,25 @@ export function OnboardingPage() {
             )}
 
             {step === 'avatar' && (
-              <Question title={o.avatarQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.avatarQ}>
                 <div className="-mt-3 rounded-[var(--radius-card)] border border-border bg-card py-2">
                   <AvatarFigure avatar={avatar} className="mx-auto h-56 w-auto" />
                 </div>
-                <Tip className="mt-4">{t.mascot.avatarIntro}</Tip>
+                <Tip bare className="mt-4">
+                  {t.mascot.avatarIntro}
+                </Tip>
                 <div className="mt-6">
-                  <AvatarEditor value={avatar} onChange={(v) => set('avatar', v)} />
+                  <AvatarEditor
+                    value={avatar}
+                    onChange={(v) => set('avatar', v)}
+                    progress={avatarProgress}
+                  />
                 </div>
               </Question>
             )}
 
             {step === 'name' && (
-              <Question title={o.nameQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.nameQ}>
                 <Input
                   autoFocus
                   value={draft.name ?? ''}
@@ -314,13 +339,19 @@ export function OnboardingPage() {
                   autoComplete="given-name"
                   enterKeyHint="next"
                   className="h-16 text-xl"
+                  placeholder={o.namePlaceholder}
                   aria-label={o.nameQ}
                 />
               </Question>
             )}
 
             {step === 'sex' && (
-              <Question title={o.sexQ} hint={o.sexHint}>
+              <Question
+                pose={POSE[step]?.[0]}
+                mood={POSE[step]?.[1]}
+                title={o.sexQ}
+                hint={o.sexHint}
+              >
                 <Options>
                   {(['male', 'female'] as Sex[]).map((v) => (
                     <OptionCard
@@ -336,7 +367,12 @@ export function OnboardingPage() {
             )}
 
             {step === 'body' && (
-              <Question title={o.bodyQ} hint={o.bodyHint}>
+              <Question
+                pose={POSE[step]?.[0]}
+                mood={POSE[step]?.[1]}
+                title={o.bodyQ}
+                hint={o.bodyHint}
+              >
                 <div className="space-y-4">
                   <UnitField
                     label={o.age}
@@ -363,7 +399,7 @@ export function OnboardingPage() {
             )}
 
             {step === 'goal' && (
-              <Question title={o.goalQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.goalQ}>
                 <Options>
                   {(
                     [
@@ -383,12 +419,21 @@ export function OnboardingPage() {
                     />
                   ))}
                 </Options>
-                {goalTip && <Tip className="mt-5">{goalTip}</Tip>}
+                {goalTip && (
+                  <Tip bare className="mt-5">
+                    {goalTip}
+                  </Tip>
+                )}
               </Question>
             )}
 
             {step === 'target' && (
-              <Question title={o.targetQ} hint={o.targetHint}>
+              <Question
+                pose={POSE[step]?.[0]}
+                mood={POSE[step]?.[1]}
+                title={o.targetQ}
+                hint={o.targetHint}
+              >
                 <UnitField
                   label={o.targetWeight}
                   unit={t.units.kg}
@@ -396,7 +441,7 @@ export function OnboardingPage() {
                   onChange={(v) => set('targetWeightKg', v)}
                   autoFocus
                 />
-                <Tip className="mt-5">
+                <Tip bare className="mt-5">
                   {o.tips.target}
                   {targetWeeks ? ` ${o.tips.targetWeeks(targetWeeks)}` : ''}
                 </Tip>
@@ -404,7 +449,7 @@ export function OnboardingPage() {
             )}
 
             {step === 'activity' && (
-              <Question title={o.activityQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.activityQ}>
                 <Options>
                   {(
                     [
@@ -424,12 +469,14 @@ export function OnboardingPage() {
                     />
                   ))}
                 </Options>
-                <Tip className="mt-5">{o.tips.activity}</Tip>
+                <Tip bare className="mt-5">
+                  {o.tips.activity}
+                </Tip>
               </Question>
             )}
 
             {step === 'experience' && (
-              <Question title={o.experienceQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.experienceQ}>
                 <Options>
                   {(
                     [
@@ -448,12 +495,19 @@ export function OnboardingPage() {
                     />
                   ))}
                 </Options>
-                <Tip className="mt-5">{o.tips.experience}</Tip>
+                <Tip bare className="mt-5">
+                  {o.tips.experience}
+                </Tip>
               </Question>
             )}
 
             {step === 'days' && (
-              <Question title={o.daysQ} hint={o.daysHint}>
+              <Question
+                pose={POSE[step]?.[0]}
+                mood={POSE[step]?.[1]}
+                title={o.daysQ}
+                hint={o.daysHint}
+              >
                 <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label={o.daysQ}>
                   {[2, 3, 4, 5, 6].map((n) => (
                     <button
@@ -474,12 +528,14 @@ export function OnboardingPage() {
                     </button>
                   ))}
                 </div>
-                <Tip className="mt-6">{o.tips.days}</Tip>
+                <Tip bare className="mt-6">
+                  {o.tips.days}
+                </Tip>
               </Question>
             )}
 
             {step === 'split' && (
-              <Question title={o.splitQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.splitQ}>
                 <Options>
                   {(
                     [
@@ -500,12 +556,14 @@ export function OnboardingPage() {
                     />
                   ))}
                 </Options>
-                <Tip className="mt-5">{o.tips.split(L.split[suggestedSplit])}</Tip>
+                <Tip bare className="mt-5">
+                  {o.tips.split(L.split[suggestedSplit])}
+                </Tip>
               </Question>
             )}
 
             {step === 'legs' && (
-              <Question title={o.legsQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.legsQ}>
                 <Options>
                   <OptionCard
                     icon={Rabbit}
@@ -522,12 +580,14 @@ export function OnboardingPage() {
                     onSelect={() => choose('easeLegs', true)}
                   />
                 </Options>
-                <Tip className="mt-5">{o.tips.legs}</Tip>
+                <Tip bare className="mt-5">
+                  {o.tips.legs}
+                </Tip>
               </Question>
             )}
 
             {step === 'duration' && (
-              <Question title={o.durationQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.durationQ}>
                 <div className="grid grid-cols-2 gap-3" role="radiogroup">
                   {[45, 60, 75, 90].map((m) => (
                     <button
@@ -547,12 +607,14 @@ export function OnboardingPage() {
                     </button>
                   ))}
                 </div>
-                <Tip className="mt-6">{o.tips.duration}</Tip>
+                <Tip bare className="mt-6">
+                  {o.tips.duration}
+                </Tip>
               </Question>
             )}
 
             {step === 'place' && (
-              <Question title={o.placeQ}>
+              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.placeQ}>
                 <Options>
                   {(
                     [
@@ -607,7 +669,7 @@ export function OnboardingPage() {
                         {i + 1}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block font-semibold">{r.name}</span>
+                        <span className="block font-semibold">{routineText(r.name)}</span>
                         <span className="block truncate text-sm text-muted">{r.description}</span>
                       </span>
                       <span className="shrink-0 num text-sm text-muted">
@@ -682,17 +744,34 @@ export function OnboardingPage() {
 function Question({
   title,
   hint,
+  pose = 'idle',
+  mood = 'happy',
   children,
 }: {
   title: string
   hint?: string
+  pose?: MascotPose
+  mood?: MascotMood
   children: ReactNode
 }) {
   return (
     <div>
-      <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">{title}</h1>
+      {/* Volt hace la pregunta */}
+      <div className="flex items-end gap-2">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+          className="-ml-2"
+        >
+          <Mascot size={78} pose={pose} mood={mood} bounce />
+        </motion.div>
+        <div className="mb-6 min-w-0 flex-1 rounded-2xl rounded-bl-md border border-accent/30 bg-accent/10 px-4 py-3">
+          <h1 className="text-[1.4rem] leading-tight font-bold tracking-tight">{title}</h1>
+        </div>
+      </div>
       {hint && <p className="mt-2 text-[0.95rem] text-muted">{hint}</p>}
-      <div className="mt-7">{children}</div>
+      <div className="mt-6">{children}</div>
     </div>
   )
 }

@@ -13,6 +13,7 @@ import { weightStats } from '@/domain/body-weight'
 import type { Exercise, ExerciseSet, Goal, WorkoutSession } from '@/types/models'
 import { bodyWeightService, exercisesService } from './local-data'
 import { historyService } from './workout'
+import { exerciseName } from '@/i18n/names'
 
 /**
  * Estadísticas para los gráficos y los mensajes de progreso. Solo datos reales.
@@ -174,7 +175,7 @@ export const statsService = {
       const pct = pctChange(pts.at(-1)!, pts[0]!)
       if (pct !== null && pct > 0 && (!strength || pct > strength.pct))
         strength = {
-          exerciseName: exercises.get(id)?.name ?? '',
+          exerciseName: exerciseName(exercises.get(id)),
           pct,
           from: pts[0]!,
           to: pts.at(-1)!,

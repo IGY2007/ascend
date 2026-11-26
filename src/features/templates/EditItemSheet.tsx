@@ -10,6 +10,7 @@ import { ExercisePicker } from '@/features/exercises/ExercisePicker'
 import { exercisesService, templatesService, type TemplateItem } from '@/services/local-data'
 import { formatDecimal } from '@/domain/numbers'
 import { t } from '@/i18n'
+import { exerciseName } from '@/i18n/names'
 
 const w = t.workouts
 const MAX_SETS = 20
@@ -112,7 +113,7 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
               {item.exercise && <ExerciseThumbnail exercise={item.exercise} />}
               {renaming === null ? (
                 <p className="min-w-0 flex-1 text-lg leading-snug font-semibold">
-                  {item.exercise?.name}
+                  {exerciseName(item.exercise)}
                 </p>
               ) : (
                 <form
@@ -147,7 +148,7 @@ export function EditItemSheet({ item, isFirst, isLast, onClose }: Props) {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => setRenaming(item.exercise?.name ?? '')}
+                onClick={() => setRenaming(exerciseName(item.exercise))}
               >
                 <Pencil />
                 {w.rename}

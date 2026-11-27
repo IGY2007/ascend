@@ -74,7 +74,13 @@ export function RestTimer({
 
   // Un consejo distinto en cada descanso (fijo mientras dura ese descanso)
   const tips = t.workout.restTips
-  const tip = rest ? tips[Math.floor(rest.endsAt / 1000) % tips.length] : null
+  // Cada tres descansos, Volt te recuerda tomar agua (en vez de llevar la cuenta del agua)
+  const restIndex = rest ? Math.floor(rest.endsAt / 1000) : 0
+  const tip = rest
+    ? restIndex % 3 === 0
+      ? t.workout.waterReminder
+      : tips[restIndex % tips.length]
+    : null
 
   const progress = rest ? Math.min(1, Math.max(0, remaining / rest.total)) : 0
 

@@ -336,6 +336,7 @@ export const en = {
     newRecord: 'New record!',
     progressRule: (max: number) =>
       `Hit ${max} reps on every set and add a little weight next time.`,
+    waterReminder: 'Take a sip of water: even mild dehydration costs you strength.',
     restTipLabel: 'Volt',
     restTips: [
       'Breathe in before the rep, brace your core, breathe out on the way up.',
@@ -453,6 +454,7 @@ export const en = {
   },
   charts: {
     tabs: {
+      month: 'Month',
       summary: 'Summary',
       calendar: 'Calendar',
       muscles: 'Physique',
@@ -460,6 +462,9 @@ export const en = {
       weight: 'Weight',
       cardio: 'Cardio & water',
     },
+    e1rmExplain:
+      '1RM = the heaviest weight you could lift ONE time. No need to test it: we estimate it from your sets (weight × (1 + reps/30)). It lets you compare: 60 kg × 10 today vs 65 kg × 6 before still tells you if you got stronger. If the line goes up, you are progressing.',
+    maxShort: (kg: string) => `${kg} kg max`,
     sessionsPerWeek: 'Workouts per week',
     volumePerWeek: 'Volume per week',
     cardioPerWeek: 'Cardio minutes per week',
@@ -605,6 +610,7 @@ export const en = {
       prs: 'Records',
       cardio: 'Cardio',
       water: 'Water goals',
+      sets: 'Sets',
       topExercise: 'Most trained',
       bestLift: 'Best lift (est. 1RM)',
       equivalent: (count: string, thing: string) => `That is like lifting ${count} ${thing}.`,
@@ -777,6 +783,8 @@ export const en = {
     today: 'Today',
     todayProgress: "Today's progress",
     completed: 'done',
+    doneToday: 'Done today',
+    workoutsShort: 'workouts',
     restDay: 'Rest day today',
     upNext: 'Up next',
     startWorkout: 'Start workout',

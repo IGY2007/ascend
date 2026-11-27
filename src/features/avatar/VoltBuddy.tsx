@@ -8,8 +8,6 @@ import {
   useLocalProfile,
   useNextTemplateId,
   useTemplates,
-  useTodayWater,
-  useWaterTarget,
 } from '@/features/profile/hooks'
 import { startOfWeek, toDateKey } from '@/domain/dates'
 import { t } from '@/i18n'
@@ -41,8 +39,6 @@ export function VoltBuddy() {
   const templates = useTemplates()
   const nextId = useNextTemplateId()
   const today = toDateKey(new Date())
-  const water = useTodayWater(today)
-  const waterTarget = useWaterTarget()
   const [visible, setVisible] = useState<{ path: string; line: Line } | null>(null)
 
   const ready = history !== undefined && game !== undefined && profile !== undefined
@@ -75,8 +71,6 @@ export function VoltBuddy() {
       pool.push({ text: b.notYetEvening, pose: 'point', mood: 'happy' })
     if (!trainedToday && hour < 11)
       pool.push({ text: b.notYetMorning, pose: 'wave', mood: 'happy' })
-    if (waterTarget && (water ?? 0) < waterTarget * 0.4 && hour >= 14)
-      pool.push({ text: b.water, pose: 'think', mood: 'happy' })
     if (pathname.startsWith('/nutrition'))
       pool.unshift({ text: b.nutrition, pose: 'think', mood: 'happy' })
     if (pathname.startsWith('/progress'))
@@ -94,7 +88,7 @@ export function VoltBuddy() {
     // Rota entre los primeros que aplican, para no repetir siempre el mismo
     const pickFrom = pool.slice(0, 3)
     return pickFrom[(now.getHours() + pathname.length) % pickFrom.length]!
-  }, [ready, game, history, profile, templates, nextId, water, waterTarget, pathname, today])
+  }, [ready, game, history, profile, templates, nextId, pathname, today])
 
   // Aparece un rato después de entrar a una pantalla, si pasó el tiempo mínimo desde la última vez
   useEffect(() => {

@@ -15,7 +15,6 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Sheet } from '@/components/ui/sheet'
 import { CardioSheet } from '@/features/activity/CardioSheet'
-import { WaterCard } from '@/features/activity/WaterCard'
 import { LogWeightSheet } from '@/features/body/LogWeightSheet'
 import {
   useDaySessions,
@@ -108,7 +107,7 @@ function DayReport({
         </button>
         <div className="min-w-0 flex-1 text-center">
           {relative && <p className="text-xs font-medium text-accent-2">{relative}</p>}
-          <h1 className="truncate text-xl font-bold tracking-tight first-letter:uppercase">
+          <h1 className="line-clamp-2 text-lg leading-tight font-bold tracking-tight first-letter:uppercase">
             {formatLongDate(day)}
           </h1>
         </div>
@@ -240,11 +239,6 @@ function DayReport({
             ) : (
               <Empty>{d.noCardio}</Empty>
             )}
-          </Section>
-
-          {/* Agua */}
-          <Section title={d.water}>
-            <WaterCard date={date} />
           </Section>
 
           {/* Peso */}

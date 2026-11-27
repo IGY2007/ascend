@@ -338,6 +338,7 @@ export const es: Messages = {
     newRecord: '¡Nuevo récord!',
     progressRule: (max: number) =>
       `Cuando hagas ${max} reps en todas las series, subí un poco el peso la próxima.`,
+    waterReminder: 'Tomá un trago de agua: deshidratarte un poco ya te quita fuerza.',
     restTipLabel: 'Volt',
     restTips: [
       'Tomá aire antes de la rep, apretá el abdomen y soltalo al subir.',
@@ -456,6 +457,7 @@ export const es: Messages = {
   },
   charts: {
     tabs: {
+      month: 'Mes',
       summary: 'Resumen',
       calendar: 'Calendario',
       muscles: 'Físico',
@@ -463,6 +465,9 @@ export const es: Messages = {
       weight: 'Peso',
       cardio: 'Cardio y agua',
     },
+    e1rmExplain:
+      '1RM = el peso máximo que podrías levantar UNA sola vez. No hace falta probarlo: lo estimamos con tus series (peso × (1 + reps/30)). Sirve para comparar: si hoy hiciste 60 kg × 10 y antes 65 kg × 6, igual sabés si estás más fuerte. Si la línea sube, progresás.',
+    maxShort: (kg: string) => `${kg} kg máx.`,
     sessionsPerWeek: 'Entrenamientos por semana',
     volumePerWeek: 'Volumen por semana',
     cardioPerWeek: 'Minutos de cardio por semana',
@@ -610,6 +615,7 @@ export const es: Messages = {
       prs: 'Récords',
       cardio: 'Cardio',
       water: 'Días de agua',
+      sets: 'Series',
       topExercise: 'El más entrenado',
       bestLift: 'Mejor levantamiento (1RM est.)',
       equivalent: (count: string, thing: string) => `Es como levantar ${count} ${thing}.`,
@@ -783,6 +789,8 @@ export const es: Messages = {
     today: 'Hoy',
     todayProgress: 'Tu progreso de hoy',
     completed: 'cumplido',
+    doneToday: 'Hoy ya entrenaste',
+    workoutsShort: 'entrenos',
     restDay: 'Hoy toca descanso',
     upNext: 'Te toca',
     startWorkout: 'Empezar entrenamiento',

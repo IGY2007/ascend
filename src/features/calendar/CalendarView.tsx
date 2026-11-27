@@ -76,7 +76,6 @@ export function CalendarView() {
             const info = days?.get(date)
             const trained = (info?.workouts ?? 0) > 0
             const cardio = (info?.cardioMinutes ?? 0) > 0
-            const water = info?.waterGoalMet ?? false
             const future = date > today
             const isToday = date === today
             const label = c.openDay(formatLongDate(fromDateKey(date)))
@@ -94,7 +93,6 @@ export function CalendarView() {
                 </span>
                 <span className="flex h-1.5 items-center gap-1" aria-hidden>
                   {cardio && <span className="size-1.5 rounded-full bg-success" />}
-                  {water && <span className="size-1.5 rounded-full bg-sky-300/80" />}
                 </span>
               </>
             )
@@ -129,10 +127,6 @@ export function CalendarView() {
           <span className="flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-success" />
             {c.legendCardio}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-sky-300/80" />
-            {c.legendWater}
           </span>
         </div>
       </Card>

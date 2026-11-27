@@ -24,8 +24,7 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
 
   return (
     <Link
-      to="/progress"
-      onClick={() => sessionStorage.setItem('ascend-progress-tab', 'muscles')}
+      to="/physique"
       className="relative block overflow-hidden rounded-[var(--radius-card)] border border-accent/40 shadow-[0_12px_40px_-16px_rgb(139_92_246/0.5)] transition-transform active:scale-[0.99]"
       aria-label={`${t.avatar.title} · ${g.level(level.level)}`}
       style={{

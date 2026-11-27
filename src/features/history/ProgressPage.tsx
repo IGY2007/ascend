@@ -11,22 +11,17 @@ import { BarChart, type Bar } from '@/components/charts/BarChart'
 import { LineChart } from '@/components/charts/LineChart'
 import { WeightChart } from '@/features/body/WeightChart'
 import { LogWeightSheet } from '@/features/body/LogWeightSheet'
-import { CardioSheet } from '@/features/activity/CardioSheet'
 import { InsightsCard } from '@/features/progress/InsightsCard'
 import { ExerciseThumbnail } from '@/features/exercises/ExerciseThumbnail'
 import {
   useBodyWeights,
-  useCardioLogs,
   useExerciseHistory,
   useExercisesDone,
   useHistory,
   useLocalProfile,
-  useWaterDaily,
-  useWaterTarget,
   useWeeklyStats,
 } from '@/features/profile/hooks'
 import { bodyWeightService } from '@/services/local-data'
-import { cardioService } from '@/services/activity'
 import { filterRange, weightStats } from '@/domain/body-weight'
 import { fromDateKey, toDateKey } from '@/domain/dates'
 import { formatDecimal, formatSigned } from '@/domain/numbers'
@@ -34,14 +29,14 @@ import { pctChange, type WeekBucket } from '@/domain/progress-stats'
 import { formatDuration } from '@/domain/workout'
 import { cn } from '@/lib/utils'
 import { locale, t } from '@/i18n'
+import { Tip } from '@/components/ui/tip'
 import { CalendarView } from '@/features/calendar/CalendarView'
-import { PhysiqueTab } from '@/features/game/PhysiqueTab'
-import type { BodyWeight, CardioLog } from '@/types/models'
+import type { BodyWeight } from '@/types/models'
 import { exerciseName, routineText } from '@/i18n/names'
 
 const p = t.progress
 const ch = t.charts
-const TABS = ['summary', 'calendar', 'muscles', 'strength', 'weight', 'cardio'] as const
+const TABS = ['month', 'strength', 'weight'] as const
 type Tab = (typeof TABS)[number]
 
 const entryDate = new Intl.DateTimeFormat(locale, {
@@ -64,9 +59,10 @@ const weekBars = (buckets: WeekBucket[]): Bar[] =>
   })
 
 export function ProgressPage() {
-  const [tab, setTab] = useState<Tab>(
-    () => (sessionStorage.getItem('ascend-progress-tab') as Tab) || 'summary',
-  )
+  const [tab, setTab] = useState<Tab>(() => {
+    const saved = sessionStorage.getItem('ascend-progress-tab') as Tab | null
+    return saved && TABS.includes(saved) ? saved : 'month'
+  })
   const choose = (next: Tab) => {
     setTab(next)
     sessionStorage.setItem('ascend-progress-tab', next)
@@ -95,17 +91,9 @@ export function ProgressPage() {
           ))}
         </div>
       </div>
-      {tab === 'summary' && <SummaryTab />}
-      {tab === 'calendar' && (
-        <>
-          <p className="mb-3 px-1 text-sm text-muted">{t.calendar.tapHint}</p>
-          <CalendarView />
-        </>
-      )}
-      {tab === 'muscles' && <PhysiqueTab />}
+      {tab === 'month' && <MonthTab />}
       {tab === 'strength' && <StrengthTab />}
       {tab === 'weight' && <WeightTab />}
-      {tab === 'cardio' && <CardioWaterTab />}
     </>
   )
 }
@@ -129,14 +117,16 @@ function Section({
 
 // ---------------------------------------------------------------- Resumen
 
-function SummaryTab() {
+function MonthTab() {
   const today = toDateKey(new Date())
   const weekly = useWeeklyStats(today)
   const history = useHistory()
 
   return (
     <>
-      <InsightsCard />
+      <p className="mb-3 px-1 text-sm text-muted">{t.calendar.tapHint}</p>
+      <CalendarView />
+      <InsightsCard className="mt-4" />
       <Section title={ch.sessionsPerWeek}>
         <Card className="px-3">
           {weekly ? (
@@ -238,6 +228,8 @@ function StrengthTab() {
         ))}
       </div>
 
+      <Tip className="mt-4">{ch.e1rmExplain}</Tip>
+
       {summary && (
         <Card className="mt-4 px-4">
           <p className="truncate px-1 font-semibold">{exerciseName(summary.exercise)}</p>
@@ -275,7 +267,7 @@ function StrengthTab() {
                 {entryDate.format(fromDateKey(pt.date))}
               </span>
               <span className="num text-sm text-muted">
-                {formatDecimal(pt.maxWeight, 1)} {t.units.kg} máx.
+                {ch.maxShort(formatDecimal(pt.maxWeight, 1))}
               </span>
               <span className="num font-semibold">{formatDecimal(pt.e1rm, 1)}</span>
             </div>
@@ -409,107 +401,6 @@ function WeightTab() {
 }
 
 // ---------------------------------------------------------------- Cardio y agua
-
-function CardioWaterTab() {
-  const today = toDateKey(new Date())
-  const weekly = useWeeklyStats(today)
-  const water = useWaterDaily(today)
-  const target = useWaterTarget()
-  const logs = useCardioLogs()
-  const [cardioOpen, setCardioOpen] = useState(false)
-  const [toDelete, setToDelete] = useState<CardioLog | null>(null)
-
-  return (
-    <>
-      <Button block onClick={() => setCardioOpen(true)}>
-        <Plus />
-        {t.cardio.title}
-      </Button>
-      <Section title={ch.cardioPerWeek}>
-        <Card className="px-3">
-          {weekly ? (
-            <BarChart
-              bars={weekBars(weekly.cardioMinutes)}
-              unit={ch.min}
-              label={ch.cardioPerWeek}
-            />
-          ) : (
-            <Skeleton className="h-40" />
-          )}
-        </Card>
-      </Section>
-      <Section title={ch.waterPerDay}>
-        <Card className="px-3">
-          {water ? (
-            <BarChart
-              bars={water.map((d) => {
-                const date = fromDateKey(d.date)
-                return {
-                  key: d.date,
-                  label: String(date.getDate()),
-                  title: entryDate.format(date),
-                  value: d.value,
-                }
-              })}
-              unit={ch.ml}
-              label={ch.waterPerDay}
-              target={target}
-            />
-          ) : (
-            <Skeleton className="h-40" />
-          )}
-          <p className="mt-2 px-1 text-xs text-subtle">{t.water.note}</p>
-        </Card>
-      </Section>
-      {logs && logs.length > 0 && (
-        <Section title={t.cardio.history}>
-          <Card className="divide-y divide-border p-0">
-            {logs.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 py-1 pr-1 pl-5">
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">
-                    {t.cardio.activities[c.activity]}
-                  </span>
-                  <span className="block text-xs text-muted first-letter:uppercase">
-                    {entryDate.format(fromDateKey(c.date))} · {t.cardio.intensities[c.intensity]}
-                  </span>
-                </span>
-                <span className="num text-sm text-muted">
-                  {t.cardio.entry(c.minutes, formatDecimal(c.kcal, 0))}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setToDelete(c)}
-                  aria-label={t.cardio.delete}
-                  className="grid size-11 place-items-center rounded-xl text-subtle hover:text-danger"
-                >
-                  <Trash2 className="size-4" />
-                </button>
-              </div>
-            ))}
-          </Card>
-        </Section>
-      )}
-      <CardioSheet open={cardioOpen} onOpenChange={setCardioOpen} />
-      <ConfirmDialog
-        open={toDelete !== null}
-        onOpenChange={(o) => !o && setToDelete(null)}
-        title={t.cardio.delete}
-        description={
-          toDelete
-            ? `${t.cardio.activities[toDelete.activity]} · ${t.cardio.entry(toDelete.minutes, formatDecimal(toDelete.kcal, 0))}`
-            : ''
-        }
-        confirmLabel={p.delete}
-        destructive
-        onConfirm={() => {
-          if (toDelete) void cardioService.remove(toDelete.id)
-          setToDelete(null)
-        }}
-      />
-    </>
-  )
-}
 
 function Stat({
   label,

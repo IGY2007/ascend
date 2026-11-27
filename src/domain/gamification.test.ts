@@ -53,8 +53,8 @@ describe('niveles', () => {
     expect(xp.workouts).toBe(100)
     expect(xp.sets).toBe(150)
     expect(xp.prs).toBe(100)
-    expect(xp.water).toBe(20)
-    expect(xp.total).toBe(370)
+    // El agua ya no suma XP (se sacó el registro de agua)
+    expect(xp.total).toBe(350)
   })
 })
 

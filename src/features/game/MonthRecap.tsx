@@ -25,7 +25,7 @@ export function MonthRecap({ year, month }: { year: number; month: number }) {
     { label: r.hours, value: formatDecimal(rc.minutes / 60, 1) },
     { label: r.prs, value: String(rc.prs) },
     { label: r.cardio, value: `${rc.cardioMinutes} ${t.charts.min}` },
-    { label: r.water, value: String(rc.waterGoalDays) },
+    { label: r.sets, value: String(rc.sets) },
   ]
 
   return (

@@ -48,7 +48,6 @@ export const XP = {
   workout: 50,
   pr: 100,
   cardioSession: 30,
-  waterGoal: 20,
   weighIn: 10,
   weekGoal: 150,
   challenge: 100,
@@ -125,7 +124,6 @@ export interface XpBreakdown {
   workouts: number
   prs: number
   cardio: number
-  water: number
   weighIns: number
   weeks: number
   challenges: number
@@ -137,7 +135,6 @@ export function totalXp(f: Facts, completedChallenges: number): XpBreakdown {
     workouts: f.sessions.length * XP.workout,
     prs: f.prs.length * XP.pr,
     cardio: f.cardio.length * XP.cardioSession,
-    water: f.waterGoalDays.length * XP.waterGoal,
     weighIns: f.weightLogs.length * XP.weighIn,
     weeks: weeksGoalMet(f).length * XP.weekGoal,
     challenges: completedChallenges * XP.challenge,
@@ -191,8 +188,6 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'volume_100t', icon: 'weight', target: 100_000, value: (t) => t.volume },
   { id: 'volume_1000t', icon: 'weight', target: 1_000_000, value: (t) => t.volume },
   { id: 'club_100', icon: 'trophy', target: 100, value: (t) => t.maxLift },
-  { id: 'hydrated_7', icon: 'droplet', target: 7, value: (t) => t.waterGoalDays },
-  { id: 'hydrated_30', icon: 'droplet', target: 30, value: (t) => t.waterGoalDays },
   { id: 'cardio_10', icon: 'zap', target: 10, value: (t) => t.cardioSessions },
   { id: 'weigh_in_10', icon: 'scale', target: 10, value: (t) => t.weightLogs },
 ]
@@ -239,14 +234,7 @@ export interface Challenge {
   done: boolean
 }
 
-const OPTIONAL: ChallengeKind[] = [
-  'water_days',
-  'cardio_minutes',
-  'record',
-  'sets',
-  'weigh_ins',
-  'beat_volume',
-]
+const OPTIONAL: ChallengeKind[] = ['cardio_minutes', 'record', 'sets', 'weigh_ins', 'beat_volume']
 
 /** Número de semana estable (para rotar los desafíos de forma determinística). */
 const weekIndex = (weekStart: string) => Math.round(fromDateKey(weekStart).getTime() / 604_800_000)
@@ -312,7 +300,6 @@ export function completedChallenges(f: Facts, today: string): number {
   const dates = [
     ...f.sessions.map((s) => s.date),
     ...f.cardio.map((c) => c.date),
-    ...f.waterGoalDays,
     ...f.weightLogs,
   ].sort()
   if (dates.length === 0) return 0

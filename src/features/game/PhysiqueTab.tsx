@@ -3,18 +3,12 @@ import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tip } from '@/components/ui/tip'
 import { useGameState, useLocalProfile } from '@/features/profile/hooks'
-import {
-  laggingStat,
-  physiqueLevel,
-  setsForMuscleLevel,
-  type Readiness,
-} from '@/domain/gamification'
+import { laggingStat, type Readiness } from '@/domain/gamification'
 import { Link } from 'react-router'
 import { Pencil } from 'lucide-react'
 import { useAvatar } from '@/features/profile/hooks'
 import { AvatarFigure } from '@/features/avatar/AvatarFigure'
 import { bodyComment } from '@/features/avatar/body-comment'
-import { formatDecimal } from '@/domain/numbers'
 import { cn } from '@/lib/utils'
 import { formatMonthYear, t } from '@/i18n'
 
@@ -28,8 +22,8 @@ const READY_STYLE: Record<Readiness, string> = {
 }
 
 /**
- * La ficha del físico, estilo RPG: cada grupo muscular sube de nivel con las series que hacés,
- * con un radar del equilibrio general y el estado de recuperación de cada uno.
+ * La ficha del físico: tu personaje del mes, cuánto creció cada grupo muscular y si está listo
+ * para volver a entrenarse. Un solo nivel en toda la app (el del viaje): acá no hay niveles por músculo.
  */
 export function PhysiqueTab() {
   const game = useGameState()
@@ -64,9 +58,6 @@ export function PhysiqueTab() {
           className="mx-auto mt-2 h-80 w-auto"
           title={t.avatar.title}
         />
-        <p className="text-center text-sm font-medium text-muted">
-          {m.overall(formatDecimal(physiqueLevel(stats), 1))}
-        </p>
       </Card>
 
       <Tip className="mt-4" mood={lagging ? 'wow' : 'happy'}>
@@ -75,14 +66,10 @@ export function PhysiqueTab() {
 
       <ul className="mt-5 space-y-2.5">
         {stats.map((s) => {
-          const toNext = setsForMuscleLevel(s.level + 1) - s.sets
           return (
             <li key={s.stat}>
               <Card className="p-4">
                 <div className="flex items-center gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-card-2 num text-sm font-bold">
-                    {m.level(s.level)}
-                  </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-semibold">{m.stats[s.stat]}</p>
@@ -101,9 +88,8 @@ export function PhysiqueTab() {
                         style={{ transform: `scaleX(${Math.max(0.02, game.monthBody[s.stat])})` }}
                       />
                     </div>
-                    <p className="mt-1.5 flex justify-between gap-2 num text-xs text-muted">
-                      <span>{m.setsToNext(toNext)}</span>
-                      <span>{t.avatar.monthSets(game.monthSets[s.stat])}</span>
+                    <p className="mt-1.5 num text-xs text-muted">
+                      {t.avatar.monthSets(game.monthSets[s.stat])}
                     </p>
                   </div>
                 </div>

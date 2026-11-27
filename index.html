@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es" class="dark">
+<html lang="es" class="dark" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -12,6 +12,26 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <script>
+      // Tema guardado (oscuro / claro / automático) antes del primer cuadro: sin parpadeo.
+      ;(function () {
+        try {
+          var p = localStorage.getItem('ascend-theme') || 'system'
+          var light =
+            p === 'light' || (p === 'system' && matchMedia('(prefers-color-scheme: light)').matches)
+          var r = document.documentElement
+          r.dataset.theme = light ? 'light' : 'dark'
+          if (light) {
+            r.classList.remove('dark')
+            document.querySelector('meta[name=theme-color]').setAttribute('content', '#f5f4f9')
+            document.querySelector('meta[name=color-scheme]').setAttribute('content', 'light')
+            document
+              .querySelector('meta[name=apple-mobile-web-app-status-bar-style]')
+              .setAttribute('content', 'default')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <meta name="apple-mobile-web-app-title" content="ASCEND" />
     <meta name="format-detection" content="telephone=no" />
 
@@ -75,10 +95,14 @@
 
     <!-- Fondo oscuro antes de que cargue el JS: sin flash blanco -->
     <style>
-      html,
-      body {
+      /* Fondo antes de que cargue el CSS (sin parpadeo blanco); el modo claro tiene el suyo */
+      html:not([data-theme='light']) {
         background: #09090b;
         color: #f4f4f5;
+      }
+      html[data-theme='light'] {
+        background: #f5f4f9;
+        color: #17141f;
       }
     </style>
   </head>

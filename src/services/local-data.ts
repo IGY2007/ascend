@@ -143,6 +143,64 @@ export function previewPlan(answers: OnboardingAnswers): PlanPreview {
   }
 }
 
+/**
+ * Reemplaza las rutinas generadas por las nuevas (las propias no se tocan). Los kilos por serie que
+ * el usuario había cargado se mantienen en los ejercicios que siguen estando.
+ */
+async function replaceGeneratedRoutines(routines: PlanPreview['routines'], ts: string) {
+  const previousWeights = new Map<string, (number | null)[]>()
+  const generated = await db.templates.filter((t) => t.source === 'generated').toArray()
+  const generatedIds = generated.map((t) => t.id)
+  for (const it of await db.templateExercises.where('templateId').anyOf(generatedIds).toArray())
+    if (it.targetWeights?.some((w) => w !== null))
+      previousWeights.set(it.exerciseId, it.targetWeights)
+  await db.templateExercises.where('templateId').anyOf(generatedIds).delete()
+  await db.templates.bulkDelete(generatedIds)
+  const manual = await db.templates.orderBy('position').toArray()
+
+  const templates: WorkoutTemplate[] = []
+  const items: TemplateExercise[] = []
+  routines.forEach((r, i) => {
+    const templateId = uuid()
+    templates.push({
+      id: templateId,
+      userId: LOCAL_USER_ID,
+      name: r.name,
+      description: r.description,
+      weekdays: r.weekdays,
+      notes: r.notes,
+      position: i,
+      source: 'generated',
+      createdAt: ts,
+      updatedAt: ts,
+    })
+    r.exercises.forEach((e, position) =>
+      items.push({
+        id: uuid(),
+        userId: LOCAL_USER_ID,
+        templateId,
+        exerciseId: e.exerciseId,
+        position,
+        targetSets: e.sets,
+        targetRepsMin: e.repsMin,
+        targetRepsMax: e.repsMax,
+        targetRestSeconds: e.restSeconds,
+        targetRir: e.rir,
+        targetWeights: previousWeights.get(e.exerciseId),
+        notes: null,
+        createdAt: ts,
+        updatedAt: ts,
+      }),
+    )
+  })
+  // Las generadas van primero en la rotación; las propias, después.
+  await Promise.all(
+    manual.map((t, i) => db.templates.update(t.id, { position: templates.length + i })),
+  )
+  await db.templates.bulkAdd(templates)
+  await db.templateExercises.bulkAdd(items)
+}
+
 export const profileService = {
   get: () => db.profile.get('me'),
 
@@ -151,6 +209,25 @@ export const profileService = {
    * peso de hoy. Si se rehace, reemplaza solo las rutinas generadas (las propias se mantienen) y
    * nunca toca el historial de peso ni los entrenamientos.
    */
+  /**
+   * "Mis datos": guarda cambios del perfil y recalcula los macros (salvo que sean manuales).
+   * Si `regenerate`, rearma las rutinas generadas con los datos nuevos.
+   */
+  async updateAnswers(patch: Partial<OnboardingAnswers>, regenerate = false) {
+    const ts = now()
+    const current = await db.profile.get('me')
+    if (!current) return
+    const next = { ...current, ...patch, updatedAt: ts }
+    await db.profile.put(next)
+    const latest = await db.bodyWeights.orderBy('date').last()
+    await nutritionService.recalcFromWeight(latest?.weightKg ?? next.weightKg)
+    if (regenerate) {
+      await db.transaction('rw', [db.templates, db.templateExercises], () =>
+        replaceGeneratedRoutines(previewPlan(next).routines, ts),
+      )
+    }
+  },
+
   /** Guarda el personaje. */
   async updateAvatar(avatar: AvatarConfig) {
     await db.profile.update('me', { avatar, updatedAt: now() })
@@ -195,52 +272,7 @@ export const profileService = {
             updatedAt: ts,
           })
 
-        const generated = await db.templates.filter((t) => t.source === 'generated').toArray()
-        const generatedIds = generated.map((t) => t.id)
-        await db.templateExercises.where('templateId').anyOf(generatedIds).delete()
-        await db.templates.bulkDelete(generatedIds)
-        const manual = await db.templates.orderBy('position').toArray()
-
-        const templates: WorkoutTemplate[] = []
-        const items: TemplateExercise[] = []
-        plan.routines.forEach((r, i) => {
-          const templateId = uuid()
-          templates.push({
-            id: templateId,
-            userId: LOCAL_USER_ID,
-            name: r.name,
-            description: r.description,
-            weekdays: r.weekdays,
-            notes: r.notes,
-            position: i,
-            source: 'generated',
-            createdAt: ts,
-            updatedAt: ts,
-          })
-          r.exercises.forEach((e, position) =>
-            items.push({
-              id: uuid(),
-              userId: LOCAL_USER_ID,
-              templateId,
-              exerciseId: e.exerciseId,
-              position,
-              targetSets: e.sets,
-              targetRepsMin: e.repsMin,
-              targetRepsMax: e.repsMax,
-              targetRestSeconds: e.restSeconds,
-              targetRir: e.rir,
-              notes: null,
-              createdAt: ts,
-              updatedAt: ts,
-            }),
-          )
-        })
-        // Las generadas van primero en la rotación; las propias, después.
-        await Promise.all(
-          manual.map((t, i) => db.templates.update(t.id, { position: templates.length + i })),
-        )
-        await db.templates.bulkAdd(templates)
-        await db.templateExercises.bulkAdd(items)
+        await replaceGeneratedRoutines(plan.routines, ts)
       },
     )
   },

@@ -224,6 +224,7 @@ export const es: Messages = {
     targetWeight: 'Peso objetivo',
     years: 'años',
     goalQ: '¿Cuál es tu objetivo?',
+    targetOptional: 'Peso objetivo (opcional)',
     targetQ: '¿A qué peso te gustaría llegar?',
     targetHint: 'Opcional. Lo usamos para mostrarte cuánto te falta.',
     activityQ: 'Fuera del gimnasio, ¿cuánto te movés en el día?',
@@ -766,7 +767,156 @@ export const es: Messages = {
     share: 'Compartir',
     saved: 'Imagen guardada.',
     badgeRecord: 'Nuevo récord',
-    stats: { time: 'Tiempo', volume: 'Volumen', sets: 'Series', records: 'Récords' },
+    badgeStreak: (w: string) => `Racha de ${w}`,
+    monthSubtitle: (year: string) => `Resumen del mes · ${year}`,
+    shareMonth: 'Compartir resumen',
+    stats: {
+      time: 'Tiempo',
+      volume: 'Volumen',
+      sets: 'Series',
+      records: 'Récords',
+      workouts: 'Entrenamientos',
+      hours: 'Horas',
+    },
+  },
+  journey: {
+    title: 'El viaje',
+    subtitle: 'Tu camino al Olimpo',
+    campOf: (n: number, total: number) => `Campamento ${n} de ${total}`,
+    here: 'Estás acá',
+    next: (name: string, level: number) => `Próximo: ${name} en el nivel ${level}`,
+    lockedAt: (level: number) => `Se desbloquea en el nivel ${level}`,
+    read: 'Leer la historia',
+    unlocks: 'Al llegar desbloqueás',
+    lesson: 'Lo que te enseña',
+    reached: 'Nuevo campamento',
+    reachedTitle: (name: string) => `¡Llegaste a ${name}!`,
+    arrived: '¡Llegaste!',
+    summit: '¡Llegaste a la cima!',
+    camps: {
+      base: {
+        name: 'Campamento base',
+        era: 'Grecia, siglo VI a. C.',
+        title: 'Milón de Crotona',
+        story:
+          'Milón fue un luchador griego que ganó seis veces en los Juegos Olímpicos. Cuenta la leyenda que se preparaba cargando un ternero recién nacido sobre los hombros todos los días. El ternero crecía, y Milón con él, hasta que un día cargó un toro adulto.',
+        lesson:
+          'Eso es la sobrecarga progresiva: un poquito más que la vez anterior, semana a semana. Es lo que hace ASCEND con tus kilos.',
+      },
+      gymnasion: {
+        name: 'El gimnasio griego',
+        era: 'Grecia antigua',
+        title: '¿De dónde viene “gimnasio”?',
+        story:
+          'La palabra viene del griego gymnásion, y esta de gymnós, “desnudo”: los atletas griegos entrenaban sin ropa. El gimnasio era mucho más que un lugar para hacer ejercicio: ahí también se estudiaba, se charlaba de filosofía y se formaba a los jóvenes.',
+        lesson:
+          'Cuerpo y cabeza siempre fueron de la mano. Cuidar la técnica es entrenar pensando.',
+      },
+      strongmen: {
+        name: 'Los forzudos',
+        era: 'Fines del siglo XIX',
+        title: 'Eugen Sandow',
+        story:
+          'Sandow, nacido en Prusia en 1867, empezó como forzudo de circo y terminó mostrando su físico en teatros de todo el mundo. En 1901 organizó en el Royal Albert Hall de Londres “The Great Competition”, considerado el primer gran concurso de físico. Por eso le dicen el padre del culturismo moderno.',
+        lesson:
+          'Sandow entrenaba con método y medía su progreso. Lo que no se registra, no se puede mejorar.',
+      },
+      muscle_beach: {
+        name: 'Muscle Beach',
+        era: 'Años 30',
+        title: 'Pesas frente al mar',
+        story:
+          'En los años 30, en Santa Mónica (California), un grupo de acróbatas y levantadores empezó a entrenar al aire libre frente a la playa. El lugar se hizo famoso como Muscle Beach y miles de personas iban a verlos.',
+        lesson: 'Entrenar en comunidad motiva. Mostrar tu progreso contagia a otros a empezar.',
+      },
+      golden_era: {
+        name: 'La era dorada',
+        era: 'Años 60 y 70',
+        title: 'Gold’s Gym y Pumping Iron',
+        story:
+          'En 1965 Joe Gold abrió en Venice Beach el Gold’s Gym, que se volvió la meca del culturismo. Ahí entrenaba Arnold Schwarzenegger, que se hizo famoso en todo el mundo con el documental Pumping Iron (1977).',
+        lesson:
+          'Los campeones entrenaron años con constancia. No hay atajos: hay semanas seguidas.',
+      },
+      iron: {
+        name: 'El hierro',
+        era: 'Desde los años 70',
+        title: 'Powerlifting y ciencia',
+        story:
+          'En 1972 se fundó la Federación Internacional de Powerlifting (IPF), que compite en tres levantamientos: sentadilla, press de banca y peso muerto. Hoy la ciencia confirma lo que el hierro enseñó: sobrecarga progresiva, unas 10 a 20 series semanales por músculo, suficiente proteína y buen descanso.',
+        lesson: 'Fuerza y músculo se construyen con lo básico bien hecho, repetido muchas veces.',
+      },
+      olympus: {
+        name: 'El Olimpo',
+        era: 'Mitología griega',
+        title: 'La morada de los dioses',
+        story:
+          'Los griegos imaginaban a sus dioses y héroes con cuerpos perfectos, como Heracles y sus doce trabajos. El escultor Policleto (siglo V a. C.) llegó a escribir un “canon” de proporciones ideales, que se ve en su estatua del Doríforo. Y vos llegaste a la cima.',
+        lesson:
+          'Llegar al Olimpo no es el final: es la prueba de que la constancia te hizo otra persona.',
+      },
+    } as Record<
+      string,
+      { name: string; era: string; title: string; story: string; lesson: string }
+    >,
+  },
+  streak: {
+    title: 'Racha',
+    weeks: (n: number) => (n === 1 ? '1 semana' : `${n} semanas`),
+    short: (n: number) => `${n} sem.`,
+    best: (n: number) => `Mejor racha: ${n === 1 ? '1 semana' : `${n} semanas`}`,
+    freezes: (n: number) => (n === 1 ? '1 protector' : `${n} protectores`),
+    hint: 'Semanas seguidas cumpliendo tu meta. Cada 4 semanas ganás un protector que salva una semana floja.',
+    none: 'Cumplí tu meta esta semana y arrancás tu racha.',
+    pending: (left: number) =>
+      left === 1
+        ? 'Te falta 1 entreno esta semana para sumar.'
+        : `Te faltan ${left} entrenos esta semana para sumar.`,
+    done: 'Semana cumplida: la racha suma.',
+  },
+  profilePage: {
+    title: 'Perfil',
+    settings: 'Ajustes',
+    since: (date: string) => `Entrena con ASCEND desde ${date}`,
+    stats: {
+      streak: 'Racha',
+      tonnes: 'Toneladas',
+      workouts: 'Entrenamientos',
+      records: 'Récords',
+      camp: 'Campamento',
+      bestStreak: 'Mejor racha',
+    },
+    lately: 'Últimamente',
+    latelyHint: 'Entrenamientos por semana (últimas 8)',
+    friends: 'Amigos',
+    friendsSoon: 'Muy pronto vas a poder agregar amigos, ver sus personajes y competir con ellos.',
+    comingSoon: 'Próximamente',
+  },
+  settings: {
+    title: 'Ajustes',
+    myData: 'Mis datos',
+    myDataHint: 'Altura, peso, objetivo, días, lesiones…',
+    character: 'Personaje',
+    nutritionPlan: 'Plan de nutrición',
+    nutritionPlanHint: (kcal: string) => `${kcal} kcal por día`,
+    appearance: 'Apariencia',
+    themes: { dark: 'Oscuro', light: 'Claro', system: 'Automático' },
+    themeHint: 'Automático sigue al modo del iPhone.',
+    testing: 'Pruebas',
+    testingHint: 'Solo mientras probamos la app.',
+  },
+  editData: {
+    title: 'Mis datos',
+    saved: 'Datos guardados.',
+    personal: 'Vos',
+    training: 'Entrenamiento',
+    targetNone: 'Sin objetivo',
+    regenerateTitle: '¿Rearmar tus rutinas?',
+    regenerateBody:
+      'Cambiaste cosas que afectan tus rutinas. Podemos rearmarlas con tus datos nuevos: los kilos que cargaste se mantienen en los ejercicios que sigan. Tus rutinas propias no se tocan.',
+    regenerate: 'Rearmar rutinas',
+    keep: 'Dejarlas como están',
+    regenerated: 'Rutinas rearmadas.',
   },
   units: {
     kg: 'kg',

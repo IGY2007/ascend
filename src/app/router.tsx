@@ -22,6 +22,9 @@ import { DayPage } from '@/features/calendar/DayPage'
 import { NutritionPage } from '@/features/nutrition/NutritionPage'
 import { AvatarEditorPage } from '@/features/avatar/AvatarEditorPage'
 import { PhysiquePage } from '@/features/game/PhysiquePage'
+import { JourneyPage } from '@/features/journey/JourneyPage'
+import { SettingsPage } from '@/features/profile/SettingsPage'
+import { EditDataPage } from '@/features/profile/EditDataPage'
 
 // HashRouter: GitHub Pages no puede resolver rutas del lado del servidor.
 export const router = createHashRouter([
@@ -49,6 +52,7 @@ export const router = createHashRouter([
               { path: '/workout/:id/summary', element: <SummaryPage /> },
               { path: '/workout/:id/edit', element: <EditSessionPage /> },
               { path: '/workout/:id/share', element: <SharePage /> },
+              { path: '/share/month/:ym', element: <SharePage /> },
               {
                 element: <AppLayout />,
                 children: [
@@ -60,6 +64,9 @@ export const router = createHashRouter([
                   { path: '/nutrition', element: <NutritionPage /> },
                   { path: '/avatar', element: <AvatarEditorPage /> },
                   { path: '/physique', element: <PhysiquePage /> },
+                  { path: '/journey', element: <JourneyPage /> },
+                  { path: '/settings', element: <SettingsPage /> },
+                  { path: '/settings/data', element: <EditDataPage /> },
                   { path: '/profile', element: <ProfilePage /> },
                 ],
               },

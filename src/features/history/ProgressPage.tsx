@@ -28,7 +28,7 @@ import { formatDecimal, formatSigned } from '@/domain/numbers'
 import { pctChange, type WeekBucket } from '@/domain/progress-stats'
 import { formatDuration } from '@/domain/workout'
 import { cn } from '@/lib/utils'
-import { locale, t } from '@/i18n'
+import { formatDayMonth, locale, t } from '@/i18n'
 import { Tip } from '@/components/ui/tip'
 import { CalendarView } from '@/features/calendar/CalendarView'
 import type { BodyWeight } from '@/types/models'
@@ -52,7 +52,7 @@ const weekBars = (buckets: WeekBucket[]): Bar[] =>
     const d = fromDateKey(b.weekStart)
     return {
       key: b.weekStart,
-      label: `${d.getMonth() + 1}/${d.getDate()}`,
+      label: formatDayMonth(d),
       title: ch.weekOf(dayMonth.format(d)),
       value: b.value,
     }

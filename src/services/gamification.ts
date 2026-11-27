@@ -10,6 +10,8 @@ import {
   totalXp,
   totalsOf,
   weeklyChallenges,
+  weeklyStreak,
+  type StreakInfo,
   type ExerciseSetFact,
   type Facts,
   type PrFact,
@@ -18,6 +20,7 @@ import {
 import { startOfWeek } from '@/domain/dates'
 import { exercisesService } from './local-data'
 import { bodyFromSets, monthSets, type Body } from '@/domain/avatar'
+import { journeyPosition, type JourneyPosition } from '@/domain/journey'
 
 /**
  * Junta los datos reales del dispositivo en un solo objeto (`Facts`) para la gamificación.
@@ -119,21 +122,26 @@ export interface GameState {
   /** Series de cada grupo en el mes actual y cuánto creció el personaje (0–1). */
   monthSets: Body
   monthBody: Body
+  streak: StreakInfo
+  journey: JourneyPosition
 }
 
 export async function gameState(today = toDateKey(new Date())): Promise<GameState> {
   const facts = await loadFacts()
   const xp = totalXp(facts, completedChallenges(facts, today))
+  const level = levelFromXp(xp.total)
   const now = new Date()
   const sets = monthSets(facts, now.getFullYear(), now.getMonth())
   return {
     facts,
-    level: levelFromXp(xp.total),
+    level,
     achievements: achievements(totalsOf(facts)),
     challenges: weeklyChallenges(facts, toDateKey(startOfWeek(new Date()))),
     muscles: muscleStats(facts, today),
     monthSets: sets,
     monthBody: bodyFromSets(sets),
+    streak: weeklyStreak(facts, today),
+    journey: journeyPosition(level.level, level.into, level.needed),
   }
 }
 

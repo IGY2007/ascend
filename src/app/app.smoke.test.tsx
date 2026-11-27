@@ -111,7 +111,7 @@ describe('app con cuentas (smoke)', () => {
         user: { id: 'u1', user_metadata: { display_name: 'Julius' } },
       }),
     )
-    await renderApp('#/profile')
+    await renderApp('#/settings')
     act(() => listeners.forEach((l) => l('INITIAL_SESSION', null)))
     expect(await screen.findByText(t.profile.offlineSession)).toBeInTheDocument()
   })

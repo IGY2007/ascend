@@ -44,3 +44,10 @@ export function formatLongDate(date: Date) {
 export function formatMonthYear(date: Date) {
   return monthYearFormatter.format(date)
 }
+
+const dayMonthFormatter = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric' })
+
+/** "25/11" en español, "11/25" en inglés (etiquetas cortas de los gráficos). */
+export function formatDayMonth(date: Date) {
+  return dayMonthFormatter.format(date)
+}

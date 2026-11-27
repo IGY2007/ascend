@@ -13,7 +13,8 @@ import {
 } from '@/features/profile/hooks'
 import { formatDecimal } from '@/domain/numbers'
 import { routineText } from '@/i18n/names'
-import { formatLongDate, t } from '@/i18n'
+import { formatLongDate, formatMonthYear, t } from '@/i18n'
+import { monthRecap } from '@/domain/gamification'
 import { cn } from '@/lib/utils'
 import {
   drawShare,
@@ -42,9 +43,11 @@ function volumeLabel(kg: number): string {
  * los movés y achicás con el dedo. Se exporta en formato historia (9:16) o post (4:5).
  */
 export function SharePage() {
-  const { id } = useParams()
+  const { id, ym } = useParams()
   const navigate = useNavigate()
-  const summary = useSessionSummary(id)
+  // Dos usos: el fin de un entrenamiento (/workout/:id/share) o el resumen del mes (/share/month/:ym)
+  const isMonth = !!ym
+  const summary = useSessionSummary(isMonth ? undefined : id)
   const avatar = useAvatar()
   const game = useGameState()
   const profile = useLocalProfile()
@@ -69,6 +72,26 @@ export function SharePage() {
   const { w: W, h: H } = FORMAT_SIZE[format]
 
   const data = useMemo<ShareData | null>(() => {
+    const streakBadge =
+      game && game.streak.current > 0 ? sh.badgeStreak(t.streak.weeks(game.streak.current)) : null
+    if (isMonth) {
+      if (!game || !ym) return null
+      const [y, m] = ym.split('-').map(Number)
+      const rc = monthRecap(game.facts, y!, (m ?? 1) - 1)
+      const name = formatMonthYear(new Date(y!, (m ?? 1) - 1, 1)).split(' ')[0]!
+      const stats = [
+        { label: sh.stats.workouts, value: String(rc.workouts) },
+        { label: sh.stats.volume, value: volumeLabel(rc.volume) },
+        { label: sh.stats.hours, value: formatDecimal(rc.minutes / 60, 1) },
+      ]
+      if (rc.prs > 0) stats.push({ label: sh.stats.records, value: String(rc.prs) })
+      return {
+        title: name.charAt(0).toUpperCase() + name.slice(1),
+        subtitle: sh.monthSubtitle(String(y)),
+        stats,
+        badge: streakBadge,
+      }
+    }
     if (!summary) return null
     const { session } = summary
     const stats = [
@@ -82,9 +105,9 @@ export function SharePage() {
       title: routineText(session.name),
       subtitle: formatLongDate(new Date(session.startedAt)),
       stats,
-      badge: summary.records.length > 0 ? sh.badgeRecord : null,
+      badge: summary.records.length > 0 ? sh.badgeRecord : streakBadge,
     }
-  }, [summary])
+  }, [summary, game, isMonth, ym])
 
   useEffect(() => {
     void document.fonts.ready.then(() => setFontsReady(true))
@@ -102,7 +125,7 @@ export function SharePage() {
     img.onload = () => setAvatarImg(img)
     img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(clone))}`
     // Se reintenta cuando aparece la pantalla (antes de cargar el resumen no está montada)
-  }, [avatar, game?.monthBody, summary?.session.id])
+  }, [avatar, game?.monthBody, summary?.session.id, isMonth])
 
   // Redibuja la vista previa
   useEffect(() => {
@@ -204,8 +227,9 @@ export function SharePage() {
     }
   }
 
-  if (summary === undefined) return <Skeleton className="m-5 h-96" />
-  if (summary === null) return <p className="p-8 text-center text-muted">{t.workout.notFound}</p>
+  if (isMonth ? !game : summary === undefined) return <Skeleton className="m-5 h-96" />
+  if (!isMonth && summary === null)
+    return <p className="p-8 text-center text-muted">{t.workout.notFound}</p>
 
   const seg = <T extends string>(value: T, options: [T, string][], onPick: (v: T) => void) => (
     <div

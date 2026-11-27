@@ -222,6 +222,7 @@ export const en = {
     targetWeight: 'Target weight',
     years: 'years',
     goalQ: "What's your goal?",
+    targetOptional: 'Target weight (optional)',
     targetQ: 'What weight would you like to reach?',
     targetHint: "Optional. We'll show you how far you have to go.",
     activityQ: 'Outside the gym, how much do you move during the day?',
@@ -760,7 +761,157 @@ export const en = {
     share: 'Share',
     saved: 'Image saved.',
     badgeRecord: 'New record',
-    stats: { time: 'Time', volume: 'Volume', sets: 'Sets', records: 'Records' },
+    badgeStreak: (w: string) => `${w} streak`,
+    monthSubtitle: (year: string) => `Monthly recap · ${year}`,
+    shareMonth: 'Share recap',
+    stats: {
+      time: 'Time',
+      volume: 'Volume',
+      sets: 'Sets',
+      records: 'Records',
+      workouts: 'Workouts',
+      hours: 'Hours',
+    },
+  },
+  journey: {
+    title: 'The journey',
+    subtitle: 'Your path to Olympus',
+    campOf: (n: number, total: number) => `Camp ${n} of ${total}`,
+    here: 'You are here',
+    next: (name: string, level: number) => `Next: ${name} at level ${level}`,
+    lockedAt: (level: number) => `Unlocks at level ${level}`,
+    read: 'Read the story',
+    unlocks: 'Reaching it unlocks',
+    lesson: 'What it teaches you',
+    reached: 'New camp',
+    reachedTitle: (name: string) => `You reached ${name}!`,
+    arrived: 'You made it!',
+    summit: 'You reached the summit!',
+    camps: {
+      base: {
+        name: 'Base camp',
+        era: 'Greece, 6th century BC',
+        title: 'Milo of Croton',
+        story:
+          'Milo was a Greek wrestler who won six times at the Olympic Games. Legend says he trained by carrying a newborn calf on his shoulders every day. The calf grew, and so did Milo, until one day he carried a full-grown bull.',
+        lesson:
+          'That is progressive overload: a little more than last time, week after week. It is what ASCEND does with your weights.',
+      },
+      gymnasion: {
+        name: 'The Greek gymnasium',
+        era: 'Ancient Greece',
+        title: 'Where does “gym” come from?',
+        story:
+          'The word comes from the Greek gymnasion, from gymnos, “naked”: Greek athletes trained without clothes. The gymnasium was much more than a place to exercise: people also studied, discussed philosophy and educated the young there.',
+        lesson:
+          'Body and mind always went together. Caring about technique is training with your head.',
+      },
+      strongmen: {
+        name: 'The strongmen',
+        era: 'Late 19th century',
+        title: 'Eugen Sandow',
+        story:
+          'Sandow, born in Prussia in 1867, started as a circus strongman and ended up showing his physique in theaters around the world. In 1901 he organized “The Great Competition” at London’s Royal Albert Hall, considered the first major physique contest. That is why he is called the father of modern bodybuilding.',
+        lesson:
+          'Sandow trained with a method and tracked his progress. What is not measured cannot improve.',
+      },
+      muscle_beach: {
+        name: 'Muscle Beach',
+        era: '1930s',
+        title: 'Weights by the sea',
+        story:
+          'In the 1930s, in Santa Monica (California), a group of acrobats and lifters started training outdoors by the beach. The spot became famous as Muscle Beach and thousands came to watch.',
+        lesson: 'Training together is motivating. Showing your progress inspires others to start.',
+      },
+      golden_era: {
+        name: 'The golden era',
+        era: '1960s and 70s',
+        title: 'Gold’s Gym and Pumping Iron',
+        story:
+          'In 1965 Joe Gold opened Gold’s Gym in Venice Beach, which became the mecca of bodybuilding. Arnold Schwarzenegger trained there and became world famous with the documentary Pumping Iron (1977).',
+        lesson:
+          'Champions trained consistently for years. There are no shortcuts, only weeks in a row.',
+      },
+      iron: {
+        name: 'The iron',
+        era: 'Since the 1970s',
+        title: 'Powerlifting and science',
+        story:
+          'In 1972 the International Powerlifting Federation (IPF) was founded, competing in three lifts: squat, bench press and deadlift. Today science confirms what the iron taught: progressive overload, about 10 to 20 weekly sets per muscle, enough protein and good rest.',
+        lesson: 'Strength and muscle are built with the basics done well, repeated many times.',
+      },
+      olympus: {
+        name: 'Olympus',
+        era: 'Greek mythology',
+        title: 'Home of the gods',
+        story:
+          'The Greeks imagined their gods and heroes with perfect bodies, like Heracles and his twelve labors. The sculptor Polykleitos (5th century BC) even wrote a “canon” of ideal proportions, seen in his statue the Doryphoros. And you reached the top.',
+        lesson:
+          'Reaching Olympus is not the end: it proves consistency made you a different person.',
+      },
+    } as Record<
+      string,
+      { name: string; era: string; title: string; story: string; lesson: string }
+    >,
+  },
+  streak: {
+    title: 'Streak',
+    weeks: (n: number) => (n === 1 ? '1 week' : `${n} weeks`),
+    short: (n: number) => `${n} wk`,
+    best: (n: number) => `Best streak: ${n === 1 ? '1 week' : `${n} weeks`}`,
+    freezes: (n: number) => (n === 1 ? '1 shield' : `${n} shields`),
+    hint: 'Weeks in a row hitting your goal. Every 4 weeks you earn a shield that saves one slow week.',
+    none: 'Hit your goal this week to start your streak.',
+    pending: (left: number) =>
+      left === 1
+        ? '1 more workout this week to add to it.'
+        : `${left} more workouts this week to add to it.`,
+    done: 'Week done: your streak grows.',
+  },
+  profilePage: {
+    title: 'Profile',
+    settings: 'Settings',
+    since: (date: string) => `Training with ASCEND since ${date}`,
+    stats: {
+      streak: 'Streak',
+      tonnes: 'Tonnes',
+      workouts: 'Workouts',
+      records: 'Records',
+      camp: 'Camp',
+      bestStreak: 'Best streak',
+    },
+    lately: 'Lately',
+    latelyHint: 'Workouts per week (last 8)',
+    friends: 'Friends',
+    friendsSoon:
+      'Soon you will be able to add friends, see their characters and compete with them.',
+    comingSoon: 'Coming soon',
+  },
+  settings: {
+    title: 'Settings',
+    myData: 'My data',
+    myDataHint: 'Height, weight, goal, days, injuries…',
+    character: 'Character',
+    nutritionPlan: 'Nutrition plan',
+    nutritionPlanHint: (kcal: string) => `${kcal} kcal per day`,
+    appearance: 'Appearance',
+    themes: { dark: 'Dark', light: 'Light', system: 'Automatic' },
+    themeHint: 'Automatic follows your iPhone setting.',
+    testing: 'Testing',
+    testingHint: 'Only while we test the app.',
+  },
+  editData: {
+    title: 'My data',
+    saved: 'Data saved.',
+    personal: 'You',
+    training: 'Training',
+    targetNone: 'No target',
+    regenerateTitle: 'Rebuild your routines?',
+    regenerateBody:
+      'You changed things that affect your routines. We can rebuild them with your new data: the weights you entered stay on exercises that remain. Your own routines are not touched.',
+    regenerate: 'Rebuild routines',
+    keep: 'Keep them as they are',
+    regenerated: 'Routines rebuilt.',
   },
   units: {
     kg: 'kg',

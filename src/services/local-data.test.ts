@@ -127,3 +127,28 @@ describe('biblioteca de rutinas', () => {
     expect(await workoutService.nextTemplateId()).toBe(nextBefore)
   })
 })
+
+describe('mis datos', () => {
+  it('editar datos recalcula los macros y, si se pide, rearma rutinas sin perder los kilos', async () => {
+    await db.delete()
+    await db.open()
+    await profileService.completeOnboarding(ANSWERS)
+    const before = (await templatesService.list()).filter((t) => t.source === 'generated')
+    const item = before[0]!.items[0]!
+    await templatesService.updateItem(item.id, { targetWeights: [60, 60, 62.5] })
+    const kcalBefore = (await nutritionService.current())!.kcal
+
+    // Cambio de objetivo: cambian las calorías, las rutinas quedan igual
+    await profileService.updateAnswers({ goal: 'fat_loss' })
+    expect((await nutritionService.current())!.kcal).toBeLessThan(kcalBefore)
+    expect((await templatesService.list()).map((t) => t.id)).toEqual(before.map((t) => t.id))
+
+    // Cambio de días y rearmado: los kilos del ejercicio que sigue se mantienen
+    await profileService.updateAnswers({ daysPerWeek: 3, split: 'full_body' }, true)
+    const after = (await templatesService.list()).filter((t) => t.source === 'generated')
+    expect(after.map((t) => t.id)).not.toEqual(before.map((t) => t.id))
+    const same = after.flatMap((t) => t.items).find((i) => i.exerciseId === item.exerciseId)
+    if (same) expect(same.targetWeights).toEqual([60, 60, 62.5])
+    expect((await profileService.get())!.daysPerWeek).toBe(3)
+  })
+})

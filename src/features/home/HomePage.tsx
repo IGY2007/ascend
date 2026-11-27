@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import { Check, Play } from 'lucide-react'
 import { HeroCard } from './HeroCard'
 import { WeekCard } from './WeekCard'
+import { JourneyCard } from '@/features/journey/JourneyCard'
 import { ActiveWorkoutBanner } from '@/features/workout/ActiveWorkoutBanner'
 import { useStartWorkout } from '@/features/workout/use-start-workout'
 import {
@@ -38,13 +39,13 @@ export function HomePage() {
     <>
       <p className="text-sm font-medium text-muted first-letter:uppercase">{formatLongDate(now)}</p>
       <header className="mt-1 mb-5 flex items-center justify-between gap-3">
-        <h1 className="min-w-0 truncate text-[1.75rem] leading-tight font-bold tracking-tight">
+        <h1 className="min-w-0 truncate text-[1.6rem] leading-tight font-bold tracking-tight">
           {h.greeting(name)}
         </h1>
 
         {/* Lo que toca hoy, a mano arriba a la derecha */}
         {next && !active && (
-          <div className="flex max-w-[56%] shrink-0 items-center gap-2 rounded-2xl border border-border bg-card py-1.5 pr-1.5 pl-3">
+          <div className="flex max-w-[46%] shrink-0 items-center gap-2 rounded-2xl border border-border bg-card py-1.5 pr-1.5 pl-3">
             <Link to={`/workouts/${next.id}`} className="min-w-0">
               <span className="flex items-center gap-1 text-[0.7rem] font-medium text-accent-2">
                 {trainedToday && <Check className="size-3 text-success" strokeWidth={3} />}
@@ -71,6 +72,8 @@ export function HomePage() {
       <HeroCard trainedToday={trainedToday} />
 
       <WeekCard className="mt-4" />
+
+      <JourneyCard className="mt-4" />
     </>
   )
 }

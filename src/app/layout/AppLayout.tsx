@@ -4,6 +4,7 @@ import { BottomNav } from './BottomNav'
 import { Sidebar } from './Sidebar'
 import { AchievementWatcher } from '@/features/game/AchievementWatcher'
 import { VoltBuddy } from '@/features/avatar/VoltBuddy'
+import { CampWatcher } from '@/features/journey/CampWatcher'
 
 /** Layout de las secciones principales: bottom nav en móvil, sidebar en desktop. */
 export function AppLayout() {
@@ -28,6 +29,7 @@ export function AppLayout() {
       <BottomNav />
       <AchievementWatcher />
       <VoltBuddy />
+      <CampWatcher />
     </div>
   )
 }

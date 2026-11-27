@@ -83,6 +83,25 @@
   }
 }
 
+/* Modo claro: mismos tokens, otra paleta. Los verdes y violetas se oscurecen para leerse sobre blanco. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #f5f4f9;
+  --color-bg-2: #ffffff;
+  --color-card: #ffffff;
+  --color-card-2: #efedf6;
+  --color-border: #e2dfeb;
+  --color-border-strong: #cdc8dc;
+  --color-fg: #17141f;
+  --color-muted: #5d5970;
+  --color-subtle: #858197;
+  --color-accent: #7c3aed;
+  --color-accent-2: #6d28d9;
+  --color-success: #4d7c0f;
+  --color-danger: #dc2626;
+  --color-warning: #b45309;
+}
+
 @layer base {
   html {
     color-scheme: dark;

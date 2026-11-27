@@ -1,4 +1,5 @@
-import { Sparkles } from 'lucide-react'
+import { Link } from 'react-router'
+import { Camera, Sparkles } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { useExerciseLibrary, useGameState } from '@/features/profile/hooks'
 import { monthRecap, volumeEquivalent } from '@/domain/gamification'
@@ -51,6 +52,13 @@ export function MonthRecap({ year, month }: { year: number; month: number }) {
               {r.equivalent(formatDecimal(eq.count, 1), r.things[eq.thing])}
             </p>
           )}
+          <Link
+            to={`/share/month/${year}-${String(month + 1).padStart(2, '0')}`}
+            className="mt-4 flex h-11 items-center justify-center gap-2 rounded-[var(--radius-field)] bg-accent font-semibold text-accent-fg active:scale-[0.99]"
+          >
+            <Camera className="size-4" />
+            {t.share.shareMonth}
+          </Link>
           <dl className="mt-3 space-y-3 text-sm">
             {name(rc.topExerciseId) && (
               <div>

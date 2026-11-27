@@ -28,7 +28,6 @@ import {
   Columns3,
   Layers,
   LayoutGrid,
-  Rabbit,
   Turtle,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -74,15 +73,12 @@ const STEPS = [
   'body',
   'avatar',
   'goal',
-  'target',
   'activity',
   'experience',
   'days',
   'split',
-  'legs',
   'injuries',
   'preference',
-  'duration',
   'place',
   'summary',
 ] as const
@@ -108,15 +104,12 @@ const POSE: Partial<Record<Step, [MascotPose, MascotMood]>> = {
   avatar: ['cheer', 'proud'],
   body: ['point', 'happy'],
   goal: ['flex', 'proud'],
-  target: ['think', 'wow'],
   activity: ['idle', 'wink'],
   experience: ['lift', 'proud'],
   days: ['point', 'happy'],
   split: ['think', 'happy'],
-  legs: ['flex', 'wink'],
   injuries: ['think', 'wow'],
   preference: ['lift', 'happy'],
-  duration: ['idle', 'happy'],
   place: ['point', 'proud'],
 }
 const L = t.labels
@@ -135,9 +128,8 @@ function validate(step: Step, d: Draft): string | null {
       if (!inRange(d.age, 14, 90)) return o.errors.age
       if (!inRange(d.heightCm, 120, 230)) return o.errors.height
       if (!inRange(d.weightKg, 35, 250)) return o.errors.weight
+      if (d.targetWeightKg != null && !inRange(d.targetWeightKg, 35, 250)) return o.errors.target
       return null
-    case 'target':
-      return d.targetWeightKg == null || inRange(d.targetWeightKg, 35, 250) ? null : o.errors.target
     case 'goal':
       return d.goal ? null : ''
     case 'activity':
@@ -148,14 +140,10 @@ function validate(step: Step, d: Draft): string | null {
       return inRange(d.daysPerWeek, 2, 6) ? null : o.errors.days
     case 'split':
       return d.split ? null : ''
-    case 'legs':
-      return d.easeLegs === undefined ? '' : null
     case 'injuries':
       return d.injuries ? null : ''
     case 'preference':
       return d.equipmentPref ? null : ''
-    case 'duration':
-      return d.sessionMinutes ? null : ''
     case 'place':
       return d.place ? null : ''
     default:
@@ -170,7 +158,11 @@ export function OnboardingPage() {
   const existing = useLocalProfile()
   const avatarProgress = useAvatarProgress()
   // Si se rehace el cuestionario, arranca con las respuestas anteriores y sin la bienvenida.
-  const [draft, setDraft] = useState<Draft>(() => ({ sessionMinutes: 60, place: 'gym' }))
+  const [draft, setDraft] = useState<Draft>(() => ({
+    sessionMinutes: 60,
+    place: 'gym',
+    easeLegs: false,
+  }))
   const [loadedExisting, setLoadedExisting] = useState(false)
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState(1)
@@ -271,10 +263,7 @@ export function OnboardingPage() {
     'experience',
     'days',
     'split',
-    'legs',
     'preference',
-    'duration',
-    'place',
   ].includes(step)
 
   return (
@@ -435,7 +424,19 @@ export function OnboardingPage() {
                     value={draft.weightKg ?? null}
                     onChange={(v) => set('weightKg', v ?? undefined)}
                   />
+                  <UnitField
+                    label={o.targetOptional}
+                    unit={t.units.kg}
+                    value={draft.targetWeightKg ?? null}
+                    onChange={(v) => set('targetWeightKg', v)}
+                  />
                 </div>
+                {draft.targetWeightKg != null && (
+                  <Tip bare className="mt-5">
+                    {o.tips.target}
+                    {targetWeeks ? ` ${o.tips.targetWeeks(targetWeeks)}` : ''}
+                  </Tip>
+                )}
               </Question>
             )}
 
@@ -465,27 +466,6 @@ export function OnboardingPage() {
                     {goalTip}
                   </Tip>
                 )}
-              </Question>
-            )}
-
-            {step === 'target' && (
-              <Question
-                pose={POSE[step]?.[0]}
-                mood={POSE[step]?.[1]}
-                title={o.targetQ}
-                hint={o.targetHint}
-              >
-                <UnitField
-                  label={o.targetWeight}
-                  unit={t.units.kg}
-                  value={draft.targetWeightKg ?? null}
-                  onChange={(v) => set('targetWeightKg', v)}
-                  autoFocus
-                />
-                <Tip bare className="mt-5">
-                  {o.tips.target}
-                  {targetWeeks ? ` ${o.tips.targetWeeks(targetWeeks)}` : ''}
-                </Tip>
               </Question>
             )}
 
@@ -603,30 +583,6 @@ export function OnboardingPage() {
               </Question>
             )}
 
-            {step === 'legs' && (
-              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.legsQ}>
-                <Options>
-                  <OptionCard
-                    icon={Rabbit}
-                    title={o.legsYes}
-                    description={o.legsYesHint}
-                    selected={draft.easeLegs === false}
-                    onSelect={() => choose('easeLegs', false)}
-                  />
-                  <OptionCard
-                    icon={Turtle}
-                    title={o.legsNo}
-                    description={o.legsNoHint}
-                    selected={draft.easeLegs === true}
-                    onSelect={() => choose('easeLegs', true)}
-                  />
-                </Options>
-                <Tip bare className="mt-5">
-                  {o.tips.legs}
-                </Tip>
-              </Question>
-            )}
-
             {step === 'injuries' && (
               <Question
                 pose={POSE[step]?.[0]}
@@ -648,6 +604,13 @@ export function OnboardingPage() {
                       }}
                     />
                   ))}
+                  <OptionCard
+                    icon={Turtle}
+                    title={o.legsNo}
+                    description={o.legsNoHint}
+                    selected={draft.easeLegs === true}
+                    onSelect={() => set('easeLegs', !draft.easeLegs)}
+                  />
                   <OptionCard
                     icon={ShieldCheck}
                     title={L.injuryNone}
@@ -678,33 +641,6 @@ export function OnboardingPage() {
               </Question>
             )}
 
-            {step === 'duration' && (
-              <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.durationQ}>
-                <div className="grid grid-cols-2 gap-3" role="radiogroup">
-                  {[45, 60, 75, 90].map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      role="radio"
-                      aria-checked={draft.sessionMinutes === m}
-                      onClick={() => choose('sessionMinutes', m)}
-                      className={cn(
-                        'h-20 rounded-2xl border num text-xl font-semibold transition-[transform,background-color,border-color] duration-150 active:scale-[0.97]',
-                        draft.sessionMinutes === m
-                          ? 'border-accent/70 bg-accent/12 text-fg'
-                          : 'border-border bg-card text-muted',
-                      )}
-                    >
-                      {o.minutes(m)}
-                    </button>
-                  ))}
-                </div>
-                <Tip bare className="mt-6">
-                  {o.tips.duration}
-                </Tip>
-              </Question>
-            )}
-
             {step === 'place' && (
               <Question pose={POSE[step]?.[0]} mood={POSE[step]?.[1]} title={o.placeQ}>
                 <Options>
@@ -720,10 +656,33 @@ export function OnboardingPage() {
                       title={L.place[v as TrainingPlace]}
                       description={L.placeHint[v as TrainingPlace]}
                       selected={draft.place === v}
-                      onSelect={() => choose('place', v)}
+                      onSelect={() => set('place', v)}
                     />
                   ))}
                 </Options>
+                <p className="mt-6 mb-2 px-1 text-sm font-medium text-muted">{o.durationQ}</p>
+                <div className="grid grid-cols-4 gap-2" role="radiogroup">
+                  {[45, 60, 75, 90].map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      role="radio"
+                      aria-checked={draft.sessionMinutes === m}
+                      onClick={() => set('sessionMinutes', m)}
+                      className={cn(
+                        'h-14 rounded-2xl border num text-base font-semibold transition-colors',
+                        draft.sessionMinutes === m
+                          ? 'border-accent/70 bg-accent/12 text-fg'
+                          : 'border-border bg-card text-muted',
+                      )}
+                    >
+                      {o.minutes(m)}
+                    </button>
+                  ))}
+                </div>
+                <Tip bare className="mt-5">
+                  {o.tips.duration}
+                </Tip>
               </Question>
             )}
 
@@ -805,19 +764,6 @@ export function OnboardingPage() {
         )}
         {step !== 'welcome' && step !== 'summary' && !autoAdvance && (
           <div className="flex gap-3">
-            {step === 'target' && (
-              <Button
-                size="lg"
-                variant="secondary"
-                className="flex-1"
-                onClick={() => {
-                  set('targetWeightKg', null)
-                  go(1)
-                }}
-              >
-                {o.skip}
-              </Button>
-            )}
             <Button size="lg" className="flex-1" onClick={next}>
               {o.next}
             </Button>

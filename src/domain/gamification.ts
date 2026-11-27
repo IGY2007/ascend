@@ -118,6 +118,67 @@ export function bestWeekStreak(f: Facts): number {
   return best
 }
 
+// ---------------------------------------------------------------- racha semanal
+
+export interface StreakInfo {
+  /** Semanas seguidas cumpliendo la meta (la actual suma solo si ya se cumplió). */
+  current: number
+  best: number
+  /** Protectores disponibles: salvan una semana floja sin cortar la racha. */
+  freezes: number
+  /** Semanas salvadas por un protector (lunes de cada una). */
+  frozenWeeks: string[]
+  thisWeekDone: boolean
+}
+
+/** Cada cuántas semanas seguidas se gana un protector, y cuántos se pueden guardar. */
+export const FREEZE_EVERY = 4
+export const MAX_FREEZES = 2
+
+/**
+ * Racha por semanas (no por días: con días de descanso planeados una racha diaria se cortaría
+ * siempre). Se calcula de los datos, así que nunca se desincroniza.
+ */
+export function weeklyStreak(f: Facts, today: string): StreakInfo {
+  const empty: StreakInfo = {
+    current: 0,
+    best: 0,
+    freezes: 0,
+    frozenWeeks: [],
+    thisWeekDone: false,
+  }
+  if (f.weekGoal <= 0 || f.sessions.length === 0) return empty
+  const met = new Set(weeksGoalMet(f))
+  const first = [...f.sessions].map((s) => s.date).sort()[0]!
+  const thisWeek = toDateKey(startOfWeek(fromDateKey(today)))
+  let week = startOfWeek(fromDateKey(first))
+  let current = 0
+  let best = 0
+  let run = 0
+  let freezes = 0
+  const frozenWeeks: string[] = []
+  while (toDateKey(week) < thisWeek) {
+    const key = toDateKey(week)
+    if (met.has(key)) {
+      current++
+      run++
+      if (run % FREEZE_EVERY === 0) freezes = Math.min(MAX_FREEZES, freezes + 1)
+    } else if (current > 0 && freezes > 0) {
+      freezes--
+      frozenWeeks.push(key)
+      run = 0
+    } else {
+      current = 0
+      run = 0
+    }
+    best = Math.max(best, current)
+    week = addDays(week, 7)
+  }
+  const thisWeekDone = met.has(thisWeek)
+  if (thisWeekDone) current++
+  return { current, best: Math.max(best, current), freezes, frozenWeeks, thisWeekDone }
+}
+
 export interface XpBreakdown {
   total: number
   sets: number

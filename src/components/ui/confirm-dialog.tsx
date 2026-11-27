@@ -12,6 +12,8 @@ interface ConfirmDialogProps {
   cancelLabel?: string
   destructive?: boolean
   onConfirm: () => void
+  /** Acción del botón secundario (por defecto solo cierra). */
+  onCancel?: () => void
 }
 
 /** Confirmación para acciones que no se pueden deshacer (descartar, cerrar sesión, borrar). */
@@ -24,6 +26,7 @@ export function ConfirmDialog({
   cancelLabel = t.common.cancel,
   destructive,
   onConfirm,
+  onCancel,
 }: ConfirmDialogProps) {
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
@@ -35,7 +38,10 @@ export function ConfirmDialog({
             {description}
           </AlertDialog.Description>
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <AlertDialog.Cancel className={buttonVariants({ variant: 'secondary' })}>
+            <AlertDialog.Cancel
+              onClick={onCancel}
+              className={buttonVariants({ variant: 'secondary' })}
+            >
               {cancelLabel}
             </AlertDialog.Cancel>
             <AlertDialog.Action

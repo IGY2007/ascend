@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  weeklyStreak,
   achievements,
   bestWeekStreak,
   completedChallenges,
@@ -171,5 +172,47 @@ describe('resumen del mes', () => {
     expect(r.bestLift).toEqual({ exerciseId: 'row', e1rm: 95 })
     expect(volumeEquivalent(3000)).toEqual({ thing: 'car', count: 2 })
     expect(volumeEquivalent(100)).toBeNull()
+  })
+})
+
+describe('racha semanal', () => {
+  const s = (date: string) => ({ id: date, date, sets: 10, volume: 1000, durationSeconds: 3600 })
+  // Semanas que empiezan el lunes: 2, 9, 16, 23 y 30 de noviembre de 2026
+  const weeks = (mondays: string[], perWeek = 2) =>
+    mondays.flatMap((m) => {
+      const d = new Date(`${m}T12:00:00`)
+      return Array.from({ length: perWeek }, (_, i) => {
+        const x = new Date(d)
+        x.setDate(d.getDate() + i)
+        return s(x.toISOString().slice(0, 10))
+      })
+    })
+
+  it('cuenta semanas seguidas y la actual suma solo si ya se cumplió', () => {
+    const f: Facts = {
+      ...empty,
+      weekGoal: 2,
+      sessions: weeks(['2026-11-02', '2026-11-09', '2026-11-16']),
+    }
+    expect(weeklyStreak(f, '2026-11-25')).toMatchObject({
+      current: 3,
+      best: 3,
+      thisWeekDone: false,
+    })
+    const g: Facts = { ...f, sessions: [...f.sessions, ...weeks(['2026-11-23'])] }
+    expect(weeklyStreak(g, '2026-11-25')).toMatchObject({ current: 4, thisWeekDone: true })
+  })
+
+  it('una semana floja corta la racha… salvo que tengas un protector', () => {
+    // 4 semanas cumplidas (gana 1 protector), una floja, y sigue
+    const mondays = ['2026-10-05', '2026-10-12', '2026-10-19', '2026-10-26', '2026-11-09']
+    const f: Facts = { ...empty, weekGoal: 2, sessions: weeks(mondays) }
+    const st = weeklyStreak(f, '2026-11-18')
+    expect(st.frozenWeeks).toEqual(['2026-11-02'])
+    expect(st.current).toBe(5)
+    expect(st.freezes).toBe(0)
+    // Sin protector, se corta
+    const g: Facts = { ...empty, weekGoal: 2, sessions: weeks(['2026-10-26', '2026-11-09']) }
+    expect(weeklyStreak(g, '2026-11-18').current).toBe(1)
   })
 })

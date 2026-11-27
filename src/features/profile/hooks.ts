@@ -65,13 +65,6 @@ export function useTodayCardio(date: string) {
   return useLiveQuery(() => cardioService.byDate(date), [date])
 }
 
-export function useTodayWater(date: string) {
-  return useLiveQuery(
-    async () => (await waterService.byDate(date)).reduce((s, w) => s + w.ml, 0),
-    [date],
-  )
-}
-
 export function useWaterTarget() {
   return useLiveQuery(() => waterService.target())
 }
@@ -88,10 +81,6 @@ export function useWeeklyStats(today: string) {
   return useLiveQuery(() => statsService.weekly(today, 8), [today])
 }
 
-export function useWaterDaily(today: string) {
-  return useLiveQuery(() => statsService.waterDaily(today, 14), [today])
-}
-
 export function useExercisesDone() {
   return useLiveQuery(() => statsService.exercisesDone())
 }
@@ -101,10 +90,6 @@ export function useExerciseHistory(exerciseId: string | null) {
     async () => (exerciseId ? statsService.exerciseHistory(exerciseId) : []),
     [exerciseId],
   )
-}
-
-export function useCardioLogs() {
-  return useLiveQuery(async () => (await cardioService.all()).reverse())
 }
 
 export function useDaySessions(date: string) {

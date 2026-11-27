@@ -102,6 +102,8 @@ Paleta inicial (tokens de Tailwind / variables CSS):
 - text `#F4F4F5` · text-muted `#92929E`
 - accent `#8B5CF6` · accent-2 `#A78BFA` · success `#22C55E`
 
+Hay **modo claro** (Ajustes → Apariencia: automático / oscuro / claro): mismos tokens con otra paleta en `:root[data-theme='light']` de `src/index.css`; el verde lima se oscurece para leerse sobre blanco. El oscuro sigue siendo la identidad de la marca.
+
 Tipografía moderna (Inter o Geist), números tabulares en los datos. Esquinas suaves, espaciado generoso, animaciones cortas y funcionales. Evitar: gradientes por todos lados, colores saturados, cards innecesarias, emojis como íconos, aspecto de plantilla genérica.
 
 Navegación: barra inferior en móvil (Home, Workouts, Progress, Nutrition, Profile); sidebar compacta en desktop. Las secciones que todavía no existen **no se muestran** (o aparecen deshabilitadas con la etiqueta "Próximamente"). Nunca botones decorativos que parezcan funcionales.

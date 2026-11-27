@@ -142,32 +142,42 @@ export type Unlock =
 /** Lo que no figura acá es gratis desde el principio. Claves: "campo:valor". */
 const UNLOCKS: Record<string, Unlock> = {
   'hair:mohawk': { kind: 'level', level: 3 },
-  'hair:afro': { kind: 'level', level: 4 },
-  'hair:braids': { kind: 'level', level: 4 },
-  'hair:spiky': { kind: 'level', level: 6 },
+  'hair:afro': { kind: 'level', level: 5 },
+  'hair:braids': { kind: 'level', level: 5 },
+  'hair:spiky': { kind: 'level', level: 8 },
   'hairColor:7': { kind: 'level', level: 3 },
   'hairColor:8': { kind: 'level', level: 3 },
   'hairColor:9': { kind: 'level', level: 5 },
-  'eyes:focused': { kind: 'level', level: 2 },
-  'facial:goatee': { kind: 'level', level: 2 },
+  'eyes:focused': { kind: 'level', level: 3 },
+  'facial:goatee': { kind: 'level', level: 3 },
   'outfit:hoodie': { kind: 'level', level: 3 },
   'outfit:jersey': { kind: 'achievement', id: 'full_week' },
-  'shirtColor:7': { kind: 'level', level: 2 },
-  'shirtColor:8': { kind: 'level', level: 2 },
+  'shirtColor:7': { kind: 'level', level: 3 },
+  'shirtColor:8': { kind: 'level', level: 3 },
   'shirtColor:9': { kind: 'pro' },
-  'shoesColor:3': { kind: 'level', level: 2 },
+  'shoesColor:3': { kind: 'level', level: 3 },
   'shoesColor:4': { kind: 'achievement', id: 'first_pr' },
   'shoesColor:5': { kind: 'pro' },
-  'headwear:cap': { kind: 'level', level: 2 },
+  'headwear:cap': { kind: 'level', level: 3 },
   'headwear:beanie': { kind: 'level', level: 3 },
   'headwear:headphones': { kind: 'achievement', id: 'streak_4' },
   'headwear:crown': { kind: 'pro' },
-  'eyewear:sunglasses': { kind: 'level', level: 4 },
-  'extra:wristbands': { kind: 'level', level: 2 },
+  'eyewear:sunglasses': { kind: 'level', level: 5 },
+  'extra:wristbands': { kind: 'level', level: 3 },
   'extra:medal': { kind: 'achievement', id: 'workouts_10' },
   'extra:chain': { kind: 'achievement', id: 'club_100' },
   'extra:cape': { kind: 'pro' },
   'extra:aura': { kind: 'pro' },
+}
+
+/** Lo que se desbloquea exactamente al llegar a un nivel (para mostrarlo en el viaje). */
+export function unlocksAtLevel(level: number): { field: keyof AvatarConfig; value: string }[] {
+  return Object.entries(UNLOCKS)
+    .filter(([, u]) => u.kind === 'level' && u.level === level)
+    .map(([k]) => {
+      const [field, value] = k.split(':') as [keyof AvatarConfig, string]
+      return { field, value }
+    })
 }
 
 export function unlockOf(field: keyof AvatarConfig, value: string | number): Unlock {

@@ -1,12 +1,13 @@
 import { Link } from 'react-router'
 import { motion } from 'motion/react'
 import { ChevronRight } from 'lucide-react'
+import { StreakBadge } from '@/features/game/StreakBadge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AvatarFigure } from '@/features/avatar/AvatarFigure'
 import { Mascot } from '@/features/avatar/Mascot'
 import { bodyComment } from '@/features/avatar/body-comment'
 import { useAvatar, useGameState, useLocalProfile } from '@/features/profile/hooks'
-import { formatMonthYear, t } from '@/i18n'
+import { t } from '@/i18n'
 
 const g = t.game
 
@@ -20,7 +21,6 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
   const profile = useLocalProfile()
   if (!game || !avatar) return <Skeleton className="h-64 rounded-[var(--radius-card)]" />
   const { level } = game
-  const month = formatMonthYear(new Date()).split(' ')[0]!
 
   return (
     <Link
@@ -33,7 +33,7 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
       }}
     >
       {/* Piso */}
-      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/25 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-accent/10 to-transparent" />
       <div className="relative flex items-end">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -54,17 +54,17 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
         <div className="flex min-w-0 flex-1 flex-col self-stretch py-4 pr-4">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-xs font-medium text-muted first-letter:uppercase">
-                {t.avatar.monthBody(month)}
-              </p>
-              <p className="mt-0.5 text-lg leading-tight font-bold">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <StreakBadge streak={game.streak} />
+              </div>
+              <p className="mt-1.5 text-lg leading-tight font-bold">
                 {g.levelShort(level.level)} ·{' '}
                 <span className="text-success">{g.titles[level.title]}</span>
               </p>
             </div>
             <ChevronRight className="size-5 shrink-0 text-muted" />
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/30">
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-card-2">
             <motion.div
               className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-success"
               initial={{ scaleX: 0 }}
@@ -76,7 +76,7 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
 
           {/* Volt comenta */}
           <div className="mt-auto pt-3">
-            <p className="rounded-2xl rounded-br-md bg-black/35 px-3 py-2 text-[0.8rem] leading-snug text-fg/90">
+            <p className="rounded-2xl rounded-br-md bg-bg-2/80 px-3 py-2 text-[0.8rem] leading-snug text-fg">
               {bodyComment(game.monthBody, game.monthSets)}
             </p>
             <div className="-mt-1 flex justify-end">

@@ -4,25 +4,25 @@ import {
   Flame,
   Mountain,
   Settings,
+  Images,
   Trophy,
-  Users,
   Weight,
   type LucideIcon,
 } from 'lucide-react'
-import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BarChart, type Bar } from '@/components/charts/BarChart'
 import { AvatarFigure } from '@/features/avatar/AvatarFigure'
 import { AchievementsGrid } from '@/features/game/AchievementsGrid'
 import { StreakBadge } from '@/features/game/StreakBadge'
 import { useUser } from '@/features/auth/auth-context'
 import { CAMPS } from '@/domain/journey'
-import { fromDateKey, toDateKey } from '@/domain/dates'
 import { formatDecimal } from '@/domain/numbers'
 import { cn } from '@/lib/utils'
-import { formatDayMonth, formatMonthYear, t } from '@/i18n'
+import { formatMonthYear, t } from '@/i18n'
+import { PhotoGrid } from '@/features/gallery/PhotoGrid'
+import { usePhotos } from '@/features/gallery/hooks'
+import { FriendsPreview } from './FriendsPreview'
 import { useDisplayName } from './use-profile'
-import { useAvatar, useGameState, useLocalProfile, useWeeklyStats } from './hooks'
+import { useAvatar, useGameState, useLocalProfile } from './hooks'
 
 const pp = t.profilePage
 
@@ -36,7 +36,7 @@ export function ProfilePage() {
   const profile = useLocalProfile()
   const game = useGameState()
   const avatar = useAvatar()
-  const weekly = useWeeklyStats(toDateKey(new Date()))
+  const photos = usePhotos()
 
   const since = profile?.completedAt ?? user.createdAt
   const totals = game
@@ -46,15 +46,6 @@ export function ProfilePage() {
         records: game.facts.prs.length,
       }
     : null
-  const bars: Bar[] = (weekly?.sessions ?? []).map((b) => {
-    const d = fromDateKey(b.weekStart)
-    return {
-      key: b.weekStart,
-      label: formatDayMonth(d),
-      title: t.charts.weekOf(formatDayMonth(d)),
-      value: b.value,
-    }
-  })
 
   return (
     <>
@@ -158,34 +149,32 @@ export function ProfilePage() {
         <p className="mt-2 px-1 text-xs text-subtle">{t.streak.none}</p>
       )}
 
-      {/* Últimamente */}
-      <h2 className="mt-7 mb-1 px-1 text-sm font-medium text-muted">{pp.lately}</h2>
-      <p className="mb-3 px-1 text-xs text-subtle">{pp.latelyHint}</p>
-      <Card className="px-3">
-        {weekly ? (
-          <BarChart bars={bars} unit={t.charts.sessionsUnit} label={pp.latelyHint} />
-        ) : (
-          <Skeleton className="h-40" />
-        )}
-      </Card>
-
       {/* Logros */}
       <h2 className="mt-7 mb-3 px-1 text-sm font-medium text-muted">{t.game.achievementsTitle}</h2>
       <AchievementsGrid />
 
-      {/* Amigos: llega con las cuentas (siguiente fase) */}
-      <h2 className="mt-7 mb-3 flex items-center gap-2 px-1 text-sm font-medium text-muted">
-        {pp.friends}
-        <span className="rounded-full bg-card-2 px-2 py-0.5 text-[0.65rem] font-semibold text-subtle">
-          {pp.comingSoon}
-        </span>
-      </h2>
-      <Card className="flex items-center gap-3 border-dashed opacity-80">
-        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-card-2 text-subtle">
-          <Users className="size-5" />
-        </span>
-        <p className="text-sm leading-relaxed text-muted">{pp.friendsSoon}</p>
-      </Card>
+      {/* Galería: fotos compartidas y de progreso */}
+      <div className="mt-7 mb-3 flex items-center justify-between px-1">
+        <h2 className="text-sm font-medium text-muted">{pp.gallery}</h2>
+        <Link to="/gallery" className="-my-2 py-2 text-sm font-semibold text-accent-2">
+          {pp.seeAll}
+        </Link>
+      </div>
+      {photos && photos.length > 0 ? (
+        <PhotoGrid photos={photos.slice(0, 6)} />
+      ) : (
+        <Link
+          to="/gallery"
+          className="flex items-center gap-3 rounded-[var(--radius-card)] border border-dashed border-border p-4"
+        >
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-card-2 text-accent-2">
+            <Images className="size-5" />
+          </span>
+          <p className="text-sm leading-relaxed text-muted">{pp.galleryEmpty}</p>
+        </Link>
+      )}
+
+      {game && avatar && <FriendsPreview game={game} avatar={avatar} />}
     </>
   )
 }

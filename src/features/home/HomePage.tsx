@@ -2,7 +2,6 @@ import { Link } from 'react-router'
 import { Check, Play } from 'lucide-react'
 import { HeroCard } from './HeroCard'
 import { WeekCard } from './WeekCard'
-import { JourneyCard } from '@/features/journey/JourneyCard'
 import { ActiveWorkoutBanner } from '@/features/workout/ActiveWorkoutBanner'
 import { useStartWorkout } from '@/features/workout/use-start-workout'
 import {
@@ -72,8 +71,6 @@ export function HomePage() {
       <HeroCard trainedToday={trainedToday} />
 
       <WeekCard className="mt-4" />
-
-      <JourneyCard className="mt-4" />
     </>
   )
 }

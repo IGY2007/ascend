@@ -10,7 +10,7 @@ import {
   totalXp,
   totalsOf,
   weeklyChallenges,
-  weeklyStreak,
+  dailyStreak,
   type StreakInfo,
   type ExerciseSetFact,
   type Facts,
@@ -88,6 +88,7 @@ export async function loadFacts(): Promise<Facts> {
     if (count > 0)
       sessionFacts.push({
         id: s.id,
+        hour: new Date(s.startedAt).getHours(),
         date,
         sets: count,
         volume,
@@ -128,19 +129,23 @@ export interface GameState {
 
 export async function gameState(today = toDateKey(new Date())): Promise<GameState> {
   const facts = await loadFacts()
-  const xp = totalXp(facts, completedChallenges(facts, today))
+  const challengesDone = completedChallenges(facts, today)
+  const xp = totalXp(facts, challengesDone)
   const level = levelFromXp(xp.total)
+  const streak = dailyStreak(facts, today)
   const now = new Date()
   const sets = monthSets(facts, now.getFullYear(), now.getMonth())
   return {
     facts,
     level,
-    achievements: achievements(totalsOf(facts)),
+    achievements: achievements(
+      totalsOf(facts, { level: level.level, challengesDone, bestDayStreak: streak.best }),
+    ),
     challenges: weeklyChallenges(facts, toDateKey(startOfWeek(new Date()))),
     muscles: muscleStats(facts, today),
     monthSets: sets,
     monthBody: bodyFromSets(sets),
-    streak: weeklyStreak(facts, today),
+    streak,
     journey: journeyPosition(level.level, level.into, level.needed),
   }
 }

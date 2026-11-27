@@ -1,42 +1,41 @@
 import { useState } from 'react'
 import { ChevronRight, History, Plus, Trash2 } from 'lucide-react'
-import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageHeader } from '@/components/ui/page-header'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BarChart, type Bar } from '@/components/charts/BarChart'
 import { LineChart } from '@/components/charts/LineChart'
 import { WeightChart } from '@/features/body/WeightChart'
 import { LogWeightSheet } from '@/features/body/LogWeightSheet'
-import { InsightsCard } from '@/features/progress/InsightsCard'
 import { ExerciseThumbnail } from '@/features/exercises/ExerciseThumbnail'
 import {
   useBodyWeights,
   useExerciseHistory,
   useExercisesDone,
-  useHistory,
+  useGameState,
   useLocalProfile,
-  useWeeklyStats,
 } from '@/features/profile/hooks'
 import { bodyWeightService } from '@/services/local-data'
 import { filterRange, weightStats } from '@/domain/body-weight'
 import { fromDateKey, toDateKey } from '@/domain/dates'
 import { formatDecimal, formatSigned } from '@/domain/numbers'
-import { pctChange, type WeekBucket } from '@/domain/progress-stats'
-import { formatDuration } from '@/domain/workout'
+import { pctChange } from '@/domain/progress-stats'
 import { cn } from '@/lib/utils'
-import { formatDayMonth, locale, t } from '@/i18n'
+import { locale, t } from '@/i18n'
 import { Tip } from '@/components/ui/tip'
 import { CalendarView } from '@/features/calendar/CalendarView'
+import { JourneyMap } from '@/features/journey/JourneyMap'
+import { CAMPS } from '@/domain/journey'
+import { STATS, statOf, type Stat as MuscleStatId } from '@/domain/gamification'
+import { strengthIndex } from '@/domain/strength-index'
 import type { BodyWeight } from '@/types/models'
-import { exerciseName, routineText } from '@/i18n/names'
+import { exerciseName } from '@/i18n/names'
 
 const p = t.progress
 const ch = t.charts
-const TABS = ['month', 'strength', 'weight'] as const
+const TABS = ['month', 'journey', 'strength', 'weight'] as const
 type Tab = (typeof TABS)[number]
 
 const entryDate = new Intl.DateTimeFormat(locale, {
@@ -44,19 +43,7 @@ const entryDate = new Intl.DateTimeFormat(locale, {
   day: 'numeric',
   month: 'short',
 })
-const dayMonth = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' })
 const signed = (n: number | null) => (n === null ? '—' : formatSigned(n, 1))
-
-const weekBars = (buckets: WeekBucket[]): Bar[] =>
-  buckets.map((b) => {
-    const d = fromDateKey(b.weekStart)
-    return {
-      key: b.weekStart,
-      label: formatDayMonth(d),
-      title: ch.weekOf(dayMonth.format(d)),
-      value: b.value,
-    }
-  })
 
 export function ProgressPage() {
   const [tab, setTab] = useState<Tab>(() => {
@@ -92,6 +79,7 @@ export function ProgressPage() {
         </div>
       </div>
       {tab === 'month' && <MonthTab />}
+      {tab === 'journey' && <JourneyTab />}
       {tab === 'strength' && <StrengthTab />}
       {tab === 'weight' && <WeightTab />}
     </>
@@ -117,69 +105,31 @@ function Section({
 
 // ---------------------------------------------------------------- Resumen
 
-function MonthTab() {
-  const today = toDateKey(new Date())
-  const weekly = useWeeklyStats(today)
-  const history = useHistory()
+function JourneyTab() {
+  const game = useGameState()
+  return (
+    <>
+      {game && (
+        <p className="mb-3 px-1 text-sm text-muted">
+          {t.journey.campOf(game.journey.index + 1, CAMPS.length)} ·{' '}
+          {game.journey.next
+            ? t.journey.next(
+                t.journey.camps[game.journey.next.id]?.name ?? '',
+                game.journey.next.level,
+              )
+            : t.journey.summit}
+        </p>
+      )}
+      <JourneyMap />
+    </>
+  )
+}
 
+function MonthTab() {
   return (
     <>
       <p className="mb-3 px-1 text-sm text-muted">{t.calendar.tapHint}</p>
       <CalendarView />
-      <InsightsCard className="mt-4" />
-      <Section title={ch.sessionsPerWeek}>
-        <Card className="px-3">
-          {weekly ? (
-            <BarChart
-              bars={weekBars(weekly.sessions)}
-              unit={ch.sessionsUnit}
-              label={ch.sessionsPerWeek}
-            />
-          ) : (
-            <Skeleton className="h-40" />
-          )}
-        </Card>
-      </Section>
-      <Section title={ch.volumePerWeek}>
-        <Card className="px-3">
-          {weekly ? (
-            <BarChart bars={weekBars(weekly.volume)} unit={t.units.kg} label={ch.volumePerWeek} />
-          ) : (
-            <Skeleton className="h-40" />
-          )}
-        </Card>
-      </Section>
-      <Section title={p.historyTitle}>
-        {history === undefined ? (
-          <Skeleton className="h-24 rounded-[var(--radius-card)]" />
-        ) : history.length === 0 ? (
-          <EmptyState icon={History} title={p.emptyTitle} description={p.emptyBody} />
-        ) : (
-          <ul className="space-y-2">
-            {history.map((s) => (
-              <li key={s.id}>
-                <Link
-                  to={`/workout/${s.id}/summary`}
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 transition-transform active:scale-[0.99]"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold">{routineText(s.name)}</span>
-                    <span className="block text-sm text-muted first-letter:uppercase">
-                      {entryDate.format(new Date(s.startedAt))} ·{' '}
-                      {p.sessionMeta(formatDuration(s.durationSeconds ?? 0), s.sets)}
-                    </span>
-                  </span>
-                  <span className="shrink-0 text-right num text-sm font-semibold">
-                    {formatDecimal(s.volume, 0)}{' '}
-                    <span className="text-xs font-normal text-muted">{t.units.kg}</span>
-                  </span>
-                  <ChevronRight className="size-4 shrink-0 text-subtle" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Section>
     </>
   )
 }
@@ -188,33 +138,152 @@ function MonthTab() {
 
 function StrengthTab() {
   const done = useExercisesDone()
+  const game = useGameState()
+  const [group, setGroup] = useState<MuscleStatId | 'all'>('all')
   const [selected, setSelected] = useState<string | null>(null)
-  const current = selected ?? done?.[0]?.exercise.id ?? null
-  const points = useExerciseHistory(current)
-  const summary = done?.find((d) => d.exercise.id === current)
 
-  if (done === undefined) return <Skeleton className="h-64 rounded-[var(--radius-card)]" />
+  if (done === undefined || !game) return <Skeleton className="h-64 rounded-[var(--radius-card)]" />
   if (done.length === 0)
     return <EmptyState icon={History} title={ch.e1rmTitle} description={ch.noExercises} />
 
-  const first = points?.[0]
-  const last = points?.at(-1)
-  const sinceStart = first && last && points!.length > 1 ? pctChange(last.e1rm, first.e1rm) : null
+  const groupOf = (d: (typeof done)[number]) =>
+    d.exercise.primaryMuscle ? statOf(d.exercise.primaryMuscle) : null
+  const groups = STATS.filter((g) => done.some((d) => groupOf(d) === g))
+  const inGroup = group === 'all' ? [] : done.filter((d) => groupOf(d) === group)
+  const index = strengthIndex(game.facts.exerciseSets, group === 'all' ? undefined : group)
+  const now = index.at(-1)?.value ?? 100
+
+  const chip = (active: boolean) =>
+    cn(
+      'h-10 shrink-0 rounded-full border px-4 text-sm font-semibold transition-colors',
+      active ? 'border-accent/60 bg-accent/14 text-fg' : 'border-border text-muted',
+    )
 
   return (
     <>
       <div
         className="-mx-5 flex [scrollbar-width:none] gap-2 overflow-x-auto px-5 pb-1"
         role="radiogroup"
+        aria-label={ch.group}
+      >
+        <button
+          type="button"
+          role="radio"
+          aria-checked={group === 'all'}
+          onClick={() => setGroup('all')}
+          className={chip(group === 'all')}
+        >
+          {ch.general}
+        </button>
+        {groups.map((g) => (
+          <button
+            key={g}
+            type="button"
+            role="radio"
+            aria-checked={group === g}
+            onClick={() => {
+              setGroup(g)
+              setSelected(null)
+            }}
+            className={chip(group === g)}
+          >
+            {t.game.muscles.stats[g]}
+          </button>
+        ))}
+      </div>
+
+      <Card className="mt-4 px-4">
+        <div className="flex items-baseline justify-between gap-3 px-1">
+          <p className="font-semibold">
+            {group === 'all' ? ch.generalTitle : ch.groupTitle(t.game.muscles.stats[group])}
+          </p>
+          <p
+            className={cn(
+              'num text-lg font-bold',
+              now > 100.5 ? 'text-success' : now < 99.5 ? 'text-danger' : 'text-muted',
+            )}
+          >
+            {formatSigned(now - 100, 1)}%
+          </p>
+        </div>
+        <p className="mt-1 mb-3 px-1 text-xs leading-relaxed text-muted">{ch.indexExplain}</p>
+        <LineChart
+          points={index.map((x) => ({ date: x.date, value: x.value - 100 }))}
+          unit="%"
+          label={ch.generalTitle}
+          emptyText={ch.indexNeedsTwo}
+          decimals={0}
+        />
+      </Card>
+
+      {group === 'all' ? (
+        <Card className="mt-4 divide-y divide-border p-0">
+          {groups.map((g) => {
+            const v = strengthIndex(game.facts.exerciseSets, g).at(-1)?.value ?? 100
+            return (
+              <button
+                key={g}
+                type="button"
+                onClick={() => setGroup(g)}
+                className="flex w-full items-center justify-between gap-3 px-5 py-3 text-left"
+              >
+                <span className="font-medium">{t.game.muscles.stats[g]}</span>
+                <span className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      'num text-sm font-semibold',
+                      v > 100.5 ? 'text-success' : 'text-muted',
+                    )}
+                  >
+                    {formatSigned(v - 100, 1)}%
+                  </span>
+                  <ChevronRight className="size-4 text-subtle" />
+                </span>
+              </button>
+            )
+          })}
+        </Card>
+      ) : (
+        <ExerciseDetail
+          list={inGroup}
+          current={selected ?? inGroup[0]?.exercise.id ?? null}
+          onPick={setSelected}
+        />
+      )}
+    </>
+  )
+}
+
+function ExerciseDetail({
+  list,
+  current,
+  onPick,
+}: {
+  list: NonNullable<ReturnType<typeof useExercisesDone>>
+  current: string | null
+  onPick: (id: string) => void
+}) {
+  const points = useExerciseHistory(current)
+  const summary = list.find((d) => d.exercise.id === current)
+  const first = points?.[0]
+  const last = points?.at(-1)
+  const sinceStart = first && last && points!.length > 1 ? pctChange(last.e1rm, first.e1rm) : null
+
+  return (
+    <>
+      <h3 className="mt-6 mb-2 px-1 text-sm font-medium text-muted">{ch.exercise}</h3>
+      <div
+        className="-mx-5 flex [scrollbar-width:none] gap-2 overflow-x-auto px-5 pb-1"
+        role="radiogroup"
         aria-label={ch.exercise}
       >
-        {done.map((d) => (
+        {list.map((d) => (
           <button
             key={d.exercise.id}
             type="button"
             role="radio"
             aria-checked={current === d.exercise.id}
-            onClick={() => setSelected(d.exercise.id)}
+            onClick={() => onPick(d.exercise.id)}
             className={cn(
               'flex h-11 shrink-0 items-center gap-2 rounded-full border pr-3.5 pl-1.5 text-sm font-medium transition-colors',
               current === d.exercise.id
@@ -227,8 +296,6 @@ function StrengthTab() {
           </button>
         ))}
       </div>
-
-      <Tip className="mt-4">{ch.e1rmExplain}</Tip>
 
       {summary && (
         <Card className="mt-4 px-4">
@@ -252,28 +319,9 @@ function StrengthTab() {
             label={ch.e1rmTitle}
             emptyText={ch.needsTwo}
           />
-          <p className="mt-2 px-1 text-xs text-subtle">{t.workout.e1rmNote}</p>
         </Card>
       )}
-
-      {points && points.length > 0 && (
-        <Card className="mt-4 divide-y divide-border p-0">
-          {[...points].reverse().map((pt) => (
-            <div
-              key={pt.date + pt.e1rm}
-              className="flex items-center justify-between gap-3 px-5 py-3 text-[0.95rem]"
-            >
-              <span className="text-muted first-letter:uppercase">
-                {entryDate.format(fromDateKey(pt.date))}
-              </span>
-              <span className="num text-sm text-muted">
-                {ch.maxShort(formatDecimal(pt.maxWeight, 1))}
-              </span>
-              <span className="num font-semibold">{formatDecimal(pt.e1rm, 1)}</span>
-            </div>
-          ))}
-        </Card>
-      )}
+      <Tip className="mt-4">{ch.e1rmExplain}</Tip>
     </>
   )
 }

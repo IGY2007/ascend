@@ -10,6 +10,7 @@ import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage'
 import { HomePage } from '@/features/home/HomePage'
 import { WorkoutsPage } from '@/features/templates/WorkoutsPage'
 import { ProgressPage } from '@/features/history/ProgressPage'
+import { GalleryPage } from '@/features/gallery/GalleryPage'
 import { ProfilePage } from '@/features/profile/ProfilePage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding'
@@ -68,6 +69,7 @@ export const router = createHashRouter([
                   { path: '/settings', element: <SettingsPage /> },
                   { path: '/settings/data', element: <EditDataPage /> },
                   { path: '/profile', element: <ProfilePage /> },
+                  { path: '/gallery', element: <GalleryPage /> },
                 ],
               },
             ],

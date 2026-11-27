@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Check, Target } from 'lucide-react'
+import { Check, Moon, Target } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { ProgressRing } from '@/components/ui/progress-ring'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -111,6 +111,9 @@ export function WeekCard({ className }: { className?: string }) {
           const isToday = key === todayKey
           const trained = trainedDays.has(key)
           const future = key > todayKey
+          // Día de descanso dentro de la racha: lunita
+          const rest =
+            !trained && !future && key < todayKey && !!game.streak.start && key >= game.streak.start
           const cell = (
             <>
               <span className="text-[0.7rem] font-medium text-subtle">
@@ -126,7 +129,13 @@ export function WeekCard({ className }: { className?: string }) {
                       : 'text-muted',
                 )}
               >
-                {trained ? <Check className="size-4" strokeWidth={3.5} /> : date.getDate()}
+                {trained ? (
+                  <Check className="size-4" strokeWidth={3.5} />
+                ) : rest ? (
+                  <Moon className="size-4 fill-current text-accent-2" aria-label={t.streak.rest} />
+                ) : (
+                  date.getDate()
+                )}
               </span>
             </>
           )

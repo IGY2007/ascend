@@ -241,3 +241,17 @@ export interface WaterLog {
   createdAt: string
   updatedAt: string
 }
+
+/** Foto de la galería: la imagen que compartiste de un entrenamiento o una foto de progreso. Solo en el dispositivo. */
+export interface Photo {
+  id: string
+  userId: string
+  date: string // AAAA-MM-DD
+  kind: 'workout' | 'progress'
+  /** Sesión o "month:AAAA-MM" de donde salió (para no duplicar al compartir de nuevo). */
+  sourceId: string | null
+  blob: Blob
+  width: number
+  height: number
+  createdAt: string
+}

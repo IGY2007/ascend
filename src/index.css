@@ -183,3 +183,22 @@
     transition-duration: 1ms !important;
   }
 }
+
+/* Solo en teléfonos acostados (poca altura): la app se usa en vertical */
+.rotate-lock {
+  display: none;
+}
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .rotate-lock {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    text-align: center;
+  }
+}

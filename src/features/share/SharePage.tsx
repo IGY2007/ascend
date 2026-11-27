@@ -26,6 +26,7 @@ import {
   type ShareState,
   type ShareTheme,
 } from './share-render'
+import { photoService } from '@/services/photos'
 
 const sh = t.share
 
@@ -73,7 +74,7 @@ export function SharePage() {
 
   const data = useMemo<ShareData | null>(() => {
     const streakBadge =
-      game && game.streak.current > 0 ? sh.badgeStreak(t.streak.weeks(game.streak.current)) : null
+      game && game.streak.current > 0 ? sh.badgeStreak(t.streak.days(game.streak.current)) : null
     if (isMonth) {
       if (!game || !ym) return null
       const [y, m] = ym.split('-').map(Number)
@@ -204,6 +205,16 @@ export function SharePage() {
       drawShare(canvas.getContext('2d')!, W, H, data, state, photo, avatarImg)
       const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', 0.92))
       if (!blob) throw new Error('no blob')
+      // Queda en tu galería del perfil (si volvés a compartir lo mismo, se reemplaza)
+      await photoService
+        .save({
+          blob,
+          width: W,
+          height: H,
+          kind: 'workout',
+          sourceId: isMonth ? `month:${ym}` : id,
+        })
+        .catch(() => undefined)
       const file = new File([blob], 'ascend-entreno.jpg', { type: 'image/jpeg' })
       if (navigator.canShare?.({ files: [file] })) {
         try {
@@ -350,6 +361,7 @@ export function SharePage() {
         <Share2 />
         {sh.share}
       </Button>
+      <p className="mt-2 text-center text-xs text-subtle">{sh.toGallery}</p>
 
       {/* Personaje oculto: se convierte en imagen para el diseño "Con personaje" */}
       <div

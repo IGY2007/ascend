@@ -8,6 +8,7 @@ export const es: Messages = {
   app: {
     name: 'ASCEND',
     tagline: 'Build yourself. Track your progress.',
+    rotate: 'Girá el teléfono: ASCEND se usa en vertical.',
     skipSplash: 'Tocá para continuar',
   },
   common: {
@@ -459,6 +460,7 @@ export const es: Messages = {
   charts: {
     tabs: {
       month: 'Mes',
+      journey: 'Olimpo',
       summary: 'Resumen',
       calendar: 'Calendario',
       muscles: 'Físico',
@@ -473,6 +475,13 @@ export const es: Messages = {
     volumePerWeek: 'Volumen por semana',
     cardioPerWeek: 'Minutos de cardio por semana',
     waterPerDay: 'Agua por día (últimos 14 días)',
+    group: 'Grupo muscular',
+    general: 'General',
+    generalTitle: 'Fuerza general',
+    groupTitle: (g: string) => `Fuerza de ${g.toLowerCase()}`,
+    indexNeedsTwo: 'Entrená al menos dos veces para ver cómo crece tu fuerza.',
+    indexExplain:
+      'Tu 1RM estimado de cada ejercicio comparado con la primera vez que lo hiciste, promediado.',
     exercise: 'Ejercicio',
     noExercises:
       'Cuando termines tu primer entrenamiento vas a ver acá la evolución de cada ejercicio.',
@@ -532,6 +541,7 @@ export const es: Messages = {
       beast: 'Bestia',
       titan: 'Titán',
       legend: 'Leyenda',
+      olympian: 'Olímpico',
     },
     xp: (into: number, needed: number) => `${into} / ${needed} XP`,
     xpToGo: (n: number) => `${n} XP para el próximo nivel`,
@@ -547,23 +557,41 @@ export const es: Messages = {
     achievements: {
       first_workout: { title: 'Primer paso', desc: 'Terminá tu primer entrenamiento' },
       workouts_10: { title: 'Va en serio', desc: 'Terminá 10 entrenamientos' },
+      workouts_25: { title: 'Agarrando ritmo', desc: 'Terminá 25 entrenamientos' },
       workouts_50: { title: 'Fijo en el gym', desc: 'Terminá 50 entrenamientos' },
       workouts_100: { title: 'Centurión', desc: 'Terminá 100 entrenamientos' },
+      workouts_250: { title: 'Espartano', desc: 'Terminá 250 entrenamientos' },
       first_pr: { title: 'Marca personal', desc: 'Batí tu primer récord' },
       prs_10: { title: 'Rompe récords', desc: 'Batí 10 récords' },
+      prs_25: { title: 'En ascenso', desc: 'Batí 25 récords' },
       prs_50: { title: 'Imparable', desc: 'Batí 50 récords' },
+      streak_7: { title: 'Encendido', desc: 'Llegá a una racha de 7 días' },
+      streak_30: { title: 'Hábito de hierro', desc: 'Llegá a una racha de 30 días' },
+      streak_100: { title: 'Inquebrantable', desc: 'Llegá a una racha de 100 días' },
+      streak_365: { title: 'Un año entero', desc: 'Llegá a una racha de 365 días' },
       full_week: { title: 'Semana completa', desc: 'Cumplí tu meta semanal' },
-      streak_4: { title: 'Encendido', desc: 'Cumplí tu meta 4 semanas seguidas' },
-      streak_12: { title: 'Hábito de hierro', desc: 'Cumplí tu meta 12 semanas seguidas' },
+      weeks_10: { title: 'Constante', desc: 'Cumplí tu meta 10 semanas' },
+      challenges_10: { title: 'Cazadesafíos', desc: 'Completá 10 desafíos semanales' },
+      challenges_50: { title: 'Sin excusas', desc: 'Completá 50 desafíos semanales' },
       sets_500: { title: 'Máquina de volumen', desc: 'Completá 500 series' },
+      sets_2000: { title: 'Fábrica de series', desc: 'Completá 2000 series' },
       volume_10t: { title: '10 toneladas', desc: 'Levantá 10.000 kg en total' },
       volume_100t: { title: '100 toneladas', desc: 'Levantá 100.000 kg en total' },
       volume_1000t: { title: 'Mueve montañas', desc: 'Levantá 1.000.000 kg en total' },
+      club_60: { title: 'Club de los 60', desc: 'Levantá 60 kg en cualquier ejercicio' },
       club_100: { title: 'Club de los 100', desc: 'Levantá 100 kg en cualquier ejercicio' },
-      hydrated_7: { title: 'Hidratado', desc: 'Cumplí el agua 7 días' },
-      hydrated_30: { title: 'Pez', desc: 'Cumplí el agua 30 días' },
+      complete_body: {
+        title: 'Cuerpo completo',
+        desc: 'Entrená los 7 grupos musculares en un mes',
+      },
+      early_bird: { title: 'Madrugador', desc: 'Entrená 5 veces antes de las 8' },
+      night_owl: { title: 'Búho', desc: 'Entrená 5 veces después de las 21' },
+      weekend_warrior: { title: 'Guerrero de finde', desc: 'Entrená 10 veces en fin de semana' },
       cardio_10: { title: 'Motor', desc: 'Registrá 10 sesiones de cardio' },
       weigh_in_10: { title: 'Con datos', desc: 'Registrá tu peso 10 veces' },
+      level_25: { title: 'Mitad de la montaña', desc: 'Llegá al nivel 25' },
+      level_50: { title: 'Era dorada', desc: 'Llegá al nivel 50' },
+      level_100: { title: 'Olímpico', desc: 'Llegá al nivel 100 y entrá al Olimpo' },
     },
     challengesTitle: 'Desafíos de la semana',
     challengesReward: (xp: number) => `+${xp} XP cada uno`,
@@ -752,6 +780,7 @@ export const es: Messages = {
     credit: 'Fotos: free-exercise-db (dominio público).',
   },
   share: {
+    toGallery: 'También queda guardada en tu galería del perfil.',
     title: 'Compartí tu entreno',
     open: 'Compartir con foto',
     preview: 'Vista previa de la imagen para compartir',
@@ -812,6 +841,23 @@ export const es: Messages = {
         lesson:
           'Cuerpo y cabeza siempre fueron de la mano. Cuidar la técnica es entrenar pensando.',
       },
+      technique: {
+        name: 'La técnica primero',
+        era: 'Entrenamiento',
+        title: 'Recorrido completo y control',
+        story:
+          'Un ejercicio bien hecho trabaja el músculo que buscás y cuida tus articulaciones. Bajar el peso en 2 a 3 segundos, usar todo el recorrido que tu cuerpo permite y no rebotar hace que cada repetición rinda más.',
+        lesson:
+          'Si para subir el peso tenés que romper la técnica, todavía no es momento de subirlo.',
+      },
+      protein: {
+        name: 'Proteína',
+        era: 'Nutrición',
+        title: '¿Cuánta proteína necesitás?',
+        story:
+          'Para ganar músculo, la evidencia apunta a unos 1,6 a 2,2 g de proteína por kilo de peso por día, repartidos en 3 a 5 comidas de 20 a 40 g. Carnes, huevos, lácteos, legumbres y tofu suman.',
+        lesson: 'Repartida en el día rinde más que toda junta a la noche.',
+      },
       strongmen: {
         name: 'Los forzudos',
         era: 'Fines del siglo XIX',
@@ -821,6 +867,22 @@ export const es: Messages = {
         lesson:
           'Sandow entrenaba con método y medía su progreso. Lo que no se registra, no se puede mejorar.',
       },
+      progression: {
+        name: 'Doble progresión',
+        era: 'Entrenamiento',
+        title: 'Cómo progresar sin estancarte',
+        story:
+          'Elegí un rango de repeticiones, por ejemplo de 8 a 12. Cuando completás 12 en todas las series, subís un poco el peso y volvés a 8. Así siempre tenés una meta clara para la próxima sesión.',
+        lesson: 'Una repetición más o 2,5 kg más: las dos cosas son progreso.',
+      },
+      sleep: {
+        name: 'Dormir para crecer',
+        era: 'Recuperación',
+        title: 'El músculo crece descansando',
+        story:
+          'El entrenamiento es el estímulo; el crecimiento pasa mientras te recuperás. Dormir mal se asocia con menos fuerza y peor recuperación. Apuntá a 7 a 9 horas, con horarios parecidos todos los días.',
+        lesson: 'Una buena noche de sueño también es entrenar.',
+      },
       muscle_beach: {
         name: 'Muscle Beach',
         era: 'Años 30',
@@ -828,6 +890,22 @@ export const es: Messages = {
         story:
           'En los años 30, en Santa Mónica (California), un grupo de acróbatas y levantadores empezó a entrenar al aire libre frente a la playa. El lugar se hizo famoso como Muscle Beach y miles de personas iban a verlos.',
         lesson: 'Entrenar en comunidad motiva. Mostrar tu progreso contagia a otros a empezar.',
+      },
+      volume: {
+        name: 'Volumen semanal',
+        era: 'Entrenamiento',
+        title: '¿Cuántas series hacen falta?',
+        story:
+          'Para crecer, muchas guías recomiendan unas 10 a 20 series semanales por grupo muscular, repartidas en 2 o más días. Más no siempre es mejor: si no te recuperás, el volumen extra no suma.',
+        lesson: 'Entrenar cada músculo dos veces por semana suele rendir más que una.',
+      },
+      carbs: {
+        name: 'Carbohidratos',
+        era: 'Nutrición',
+        title: 'El combustible del entrenamiento',
+        story:
+          'Los carbohidratos llenan el glucógeno, la energía que usan tus músculos cuando levantás. Comer algunos de 1 a 3 horas antes de entrenar y después de la sesión ayuda a rendir y a recuperarte.',
+        lesson: 'Arroz, papa, avena, pan y fruta son tus aliados alrededor del gym.',
       },
       golden_era: {
         name: 'La era dorada',
@@ -838,20 +916,85 @@ export const es: Messages = {
         lesson:
           'Los campeones entrenaron años con constancia. No hay atajos: hay semanas seguidas.',
       },
+      effort: {
+        name: 'Esfuerzo y RIR',
+        era: 'Entrenamiento',
+        title: 'Cerca del fallo, no siempre al fallo',
+        story:
+          'RIR significa “repeticiones en reserva”: cuántas más podrías haber hecho con buena técnica. Terminar las series a 1 a 3 repeticiones del fallo da casi el mismo estímulo que llegar al fallo, con menos fatiga.',
+        lesson: 'Guardá el fallo para la última serie de algunos ejercicios, no para todos.',
+      },
+      creatine: {
+        name: 'Creatina',
+        era: 'Nutrición',
+        title: 'El suplemento más estudiado',
+        story:
+          'La creatina monohidrato es uno de los suplementos con más evidencia para mejorar la fuerza y la masa muscular. La dosis habitual es de 3 a 5 g por día, en cualquier momento del día, sin necesidad de “cargarla”.',
+        lesson: 'No reemplaza comer bien ni entrenar: suma un poquito encima.',
+      },
       iron: {
         name: 'El hierro',
-        era: 'Desde los años 70',
-        title: 'Powerlifting y ciencia',
+        era: 'Desde 1972',
+        title: 'Powerlifting',
         story:
-          'En 1972 se fundó la Federación Internacional de Powerlifting (IPF), que compite en tres levantamientos: sentadilla, press de banca y peso muerto. Hoy la ciencia confirma lo que el hierro enseñó: sobrecarga progresiva, unas 10 a 20 series semanales por músculo, suficiente proteína y buen descanso.',
-        lesson: 'Fuerza y músculo se construyen con lo básico bien hecho, repetido muchas veces.',
+          'En 1972 se fundó la Federación Internacional de Powerlifting (IPF), que compite en tres levantamientos: sentadilla, press de banca y peso muerto. Gana quien suma más kilos entre los tres.',
+        lesson:
+          'Los ejercicios básicos, que mueven varias articulaciones, son la base de la fuerza.',
+      },
+      deload: {
+        name: 'Descargas',
+        era: 'Recuperación',
+        title: 'Bajar un cambio para seguir subiendo',
+        story:
+          'Después de varias semanas de entrenamiento duro, la fatiga se acumula. Muchos entrenadores programan cada 4 a 8 semanas una semana más liviana, con menos series o menos peso, para recuperarse y volver con más fuerza.',
+        lesson: 'Descansar a propósito no es perder el tiempo.',
+      },
+      hydration: {
+        name: 'Hidratación',
+        era: 'Nutrición',
+        title: 'Agua y rendimiento',
+        story:
+          'Perder alrededor del 2 % del peso corporal en agua ya puede bajar el rendimiento. Tomá agua durante el día y en los descansos, y más si hace calor o transpirás mucho.',
+        lesson: 'Llegar hidratado al gym rinde más que cualquier pre-entreno.',
+      },
+      women: {
+        name: 'Mujeres en el hierro',
+        era: '1979',
+        title: 'Lisa Lyon y el primer campeonato',
+        story:
+          'En 1979 Lisa Lyon ganó el primer Campeonato Mundial de Culturismo Femenino, en Los Ángeles. Abrió el camino para que millones de mujeres entrenaran con pesas.',
+        lesson: 'Las pesas son para todos: la fuerza no tiene género.',
+      },
+      mindset: {
+        name: 'Mentalidad',
+        era: 'Mente',
+        title: 'La constancia le gana a la motivación',
+        story:
+          'La motivación va y viene; los hábitos quedan. Entrenar los mismos días, tener tu rutina lista y medir tu progreso hace que entrenar sea parte de quién sos, no una decisión de todos los días.',
+        lesson: 'No hace falta tener ganas: hace falta aparecer.',
+      },
+      olympics: {
+        name: 'Los Juegos modernos',
+        era: 'Atenas, 1896',
+        title: 'Las pesas en los primeros Juegos',
+        story:
+          'En los primeros Juegos Olímpicos modernos, en Atenas en 1896, ya hubo levantamiento de pesas, con pruebas a una y a dos manos. Hoy la halterofilia olímpica compite en arranque y envión.',
+        lesson: 'La fuerza fue parte del deporte desde el principio.',
+      },
+      heracles: {
+        name: 'Heracles',
+        era: 'Mitología griega',
+        title: 'Los doce trabajos',
+        story:
+          'Heracles, el Hércules de los romanos, era el héroe más fuerte de los mitos griegos. Tuvo que cumplir doce trabajos imposibles, como vencer al león de Nemea, y su fuerza se volvió un símbolo del esfuerzo.',
+        lesson: 'Los grandes logros son muchos trabajos chicos, uno detrás de otro.',
       },
       olympus: {
         name: 'El Olimpo',
         era: 'Mitología griega',
         title: 'La morada de los dioses',
         story:
-          'Los griegos imaginaban a sus dioses y héroes con cuerpos perfectos, como Heracles y sus doce trabajos. El escultor Policleto (siglo V a. C.) llegó a escribir un “canon” de proporciones ideales, que se ve en su estatua del Doríforo. Y vos llegaste a la cima.',
+          'Los griegos imaginaban a sus dioses y héroes con cuerpos perfectos. El escultor Policleto (siglo V a. C.) llegó a escribir un “canon” de proporciones ideales, que se ve en su estatua del Doríforo. Y vos llegaste a la cima.',
         lesson:
           'Llegar al Olimpo no es el final: es la prueba de que la constancia te hizo otra persona.',
       },
@@ -859,21 +1002,32 @@ export const es: Messages = {
       string,
       { name: string; era: string; title: string; story: string; lesson: string }
     >,
+    kinds: {
+      history: 'Historia',
+      training: 'Entrenamiento',
+      nutrition: 'Nutrición',
+      recovery: 'Recuperación',
+      mind: 'Mentalidad',
+      myth: 'Mito',
+    },
   },
   streak: {
     title: 'Racha',
-    weeks: (n: number) => (n === 1 ? '1 semana' : `${n} semanas`),
-    short: (n: number) => `${n} sem.`,
-    best: (n: number) => `Mejor racha: ${n === 1 ? '1 semana' : `${n} semanas`}`,
+    days: (n: number) => (n === 1 ? '1 día' : `${n} días`),
+    weeks: (n: number) => (n === 1 ? '1 día' : `${n} días`),
+    short: (n: number) => (n === 1 ? '1 día' : `${n} días`),
+    best: (n: number) => `Mejor racha: ${n === 1 ? '1 día' : `${n} días`}`,
     freezes: (n: number) => (n === 1 ? '1 protector' : `${n} protectores`),
-    hint: 'Semanas seguidas cumpliendo tu meta. Cada 4 semanas ganás un protector que salva una semana floja.',
-    none: 'Cumplí tu meta esta semana y arrancás tu racha.',
+    rest: 'Día de descanso',
+    hint: 'Días seguidos entrenando o descansando. Se corta si una semana no llegás a tu meta. Completá los 3 desafíos de una semana y ganás un protector.',
+    none: 'Entrená hoy y arrancás tu racha.',
     pending: (left: number) =>
       left === 1
-        ? 'Te falta 1 entreno esta semana para sumar.'
-        : `Te faltan ${left} entrenos esta semana para sumar.`,
-    done: 'Semana cumplida: la racha suma.',
+        ? 'Te falta 1 entreno esta semana para no perder la racha.'
+        : `Te faltan ${left} entrenos esta semana para no perder la racha.`,
+    done: 'Meta de la semana cumplida: la racha está a salvo.',
   },
+
   profilePage: {
     title: 'Perfil',
     settings: 'Ajustes',
@@ -891,6 +1045,31 @@ export const es: Messages = {
     friends: 'Amigos',
     friendsSoon: 'Muy pronto vas a poder agregar amigos, ver sus personajes y competir con ellos.',
     comingSoon: 'Próximamente',
+    gallery: 'Galería',
+    galleryEmpty:
+      'Acá quedan las fotos que compartís de tus entrenamientos y tus fotos de progreso.',
+    seeAll: 'Ver todo',
+    friendsPreview: 'Vista previa · datos de ejemplo',
+    friendsPreviewBody:
+      'Así se va a ver cuando haya cuentas: armás un grupo con tus amigos y compiten por constancia cada semana.',
+    demoGroup: 'Los del gym',
+    weekRanking: 'Ranking de la semana',
+    workoutsWeek: (n: number) => `${n} entren.`,
+    you: 'Vos',
+    createGroup: 'Crear grupo',
+    inviteFriends: 'Invitar amigos',
+  },
+  gallery: {
+    title: 'Galería',
+    addProgress: 'Agregar foto de progreso',
+    localOnly: 'Las fotos quedan solo en este dispositivo y no van en la copia de seguridad.',
+    kinds: { workout: 'Entrenamiento', progress: 'Progreso' },
+    delete: 'Borrar foto',
+    deleteConfirm: '¿Borrar esta foto?',
+    deleteBody: 'Se borra de la galería de ASCEND. No se puede deshacer.',
+    share: 'Compartir',
+    deleted: 'Foto borrada',
+    error: 'No se pudo cargar la foto.',
   },
   settings: {
     title: 'Ajustes',
@@ -939,10 +1118,10 @@ export const es: Messages = {
     today: 'Hoy',
     todayProgress: 'Tu progreso de hoy',
     completed: 'cumplido',
-    doneToday: 'Hoy ya entrenaste',
+    doneToday: 'Hecho hoy',
     workoutsShort: 'entrenos',
     restDay: 'Hoy toca descanso',
-    upNext: 'Te toca',
+    upNext: 'Hoy',
     startWorkout: 'Empezar entrenamiento',
     weekProgress: (done: number, goal: number) => `${done} de ${goal} entrenamientos esta semana`,
     weekDone: '¡Cumpliste tu semana!',

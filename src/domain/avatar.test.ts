@@ -92,7 +92,7 @@ describe('personaje', () => {
 
   it('las opciones se desbloquean por nivel, logros o Pro', () => {
     const novato = { level: 1, achievements: new Set<string>(), pro: false }
-    const veterano = { level: 6, achievements: new Set(['club_100', 'full_week']), pro: false }
+    const veterano = { level: 20, achievements: new Set(['club_100', 'full_week']), pro: false }
     expect(isUnlocked(unlockOf('hair', 'short'), novato)).toBe(true)
     expect(isUnlocked(unlockOf('hair', 'mohawk'), novato)).toBe(false)
     expect(isUnlocked(unlockOf('hair', 'mohawk'), veterano)).toBe(true)

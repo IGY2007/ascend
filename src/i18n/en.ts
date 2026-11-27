@@ -6,6 +6,7 @@ export const en = {
   app: {
     name: 'ASCEND',
     tagline: 'Build yourself. Track your progress.',
+    rotate: 'Turn your phone: ASCEND works in portrait.',
     skipSplash: 'Tap to continue',
   },
   common: {
@@ -456,6 +457,7 @@ export const en = {
   charts: {
     tabs: {
       month: 'Month',
+      journey: 'Olympus',
       summary: 'Summary',
       calendar: 'Calendar',
       muscles: 'Physique',
@@ -470,6 +472,13 @@ export const en = {
     volumePerWeek: 'Volume per week',
     cardioPerWeek: 'Cardio minutes per week',
     waterPerDay: 'Water per day (last 14 days)',
+    group: 'Muscle group',
+    general: 'Overall',
+    generalTitle: 'Overall strength',
+    groupTitle: (g: string) => `${g} strength`,
+    indexNeedsTwo: 'Train at least twice to see your strength grow.',
+    indexExplain:
+      'Your estimated 1RM on each exercise compared with the first time you did it, averaged.',
     exercise: 'Exercise',
     noExercises: "Once you finish your first workout you'll see each exercise's progress here.",
     e1rmTitle: 'Estimated 1RM per session',
@@ -528,6 +537,7 @@ export const en = {
       beast: 'Beast',
       titan: 'Titan',
       legend: 'Legend',
+      olympian: 'Olympian',
     },
     xp: (into: number, needed: number) => `${into} / ${needed} XP`,
     xpToGo: (n: number) => `${n} XP to the next level`,
@@ -543,23 +553,38 @@ export const en = {
     achievements: {
       first_workout: { title: 'First step', desc: 'Finish your first workout' },
       workouts_10: { title: 'Getting serious', desc: 'Finish 10 workouts' },
-      workouts_50: { title: 'Regular', desc: 'Finish 50 workouts' },
+      workouts_25: { title: 'Finding rhythm', desc: 'Finish 25 workouts' },
+      workouts_50: { title: 'Gym regular', desc: 'Finish 50 workouts' },
       workouts_100: { title: 'Centurion', desc: 'Finish 100 workouts' },
-      first_pr: { title: 'Personal best', desc: 'Break your first record' },
-      prs_10: { title: 'Record breaker', desc: 'Break 10 records' },
-      prs_50: { title: 'Unstoppable', desc: 'Break 50 records' },
-      full_week: { title: 'Full week', desc: 'Hit your weekly workout goal' },
-      streak_4: { title: 'On fire', desc: 'Hit your goal 4 weeks in a row' },
-      streak_12: { title: 'Iron habit', desc: 'Hit your goal 12 weeks in a row' },
+      workouts_250: { title: 'Spartan', desc: 'Finish 250 workouts' },
+      first_pr: { title: 'Personal best', desc: 'Set your first record' },
+      prs_10: { title: 'Record breaker', desc: 'Set 10 records' },
+      prs_25: { title: 'On the rise', desc: 'Set 25 records' },
+      prs_50: { title: 'Unstoppable', desc: 'Set 50 records' },
+      streak_7: { title: 'On fire', desc: 'Reach a 7-day streak' },
+      streak_30: { title: 'Iron habit', desc: 'Reach a 30-day streak' },
+      streak_100: { title: 'Unbreakable', desc: 'Reach a 100-day streak' },
+      streak_365: { title: 'A whole year', desc: 'Reach a 365-day streak' },
+      full_week: { title: 'Full week', desc: 'Hit your weekly goal' },
+      weeks_10: { title: 'Consistent', desc: 'Hit your goal in 10 weeks' },
+      challenges_10: { title: 'Challenge hunter', desc: 'Complete 10 weekly challenges' },
+      challenges_50: { title: 'No excuses', desc: 'Complete 50 weekly challenges' },
       sets_500: { title: 'Volume machine', desc: 'Complete 500 sets' },
+      sets_2000: { title: 'Set factory', desc: 'Complete 2,000 sets' },
       volume_10t: { title: '10 tonnes', desc: 'Lift 10,000 kg in total' },
       volume_100t: { title: '100 tonnes', desc: 'Lift 100,000 kg in total' },
       volume_1000t: { title: 'Mountain mover', desc: 'Lift 1,000,000 kg in total' },
-      club_100: { title: '100 kg club', desc: 'Lift 100 kg in any exercise' },
-      hydrated_7: { title: 'Hydrated', desc: 'Reach your water goal on 7 days' },
-      hydrated_30: { title: 'Like a fish', desc: 'Reach your water goal on 30 days' },
+      club_60: { title: '60 club', desc: 'Lift 60 kg on any exercise' },
+      club_100: { title: '100 club', desc: 'Lift 100 kg on any exercise' },
+      complete_body: { title: 'Full body', desc: 'Train all 7 muscle groups in one month' },
+      early_bird: { title: 'Early bird', desc: 'Train 5 times before 8 am' },
+      night_owl: { title: 'Night owl', desc: 'Train 5 times after 9 pm' },
+      weekend_warrior: { title: 'Weekend warrior', desc: 'Train 10 times on weekends' },
       cardio_10: { title: 'Engine', desc: 'Log 10 cardio sessions' },
       weigh_in_10: { title: 'Data driven', desc: 'Log your weight 10 times' },
+      level_25: { title: 'Halfway up', desc: 'Reach level 25' },
+      level_50: { title: 'Golden era', desc: 'Reach level 50' },
+      level_100: { title: 'Olympian', desc: 'Reach level 100 and enter Olympus' },
     } as Record<string, { title: string; desc: string }>,
     challengesTitle: 'Weekly challenges',
     challengesReward: (xp: number) => `+${xp} XP each`,
@@ -746,6 +771,7 @@ export const en = {
     credit: 'Photos: free-exercise-db (public domain).',
   },
   share: {
+    toGallery: 'It’s also saved to your profile gallery.',
     title: 'Share your workout',
     open: 'Share with a photo',
     preview: 'Preview of the image to share',
@@ -806,6 +832,22 @@ export const en = {
         lesson:
           'Body and mind always went together. Caring about technique is training with your head.',
       },
+      technique: {
+        name: 'Technique first',
+        era: 'Training',
+        title: 'Full range and control',
+        story:
+          'A well-done exercise works the muscle you want and protects your joints. Lowering the weight over 2 to 3 seconds, using your full range of motion and not bouncing makes every rep count more.',
+        lesson: 'If you have to break your form to add weight, it is not time to add it yet.',
+      },
+      protein: {
+        name: 'Protein',
+        era: 'Nutrition',
+        title: 'How much protein do you need?',
+        story:
+          'To build muscle, the evidence points to about 1.6 to 2.2 g of protein per kg of body weight per day, spread over 3 to 5 meals of 20 to 40 g. Meat, eggs, dairy, legumes and tofu all count.',
+        lesson: 'Spread through the day it works better than all at dinner.',
+      },
       strongmen: {
         name: 'The strongmen',
         era: 'Late 19th century',
@@ -815,6 +857,22 @@ export const en = {
         lesson:
           'Sandow trained with a method and tracked his progress. What is not measured cannot improve.',
       },
+      progression: {
+        name: 'Double progression',
+        era: 'Training',
+        title: 'How to progress without stalling',
+        story:
+          'Pick a rep range, for example 8 to 12. When you hit 12 on every set, add a little weight and go back to 8. That way you always have a clear goal for the next session.',
+        lesson: 'One more rep or 2.5 kg more: both are progress.',
+      },
+      sleep: {
+        name: 'Sleep to grow',
+        era: 'Recovery',
+        title: 'Muscle grows while you rest',
+        story:
+          'Training is the stimulus; growth happens while you recover. Poor sleep is linked to less strength and worse recovery. Aim for 7 to 9 hours, at similar times every day.',
+        lesson: 'A good night of sleep is training too.',
+      },
       muscle_beach: {
         name: 'Muscle Beach',
         era: '1930s',
@@ -822,6 +880,22 @@ export const en = {
         story:
           'In the 1930s, in Santa Monica (California), a group of acrobats and lifters started training outdoors by the beach. The spot became famous as Muscle Beach and thousands came to watch.',
         lesson: 'Training together is motivating. Showing your progress inspires others to start.',
+      },
+      volume: {
+        name: 'Weekly volume',
+        era: 'Training',
+        title: 'How many sets do you need?',
+        story:
+          'To grow, many guidelines recommend about 10 to 20 weekly sets per muscle group, spread over 2 or more days. More is not always better: if you do not recover, extra volume does not add up.',
+        lesson: 'Training each muscle twice a week usually beats once.',
+      },
+      carbs: {
+        name: 'Carbohydrates',
+        era: 'Nutrition',
+        title: 'Training fuel',
+        story:
+          'Carbs refill glycogen, the energy your muscles use when you lift. Eating some 1 to 3 hours before training and after your session helps you perform and recover.',
+        lesson: 'Rice, potatoes, oats, bread and fruit are your allies around the gym.',
       },
       golden_era: {
         name: 'The golden era',
@@ -832,20 +906,84 @@ export const en = {
         lesson:
           'Champions trained consistently for years. There are no shortcuts, only weeks in a row.',
       },
+      effort: {
+        name: 'Effort and RIR',
+        era: 'Training',
+        title: 'Close to failure, not always to failure',
+        story:
+          'RIR means “reps in reserve”: how many more you could have done with good form. Ending sets 1 to 3 reps short of failure gives almost the same stimulus as going to failure, with less fatigue.',
+        lesson: 'Save failure for the last set of some exercises, not all of them.',
+      },
+      creatine: {
+        name: 'Creatine',
+        era: 'Nutrition',
+        title: 'The most studied supplement',
+        story:
+          'Creatine monohydrate is one of the supplements with the most evidence for improving strength and muscle mass. The usual dose is 3 to 5 g a day, any time of day, with no need to “load” it.',
+        lesson: 'It does not replace eating well or training: it adds a little on top.',
+      },
       iron: {
         name: 'The iron',
-        era: 'Since the 1970s',
-        title: 'Powerlifting and science',
+        era: 'Since 1972',
+        title: 'Powerlifting',
         story:
-          'In 1972 the International Powerlifting Federation (IPF) was founded, competing in three lifts: squat, bench press and deadlift. Today science confirms what the iron taught: progressive overload, about 10 to 20 weekly sets per muscle, enough protein and good rest.',
-        lesson: 'Strength and muscle are built with the basics done well, repeated many times.',
+          'In 1972 the International Powerlifting Federation (IPF) was founded, competing in three lifts: squat, bench press and deadlift. Whoever lifts the most combined wins.',
+        lesson: 'Compound lifts, which move several joints, are the foundation of strength.',
+      },
+      deload: {
+        name: 'Deloads',
+        era: 'Recovery',
+        title: 'Ease off to keep climbing',
+        story:
+          'After several weeks of hard training, fatigue builds up. Many coaches program a lighter week every 4 to 8 weeks, with fewer sets or less weight, to recover and come back stronger.',
+        lesson: 'Resting on purpose is not wasted time.',
+      },
+      hydration: {
+        name: 'Hydration',
+        era: 'Nutrition',
+        title: 'Water and performance',
+        story:
+          'Losing about 2% of your body weight in water can already lower performance. Drink water through the day and between sets, and more when it is hot or you sweat a lot.',
+        lesson: 'Showing up hydrated beats any pre-workout.',
+      },
+      women: {
+        name: 'Women of iron',
+        era: '1979',
+        title: 'Lisa Lyon and the first championship',
+        story:
+          'In 1979 Lisa Lyon won the first World Women’s Bodybuilding Championship, in Los Angeles. She opened the way for millions of women to train with weights.',
+        lesson: 'Weights are for everyone: strength has no gender.',
+      },
+      mindset: {
+        name: 'Mindset',
+        era: 'Mind',
+        title: 'Consistency beats motivation',
+        story:
+          'Motivation comes and goes; habits stay. Training on the same days, having your routine ready and tracking your progress makes training part of who you are, not a daily decision.',
+        lesson: 'You do not need to feel like it: you need to show up.',
+      },
+      olympics: {
+        name: 'The modern Games',
+        era: 'Athens, 1896',
+        title: 'Weights at the first Games',
+        story:
+          'At the first modern Olympic Games, in Athens in 1896, there was already weightlifting, with one-hand and two-hand events. Today Olympic weightlifting competes in the snatch and the clean and jerk.',
+        lesson: 'Strength was part of sport from the very beginning.',
+      },
+      heracles: {
+        name: 'Heracles',
+        era: 'Greek mythology',
+        title: 'The twelve labors',
+        story:
+          'Heracles, the Romans’ Hercules, was the strongest hero of Greek myth. He had to complete twelve impossible labors, like defeating the Nemean lion, and his strength became a symbol of effort.',
+        lesson: 'Great achievements are many small labors, one after another.',
       },
       olympus: {
         name: 'Olympus',
         era: 'Greek mythology',
         title: 'Home of the gods',
         story:
-          'The Greeks imagined their gods and heroes with perfect bodies, like Heracles and his twelve labors. The sculptor Polykleitos (5th century BC) even wrote a “canon” of ideal proportions, seen in his statue the Doryphoros. And you reached the top.',
+          'The Greeks imagined their gods and heroes with perfect bodies. The sculptor Polykleitos (5th century BC) even wrote a “canon” of ideal proportions, seen in his statue the Doryphoros. And you reached the top.',
         lesson:
           'Reaching Olympus is not the end: it proves consistency made you a different person.',
       },
@@ -853,21 +991,32 @@ export const en = {
       string,
       { name: string; era: string; title: string; story: string; lesson: string }
     >,
+    kinds: {
+      history: 'History',
+      training: 'Training',
+      nutrition: 'Nutrition',
+      recovery: 'Recovery',
+      mind: 'Mindset',
+      myth: 'Myth',
+    },
   },
   streak: {
     title: 'Streak',
-    weeks: (n: number) => (n === 1 ? '1 week' : `${n} weeks`),
-    short: (n: number) => `${n} wk`,
-    best: (n: number) => `Best streak: ${n === 1 ? '1 week' : `${n} weeks`}`,
+    days: (n: number) => (n === 1 ? '1 day' : `${n} days`),
+    weeks: (n: number) => (n === 1 ? '1 day' : `${n} days`),
+    short: (n: number) => (n === 1 ? '1 day' : `${n} days`),
+    best: (n: number) => `Best streak: ${n === 1 ? '1 day' : `${n} days`}`,
     freezes: (n: number) => (n === 1 ? '1 shield' : `${n} shields`),
-    hint: 'Weeks in a row hitting your goal. Every 4 weeks you earn a shield that saves one slow week.',
-    none: 'Hit your goal this week to start your streak.',
+    rest: 'Rest day',
+    hint: 'Days in a row training or resting. It breaks if a week ends without hitting your goal. Complete all 3 challenges in a week to earn a shield.',
+    none: 'Train today to start your streak.',
     pending: (left: number) =>
       left === 1
-        ? '1 more workout this week to add to it.'
-        : `${left} more workouts this week to add to it.`,
-    done: 'Week done: your streak grows.',
+        ? '1 more workout this week to keep your streak.'
+        : `${left} more workouts this week to keep your streak.`,
+    done: 'Weekly goal done: your streak is safe.',
   },
+
   profilePage: {
     title: 'Profile',
     settings: 'Settings',
@@ -886,6 +1035,30 @@ export const en = {
     friendsSoon:
       'Soon you will be able to add friends, see their characters and compete with them.',
     comingSoon: 'Coming soon',
+    gallery: 'Gallery',
+    galleryEmpty: 'Workout photos you share and your progress photos end up here.',
+    seeAll: 'See all',
+    friendsPreview: 'Preview · sample data',
+    friendsPreviewBody:
+      'This is how it will look once accounts arrive: make a group with your friends and compete on consistency every week.',
+    demoGroup: 'Gym crew',
+    weekRanking: 'This week’s ranking',
+    workoutsWeek: (n: number) => `${n} workouts`,
+    you: 'You',
+    createGroup: 'Create group',
+    inviteFriends: 'Invite friends',
+  },
+  gallery: {
+    title: 'Gallery',
+    addProgress: 'Add progress photo',
+    localOnly: 'Photos stay on this device only and are not part of the backup.',
+    kinds: { workout: 'Workout', progress: 'Progress' },
+    delete: 'Delete photo',
+    deleteConfirm: 'Delete this photo?',
+    deleteBody: 'It will be removed from the ASCEND gallery. This can’t be undone.',
+    share: 'Share',
+    deleted: 'Photo deleted',
+    error: 'Couldn’t load the photo.',
   },
   settings: {
     title: 'Settings',
@@ -937,7 +1110,7 @@ export const en = {
     doneToday: 'Done today',
     workoutsShort: 'workouts',
     restDay: 'Rest day today',
-    upNext: 'Up next',
+    upNext: 'Today',
     startWorkout: 'Start workout',
     weekProgress: (done: number, goal: number) => `${done} of ${goal} workouts this week`,
     weekDone: 'Week complete!',

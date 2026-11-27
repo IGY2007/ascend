@@ -55,6 +55,9 @@ export function CampSheet({
       {camp && text && (
         <div className="space-y-4 pt-1">
           <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">
+              {j.kinds[camp.kind]}
+            </span>
             <span className="rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent-2">
               {text.era}
             </span>

@@ -15,6 +15,8 @@ const CX = 100
 const INK = '#1f1a17'
 const GOLD = '#e6b422'
 const SHADE = 'rgb(0 0 0 / 0.15)'
+const CHIN = 92
+const HEAD_SCALE = 0.56
 
 interface Props {
   avatar: AvatarConfig
@@ -66,7 +68,7 @@ export const AvatarFigure = memo(function AvatarFigure({
   const lt = 13 + 17 * l + (female ? 3 : 0)
   const lx = Math.max(8 + lt * 0.45, female ? hw - lt / 2 - 1 : 0)
   const cw = 9 + 11 * k
-  const neck = female ? 7 : 8 + 3 * ((s + b) / 2)
+  const neck = female ? 5.5 : 6.5 + 2.5 * ((s + b) / 2)
 
   const torso = female
     ? `M${CX - tw},104 Q${CX - tw - 1},124 ${CX - ww},148 Q${CX - ww - 3},166 ${CX - hw},178 L${CX + hw},178 Q${CX + ww + 3},166 ${CX + ww},148 Q${CX + tw + 1},124 ${CX + tw},104 Q${CX},98 ${CX - tw},104 Z`
@@ -75,7 +77,10 @@ export const AvatarFigure = memo(function AvatarFigure({
   const outfit = avatar.outfit
   const covered = outfit === 'tee' || outfit === 'hoodie' || outfit === 'jersey'
   const showsBelly = outfit === 'shirtless' || outfit === 'sportsbra'
-  const viewBox = variant === 'head' ? '58 18 84 84' : '0 0 200 310'
+  // Proporciones reales: el cuerpo mide ~7 cabezas. La cabeza se dibuja grande y se escala desde el
+  // mentón (y = 92); el resto del cuerpo ya está en proporción (manos a la altura de la cadera, etc.).
+  const headTransform = `translate(${CX} ${CHIN}) scale(${HEAD_SCALE}) translate(${-CX} ${-CHIN})`
+  const viewBox = variant === 'head' ? '72 45 56 56' : '18 38 164 266'
   // 175 cm = tamaño de referencia; escala desde los pies
   const scale =
     variant === 'full' && heightCm
@@ -128,32 +133,34 @@ export const AvatarFigure = memo(function AvatarFigure({
           />
         )}
 
-        {/* Pelo que va detrás de la cabeza */}
-        {avatar.hair === 'long' && (
-          <path
-            d={`M${CX - 32},60 Q${CX - 38},112 ${CX - 22},122 L${CX + 22},122 Q${CX + 38},112 ${CX + 32},60 Z`}
-            fill={hair}
-          />
-        )}
-        {avatar.hair === 'afro' && <circle cx={CX} cy={52} r={41} fill={hair} />}
-        {avatar.hair === 'ponytail' && (
-          <path
-            d={`M${CX + 20},38 Q${CX + 50},44 ${CX + 42},96 Q${CX + 34},78 ${CX + 26},56 Z`}
-            fill={hair}
-          />
-        )}
-        {avatar.hair === 'braids' &&
-          [-1, 1].map((side) =>
-            [0, 1, 2, 3, 4].map((i) => (
-              <circle
-                key={`${side}${i}`}
-                cx={CX + side * (27 + i * 0.6)}
-                cy={74 + i * 10}
-                r={6 - i * 0.3}
-                fill={hair}
-              />
-            )),
+        <g transform={headTransform}>
+          {/* Pelo que va detrás de la cabeza */}
+          {avatar.hair === 'long' && (
+            <path
+              d={`M${CX - 32},60 Q${CX - 38},112 ${CX - 22},122 L${CX + 22},122 Q${CX + 38},112 ${CX + 32},60 Z`}
+              fill={hair}
+            />
           )}
+          {avatar.hair === 'afro' && <circle cx={CX} cy={52} r={41} fill={hair} />}
+          {avatar.hair === 'ponytail' && (
+            <path
+              d={`M${CX + 20},38 Q${CX + 50},44 ${CX + 42},96 Q${CX + 34},78 ${CX + 26},56 Z`}
+              fill={hair}
+            />
+          )}
+          {avatar.hair === 'braids' &&
+            [-1, 1].map((side) =>
+              [0, 1, 2, 3, 4].map((i) => (
+                <circle
+                  key={`${side}${i}`}
+                  cx={CX + side * (27 + i * 0.6)}
+                  cy={74 + i * 10}
+                  r={6 - i * 0.3}
+                  fill={hair}
+                />
+              )),
+            )}
+        </g>
 
         {full && (
           <g>
@@ -391,235 +398,244 @@ export const AvatarFigure = memo(function AvatarFigure({
           </g>
         )}
 
-        {/* Cabeza */}
-        <circle cx={CX - 29} cy={65} r={6} fill={skin} />
-        <circle cx={CX + 29} cy={65} r={6} fill={skin} />
-        <circle cx={CX} cy={62} r={30} fill={skin} />
+        <g transform={headTransform}>
+          {/* Cabeza */}
+          <circle cx={CX - 29} cy={65} r={6} fill={skin} />
+          <circle cx={CX + 29} cy={65} r={6} fill={skin} />
+          <circle cx={CX} cy={62} r={30} fill={skin} />
 
-        {/* Barba (debajo de la boca) */}
-        {avatar.facial === 'stubble' && (
-          <path
-            d={`M${CX - 25},66 Q${CX - 24},94 ${CX},94 Q${CX + 24},94 ${CX + 25},66 Q${CX + 18},84 ${CX},84 Q${CX - 18},84 ${CX - 25},66 Z`}
-            fill={hair}
-            opacity={0.3}
-          />
-        )}
-        {avatar.facial === 'beard' && (
-          <path
-            d={`M${CX - 28},60 Q${CX - 28},100 ${CX},101 Q${CX + 28},100 ${CX + 28},60 Q${CX + 22},84 ${CX + 9},81 Q${CX},86 ${CX - 9},81 Q${CX - 22},84 ${CX - 28},60 Z`}
-            fill={hair}
-          />
-        )}
-        {avatar.facial === 'goatee' && (
-          <path d={`M${CX - 7},83 Q${CX},98 ${CX + 7},83 Q${CX},88 ${CX - 7},83 Z`} fill={hair} />
-        )}
-
-        {/* Ojos */}
-        {[-1, 1].map((side) => {
-          const ex = CX + side * 11
-          return (
-            <g key={side}>
-              {avatar.eyes === 'happy' ? (
-                <path
-                  d={`M${ex - 4},65 Q${ex},59 ${ex + 4},65`}
-                  stroke={INK}
-                  strokeWidth={2.6}
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              ) : (
-                <>
-                  <ellipse cx={ex} cy={63} rx={3.3} ry={4.2} fill={INK} />
-                  <circle cx={ex + 1.2} cy={61.4} r={1.2} fill="#fff" />
-                </>
-              )}
-              {avatar.eyes === 'lashes' && (
-                <path
-                  d={`M${ex + side * 2.6},59.4 L${ex + side * 5.4},57.2 M${ex + side * 3.4},61.4 L${ex + side * 6.4},60.4`}
-                  stroke={INK}
-                  strokeWidth={1.4}
-                  strokeLinecap="round"
-                />
-              )}
-              {avatar.eyes === 'focused' && (
-                <path
-                  d={`M${ex - 4.5},62.2 L${ex + 4.5},62.2 L${ex + 4.5},57 L${ex - 4.5},57 Z`}
-                  fill={skin}
-                />
-              )}
-              <path
-                d={
-                  avatar.eyes === 'focused'
-                    ? `M${ex - side * 4},${54} L${ex + side * 4},${56.5}`
-                    : `M${ex - 4},${53} Q${ex},${50.5} ${ex + 4},${53}`
-                }
-                stroke={['bald', 'buzz'].includes(avatar.hair) ? INK : hair}
-                strokeWidth={2.2}
-                fill="none"
-                strokeLinecap="round"
-              />
-              <circle cx={CX + side * 19} cy={72} r={4} fill="#f87171" opacity={0.22} />
-            </g>
-          )
-        })}
-        <path
-          d={`M${CX - 7},75 Q${CX},${81 + 2 * ((c + a) / 2)} ${CX + 7},75`}
-          stroke={female ? '#be4b5a' : '#7a3b2e'}
-          strokeWidth={2.4}
-          fill="none"
-          strokeLinecap="round"
-        />
-        {avatar.facial === 'mustache' && (
-          <path
-            d={`M${CX - 11},75 Q${CX - 5},68 ${CX},72 Q${CX + 5},68 ${CX + 11},75 Q${CX},72 ${CX - 11},75 Z`}
-            fill={hair}
-          />
-        )}
-
-        {/* Pelo */}
-        {avatar.hair === 'short' && (
-          <path
-            d={`M${CX - 31},60 Q${CX - 34},26 ${CX},27 Q${CX + 34},26 ${CX + 31},60 Q${CX + 27},45 ${CX + 13},43 Q${CX},49 ${CX - 14},41 Q${CX - 27},45 ${CX - 31},60 Z`}
-            fill={hair}
-          />
-        )}
-        {avatar.hair === 'sidepart' && (
-          <path
-            d={`M${CX - 31},60 Q${CX - 34},24 ${CX + 4},25 Q${CX + 35},27 ${CX + 31},60 Q${CX + 28},44 ${CX + 19},40 Q${CX + 2},45 ${CX - 12},36 Q${CX - 27},44 ${CX - 31},60 Z`}
-            fill={hair}
-          />
-        )}
-        {(avatar.hair === 'buzz' || avatar.hair === 'afro') && (
-          <path
-            d={`M${CX - 30},56 Q${CX - 30},30 ${CX},30 Q${CX + 30},30 ${CX + 30},56 Q${CX},40 ${CX - 30},56 Z`}
-            fill={hair}
-            opacity={avatar.hair === 'buzz' ? 0.8 : 1}
-          />
-        )}
-        {avatar.hair === 'curly' &&
-          [
-            [-25, 46],
-            [-16, 35],
-            [-3, 30],
-            [10, 31],
-            [21, 38],
-            [27, 50],
-            [-29, 57],
-            [30, 60],
-          ].map(([dx, cy], i) => <circle key={i} cx={CX + dx!} cy={cy} r={10} fill={hair} />)}
-        {['long', 'bun', 'ponytail', 'braids'].includes(avatar.hair) && (
-          <path
-            d={`M${CX - 31},62 Q${CX - 33},27 ${CX},28 Q${CX + 33},27 ${CX + 31},62 Q${CX + 24},40 ${CX},42 Q${CX - 24},40 ${CX - 31},62 Z`}
-            fill={hair}
-          />
-        )}
-        {avatar.hair === 'bun' && <circle cx={CX} cy={26} r={11} fill={hair} />}
-        {avatar.hair === 'mohawk' && (
-          <>
+          {/* Barba (debajo de la boca) */}
+          {avatar.facial === 'stubble' && (
             <path
-              d={`M${CX - 29},56 Q${CX - 29},32 ${CX},32 Q${CX + 29},32 ${CX + 29},56 Q${CX},42 ${CX - 29},56 Z`}
+              d={`M${CX - 25},66 Q${CX - 24},94 ${CX},94 Q${CX + 24},94 ${CX + 25},66 Q${CX + 18},84 ${CX},84 Q${CX - 18},84 ${CX - 25},66 Z`}
               fill={hair}
               opacity={0.3}
             />
+          )}
+          {avatar.facial === 'beard' && (
             <path
-              d={`M${CX - 8},50 Q${CX - 11},16 ${CX},12 Q${CX + 11},16 ${CX + 8},50 Z`}
+              d={`M${CX - 28},60 Q${CX - 28},100 ${CX},101 Q${CX + 28},100 ${CX + 28},60 Q${CX + 22},84 ${CX + 9},81 Q${CX},86 ${CX - 9},81 Q${CX - 22},84 ${CX - 28},60 Z`}
               fill={hair}
             />
-          </>
-        )}
-        {avatar.hair === 'spiky' && (
-          <path
-            d={`M${CX - 31},58 L${CX - 30},32 L${CX - 21},40 L${CX - 15},20 L${CX - 6},35 L${CX},14 L${CX + 6},35 L${CX + 15},20 L${CX + 21},40 L${CX + 30},32 L${CX + 31},58 Q${CX},40 ${CX - 31},58 Z`}
-            fill={hair}
-          />
-        )}
-        {avatar.hair === 'bald' && (
-          <ellipse cx={CX - 9} cy={42} rx={9} ry={5} fill="#fff" opacity={0.22} />
-        )}
+          )}
+          {avatar.facial === 'goatee' && (
+            <path d={`M${CX - 7},83 Q${CX},98 ${CX + 7},83 Q${CX},88 ${CX - 7},83 Z`} fill={hair} />
+          )}
 
-        {/* Cabeza: accesorios */}
-        {avatar.headwear === 'headband' && (
-          <path
-            d={`M${CX - 30},49 Q${CX},38 ${CX + 30},49 L${CX + 30},56 Q${CX},45 ${CX - 30},56 Z`}
-            fill="#a3e635"
-          />
-        )}
-        {avatar.headwear === 'cap' && (
-          <>
-            <path
-              d={`M${CX - 31},52 Q${CX - 31},20 ${CX},20 Q${CX + 31},20 ${CX + 31},52 Z`}
-              fill={shirt}
-            />
-            <ellipse cx={CX + 12} cy={52} rx={26} ry={5.5} fill={shirt} />
-            <ellipse cx={CX + 12} cy={51} rx={26} ry={3} fill="rgb(0 0 0 / 0.18)" />
-          </>
-        )}
-        {avatar.headwear === 'beanie' && (
-          <>
-            <path
-              d={`M${CX - 31},54 Q${CX - 32},20 ${CX},20 Q${CX + 32},20 ${CX + 31},54 Z`}
-              fill={shirt}
-            />
-            <rect x={CX - 32} y={45} width={64} height={11} rx={5} fill={shirt} />
-            <rect x={CX - 32} y={45} width={64} height={11} rx={5} fill="rgb(0 0 0 / 0.15)" />
-            <circle cx={CX} cy={18} r={6} fill="#f4f4f5" />
-          </>
-        )}
-        {avatar.headwear === 'headphones' && (
-          <>
-            <path
-              d={`M${CX - 31},62 Q${CX - 35},20 ${CX},21 Q${CX + 35},20 ${CX + 31},62`}
-              stroke="#27272a"
-              strokeWidth={5}
-              fill="none"
-            />
-            {[-1, 1].map((side) => (
+          {/* Ojos */}
+          {[-1, 1].map((side) => {
+            const ex = CX + side * 11
+            return (
               <g key={side}>
-                <rect x={CX + side * 32 - 6} y={55} width={12} height={19} rx={5} fill="#27272a" />
-                <circle cx={CX + side * 32} cy={64.5} r={3} fill="#8b5cf6" />
+                {avatar.eyes === 'happy' ? (
+                  <path
+                    d={`M${ex - 4},65 Q${ex},59 ${ex + 4},65`}
+                    stroke={INK}
+                    strokeWidth={2.6}
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                ) : (
+                  <>
+                    <ellipse cx={ex} cy={63} rx={3.3} ry={4.2} fill={INK} />
+                    <circle cx={ex + 1.2} cy={61.4} r={1.2} fill="#fff" />
+                  </>
+                )}
+                {avatar.eyes === 'lashes' && (
+                  <path
+                    d={`M${ex + side * 2.6},59.4 L${ex + side * 5.4},57.2 M${ex + side * 3.4},61.4 L${ex + side * 6.4},60.4`}
+                    stroke={INK}
+                    strokeWidth={1.4}
+                    strokeLinecap="round"
+                  />
+                )}
+                {avatar.eyes === 'focused' && (
+                  <path
+                    d={`M${ex - 4.5},62.2 L${ex + 4.5},62.2 L${ex + 4.5},57 L${ex - 4.5},57 Z`}
+                    fill={skin}
+                  />
+                )}
+                <path
+                  d={
+                    avatar.eyes === 'focused'
+                      ? `M${ex - side * 4},${54} L${ex + side * 4},${56.5}`
+                      : `M${ex - 4},${53} Q${ex},${50.5} ${ex + 4},${53}`
+                  }
+                  stroke={['bald', 'buzz'].includes(avatar.hair) ? INK : hair}
+                  strokeWidth={2.2}
+                  fill="none"
+                  strokeLinecap="round"
+                />
+                <circle cx={CX + side * 19} cy={72} r={4} fill="#f87171" opacity={0.22} />
               </g>
-            ))}
-          </>
-        )}
-        {avatar.headwear === 'crown' && (
-          <g>
+            )
+          })}
+          <path
+            d={`M${CX - 7},75 Q${CX},${81 + 2 * ((c + a) / 2)} ${CX + 7},75`}
+            stroke={female ? '#be4b5a' : '#7a3b2e'}
+            strokeWidth={2.4}
+            fill="none"
+            strokeLinecap="round"
+          />
+          {avatar.facial === 'mustache' && (
             <path
-              d={`M${CX - 18},36 L${CX - 19},19 L${CX - 9},28 L${CX},14 L${CX + 9},28 L${CX + 19},19 L${CX + 18},36 Z`}
-              fill={GOLD}
-              stroke="#b8860b"
-              strokeWidth={1.2}
-              strokeLinejoin="round"
+              d={`M${CX - 11},75 Q${CX - 5},68 ${CX},72 Q${CX + 5},68 ${CX + 11},75 Q${CX},72 ${CX - 11},75 Z`}
+              fill={hair}
             />
-            <circle cx={CX} cy={30} r={2.6} fill="#ef4444" />
-            <circle cx={CX - 11} cy={31} r={2} fill="#3b82f6" />
-            <circle cx={CX + 11} cy={31} r={2} fill="#a3e635" />
-          </g>
-        )}
+          )}
 
-        {/* Anteojos */}
-        {avatar.eyewear === 'glasses' && (
-          <g stroke={INK} strokeWidth={2.4} fill="rgb(255 255 255 / 0.12)">
-            <rect x={CX - 19} y={56} width={15} height={13} rx={5} />
-            <rect x={CX + 4} y={56} width={15} height={13} rx={5} />
-            <path d={`M${CX - 4},61 Q${CX},58 ${CX + 4},61`} fill="none" />
-          </g>
-        )}
-        {avatar.eyewear === 'sunglasses' && (
-          <g>
+          {/* Pelo */}
+          {avatar.hair === 'short' && (
             <path
-              d={`M${CX - 21},57 L${CX - 2},57 L${CX - 4},67 Q${CX - 11},71 ${CX - 18},67 Z M${CX + 2},57 L${CX + 21},57 L${CX + 18},67 Q${CX + 11},71 ${CX + 4},67 Z`}
-              fill="#111"
+              d={`M${CX - 31},60 Q${CX - 34},26 ${CX},27 Q${CX + 34},26 ${CX + 31},60 Q${CX + 27},45 ${CX + 13},43 Q${CX},49 ${CX - 14},41 Q${CX - 27},45 ${CX - 31},60 Z`}
+              fill={hair}
             />
-            <path d={`M${CX - 2},58 L${CX + 2},58`} stroke="#111" strokeWidth={2.4} />
+          )}
+          {avatar.hair === 'sidepart' && (
             <path
-              d={`M${CX - 17},59.5 L${CX - 13},59.5 M${CX + 6},59.5 L${CX + 10},59.5`}
-              stroke="#fff"
-              strokeWidth={1.4}
-              opacity={0.5}
-              strokeLinecap="round"
+              d={`M${CX - 31},60 Q${CX - 34},24 ${CX + 4},25 Q${CX + 35},27 ${CX + 31},60 Q${CX + 28},44 ${CX + 19},40 Q${CX + 2},45 ${CX - 12},36 Q${CX - 27},44 ${CX - 31},60 Z`}
+              fill={hair}
             />
-          </g>
-        )}
+          )}
+          {(avatar.hair === 'buzz' || avatar.hair === 'afro') && (
+            <path
+              d={`M${CX - 30},56 Q${CX - 30},30 ${CX},30 Q${CX + 30},30 ${CX + 30},56 Q${CX},40 ${CX - 30},56 Z`}
+              fill={hair}
+              opacity={avatar.hair === 'buzz' ? 0.8 : 1}
+            />
+          )}
+          {avatar.hair === 'curly' &&
+            [
+              [-25, 46],
+              [-16, 35],
+              [-3, 30],
+              [10, 31],
+              [21, 38],
+              [27, 50],
+              [-29, 57],
+              [30, 60],
+            ].map(([dx, cy], i) => <circle key={i} cx={CX + dx!} cy={cy} r={10} fill={hair} />)}
+          {['long', 'bun', 'ponytail', 'braids'].includes(avatar.hair) && (
+            <path
+              d={`M${CX - 31},62 Q${CX - 33},27 ${CX},28 Q${CX + 33},27 ${CX + 31},62 Q${CX + 24},40 ${CX},42 Q${CX - 24},40 ${CX - 31},62 Z`}
+              fill={hair}
+            />
+          )}
+          {avatar.hair === 'bun' && <circle cx={CX} cy={26} r={11} fill={hair} />}
+          {avatar.hair === 'mohawk' && (
+            <>
+              <path
+                d={`M${CX - 29},56 Q${CX - 29},32 ${CX},32 Q${CX + 29},32 ${CX + 29},56 Q${CX},42 ${CX - 29},56 Z`}
+                fill={hair}
+                opacity={0.3}
+              />
+              <path
+                d={`M${CX - 8},50 Q${CX - 11},16 ${CX},12 Q${CX + 11},16 ${CX + 8},50 Z`}
+                fill={hair}
+              />
+            </>
+          )}
+          {avatar.hair === 'spiky' && (
+            <path
+              d={`M${CX - 31},58 L${CX - 30},32 L${CX - 21},40 L${CX - 15},20 L${CX - 6},35 L${CX},14 L${CX + 6},35 L${CX + 15},20 L${CX + 21},40 L${CX + 30},32 L${CX + 31},58 Q${CX},40 ${CX - 31},58 Z`}
+              fill={hair}
+            />
+          )}
+          {avatar.hair === 'bald' && (
+            <ellipse cx={CX - 9} cy={42} rx={9} ry={5} fill="#fff" opacity={0.22} />
+          )}
+
+          {/* Cabeza: accesorios */}
+          {avatar.headwear === 'headband' && (
+            <path
+              d={`M${CX - 30},49 Q${CX},38 ${CX + 30},49 L${CX + 30},56 Q${CX},45 ${CX - 30},56 Z`}
+              fill="#a3e635"
+            />
+          )}
+          {avatar.headwear === 'cap' && (
+            <>
+              <path
+                d={`M${CX - 31},52 Q${CX - 31},20 ${CX},20 Q${CX + 31},20 ${CX + 31},52 Z`}
+                fill={shirt}
+              />
+              <ellipse cx={CX + 12} cy={52} rx={26} ry={5.5} fill={shirt} />
+              <ellipse cx={CX + 12} cy={51} rx={26} ry={3} fill="rgb(0 0 0 / 0.18)" />
+            </>
+          )}
+          {avatar.headwear === 'beanie' && (
+            <>
+              <path
+                d={`M${CX - 31},54 Q${CX - 32},20 ${CX},20 Q${CX + 32},20 ${CX + 31},54 Z`}
+                fill={shirt}
+              />
+              <rect x={CX - 32} y={45} width={64} height={11} rx={5} fill={shirt} />
+              <rect x={CX - 32} y={45} width={64} height={11} rx={5} fill="rgb(0 0 0 / 0.15)" />
+              <circle cx={CX} cy={18} r={6} fill="#f4f4f5" />
+            </>
+          )}
+          {avatar.headwear === 'headphones' && (
+            <>
+              <path
+                d={`M${CX - 31},62 Q${CX - 35},20 ${CX},21 Q${CX + 35},20 ${CX + 31},62`}
+                stroke="#27272a"
+                strokeWidth={5}
+                fill="none"
+              />
+              {[-1, 1].map((side) => (
+                <g key={side}>
+                  <rect
+                    x={CX + side * 32 - 6}
+                    y={55}
+                    width={12}
+                    height={19}
+                    rx={5}
+                    fill="#27272a"
+                  />
+                  <circle cx={CX + side * 32} cy={64.5} r={3} fill="#8b5cf6" />
+                </g>
+              ))}
+            </>
+          )}
+          {avatar.headwear === 'crown' && (
+            <g>
+              <path
+                d={`M${CX - 18},36 L${CX - 19},19 L${CX - 9},28 L${CX},14 L${CX + 9},28 L${CX + 19},19 L${CX + 18},36 Z`}
+                fill={GOLD}
+                stroke="#b8860b"
+                strokeWidth={1.2}
+                strokeLinejoin="round"
+              />
+              <circle cx={CX} cy={30} r={2.6} fill="#ef4444" />
+              <circle cx={CX - 11} cy={31} r={2} fill="#3b82f6" />
+              <circle cx={CX + 11} cy={31} r={2} fill="#a3e635" />
+            </g>
+          )}
+
+          {/* Anteojos */}
+          {avatar.eyewear === 'glasses' && (
+            <g stroke={INK} strokeWidth={2.4} fill="rgb(255 255 255 / 0.12)">
+              <rect x={CX - 19} y={56} width={15} height={13} rx={5} />
+              <rect x={CX + 4} y={56} width={15} height={13} rx={5} />
+              <path d={`M${CX - 4},61 Q${CX},58 ${CX + 4},61`} fill="none" />
+            </g>
+          )}
+          {avatar.eyewear === 'sunglasses' && (
+            <g>
+              <path
+                d={`M${CX - 21},57 L${CX - 2},57 L${CX - 4},67 Q${CX - 11},71 ${CX - 18},67 Z M${CX + 2},57 L${CX + 21},57 L${CX + 18},67 Q${CX + 11},71 ${CX + 4},67 Z`}
+                fill="#111"
+              />
+              <path d={`M${CX - 2},58 L${CX + 2},58`} stroke="#111" strokeWidth={2.4} />
+              <path
+                d={`M${CX - 17},59.5 L${CX - 13},59.5 M${CX + 6},59.5 L${CX + 10},59.5`}
+                stroke="#fff"
+                strokeWidth={1.4}
+                opacity={0.5}
+                strokeLinecap="round"
+              />
+            </g>
+          )}
+        </g>
       </g>
     </svg>
   )

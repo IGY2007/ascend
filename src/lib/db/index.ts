@@ -6,6 +6,7 @@ import type {
   Exercise,
   ExerciseSet,
   NutritionGoal,
+  Photo,
   Profile,
   SessionExercise,
   TemplateExercise,
@@ -33,6 +34,7 @@ export class AscendDB extends Dexie {
   exerciseSets!: EntityTable<ExerciseSet, 'id'>
   cardioLogs!: EntityTable<CardioLog, 'id'>
   waterLogs!: EntityTable<WaterLog, 'id'>
+  photos!: EntityTable<Photo, 'id'>
 
   constructor(name = 'ascend') {
     super(name)
@@ -90,6 +92,9 @@ export class AscendDB extends Dexie {
         await tx.table('templates').toCollection().modify(fix)
         await tx.table('sessions').toCollection().modify(fix)
       })
+
+    // v5: galería de fotos (quedan solo en el dispositivo).
+    this.version(5).stores({ photos: 'id, date, kind, sourceId' })
   }
 }
 

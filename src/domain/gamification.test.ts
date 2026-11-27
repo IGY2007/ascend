@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  weeklyStreak,
+  dailyStreak,
   achievements,
   bestWeekStreak,
   completedChallenges,
@@ -35,12 +35,14 @@ const session = (date: string, sets = 15, volume = 5000) => ({
 })
 
 describe('niveles', () => {
-  it('cada nivel pide un poco más de XP', () => {
-    expect(levelFromXp(0)).toMatchObject({ level: 1, into: 0, needed: 250, title: 'rookie' })
-    expect(levelFromXp(249).level).toBe(1)
-    expect(levelFromXp(250)).toMatchObject({ level: 2, into: 0, needed: xpToNext(2) })
-    // 250 + 400 + 550 + 700 = 1900 → nivel 5
-    expect(levelFromXp(1900)).toMatchObject({ level: 5, title: 'grinder' })
+  it('cada nivel pide un poco más de XP, hasta el 100', () => {
+    expect(levelFromXp(0)).toMatchObject({ level: 1, into: 0, needed: 600, title: 'rookie' })
+    expect(levelFromXp(599).level).toBe(1)
+    expect(levelFromXp(600)).toMatchObject({ level: 2, into: 0, needed: xpToNext(2) })
+    // Del 1 al 10: 9 niveles de 600 + 25·(L−1)
+    const to10 = Array.from({ length: 9 }, (_, i) => xpToNext(i + 1)).reduce((a, b) => a + b, 0)
+    expect(levelFromXp(to10)).toMatchObject({ level: 10, title: 'regular' })
+    expect(levelFromXp(10_000_000)).toMatchObject({ level: 100, title: 'olympian' })
   })
 
   it('el XP sale de los datos reales', () => {
@@ -84,6 +86,43 @@ describe('rachas y logros', () => {
     const ten = list.find((a) => a.def.id === 'workouts_10')!
     expect(ten.unlocked).toBe(false)
     expect(ten.progress).toBeCloseTo(0.1)
+  })
+
+  it('logros por horario, fin de semana, nivel y racha diaria', () => {
+    const f: Facts = {
+      ...empty,
+      sessions: [
+        { ...session('2026-11-07'), hour: 7 }, // sábado temprano
+        { ...session('2026-11-08'), hour: 22 }, // domingo de noche
+        session('2026-11-10'),
+      ],
+    }
+    const t = totalsOf(f, { level: 26, bestDayStreak: 8, challengesDone: 3 })
+    expect(t.earlySessions).toBe(1)
+    expect(t.lateSessions).toBe(1)
+    expect(t.weekendSessions).toBe(2)
+    const list = achievements(t)
+    const got = (id: string) => list.find((a) => a.def.id === id)!.unlocked
+    expect(got('level_25')).toBe(true)
+    expect(got('streak_7')).toBe(true)
+    expect(got('streak_30')).toBe(false)
+    expect(got('challenges_10')).toBe(false)
+  })
+
+  it('cuerpo completo cuenta grupos distintos dentro del mismo mes', () => {
+    const muscles = ['chest', 'back', 'shoulders', 'biceps', 'quads', 'calves', 'abs'] as const
+    const f: Facts = {
+      ...empty,
+      exerciseSets: muscles.map((m, i) => ({
+        exerciseId: m,
+        date: `2026-11-${String(i + 1).padStart(2, '0')}`,
+        muscle: m,
+        maxWeight: 20,
+        bestE1rm: 25,
+        sets: 3,
+      })) as unknown as Facts['exerciseSets'],
+    }
+    expect(totalsOf(f).groupsInAMonth).toBe(7)
   })
 })
 
@@ -175,44 +214,58 @@ describe('resumen del mes', () => {
   })
 })
 
-describe('racha semanal', () => {
+describe('racha diaria', () => {
   const s = (date: string) => ({ id: date, date, sets: 10, volume: 1000, durationSeconds: 3600 })
-  // Semanas que empiezan el lunes: 2, 9, 16, 23 y 30 de noviembre de 2026
-  const weeks = (mondays: string[], perWeek = 2) =>
-    mondays.flatMap((m) => {
-      const d = new Date(`${m}T12:00:00`)
-      return Array.from({ length: perWeek }, (_, i) => {
-        const x = new Date(d)
-        x.setDate(d.getDate() + i)
-        return s(x.toISOString().slice(0, 10))
-      })
-    })
+  /** Sesiones en los días indicados (AAAA-MM-DD). */
+  const on = (...dates: string[]) => dates.map(s)
 
-  it('cuenta semanas seguidas y la actual suma solo si ya se cumplió', () => {
+  it('cuenta días seguidos: los días sin entrenar son descanso y no la cortan', () => {
+    // Meta 2 por semana. Semana del lunes 16: entrena lunes y jueves.
+    const f: Facts = { ...empty, weekGoal: 2, sessions: on('2026-11-16', '2026-11-19') }
+    const st = dailyStreak(f, '2026-11-25') // miércoles de la semana siguiente
+    expect(st.start).toBe('2026-11-16')
+    expect(st.current).toBe(10) // del 16 al 25 inclusive
+    expect(st.weekLeft).toBe(2)
+    expect(st.trainedToday).toBe(false)
+  })
+
+  it('se pierde si una semana termina sin cumplir la meta', () => {
     const f: Facts = {
       ...empty,
       weekGoal: 2,
-      sessions: weeks(['2026-11-02', '2026-11-09', '2026-11-16']),
+      sessions: on('2026-11-09', '2026-11-11', '2026-11-17'),
     }
-    expect(weeklyStreak(f, '2026-11-25')).toMatchObject({
-      current: 3,
-      best: 3,
-      thisWeekDone: false,
-    })
-    const g: Facts = { ...f, sessions: [...f.sessions, ...weeks(['2026-11-23'])] }
-    expect(weeklyStreak(g, '2026-11-25')).toMatchObject({ current: 4, thisWeekDone: true })
+    // Semana del 16: solo 1 entrenamiento → al terminar se corta
+    const st = dailyStreak(f, '2026-11-25')
+    expect(st.current).toBe(0)
+    expect(st.best).toBe(7) // del 9 al 15
   })
 
-  it('una semana floja corta la racha… salvo que tengas un protector', () => {
-    // 4 semanas cumplidas (gana 1 protector), una floja, y sigue
-    const mondays = ['2026-10-05', '2026-10-12', '2026-10-19', '2026-10-26', '2026-11-09']
-    const f: Facts = { ...empty, weekGoal: 2, sessions: weeks(mondays) }
-    const st = weeklyStreak(f, '2026-11-18')
-    expect(st.frozenWeeks).toEqual(['2026-11-02'])
-    expect(st.current).toBe(5)
+  it('arranca el día que entrenás aunque la semana siga en juego', () => {
+    const f: Facts = { ...empty, weekGoal: 3, sessions: on('2026-11-24') }
+    expect(dailyStreak(f, '2026-11-25')).toMatchObject({
+      current: 2,
+      start: '2026-11-24',
+      weekLeft: 2,
+    })
+  })
+
+  it('completar todos los desafíos de una semana da un protector que salva una semana floja', () => {
+    const f: Facts = {
+      ...empty,
+      weekGoal: 1,
+      // Semana del 9: entrena y además completa sus otros desafíos (récord + pesarse 3 veces, etc.)
+      sessions: on('2026-11-09', '2026-11-10', '2026-11-11', '2026-11-12', '2026-11-23'),
+      prs: [{ date: '2026-11-10', exerciseId: 'x' }],
+      weightLogs: ['2026-11-09', '2026-11-10', '2026-11-11'],
+      cardio: [{ date: '2026-11-12', minutes: 60 }],
+    }
+    // Esos datos cumplen cualquier combinación de desafíos que toque esa semana
+    expect(weeklyChallenges(f, '2026-11-09').every((c) => c.done)).toBe(true)
+    const st = dailyStreak(f, '2026-11-25')
+    // La semana del 16 no entrenó, pero el protector salvó la racha
+    expect(st.frozenWeeks).toEqual(['2026-11-16'])
+    expect(st.start).toBe('2026-11-09')
     expect(st.freezes).toBe(0)
-    // Sin protector, se corta
-    const g: Facts = { ...empty, weekGoal: 2, sessions: weeks(['2026-10-26', '2026-11-09']) }
-    expect(weeklyStreak(g, '2026-11-18').current).toBe(1)
   })
 })

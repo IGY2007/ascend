@@ -1,19 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import { CAMPS, journeyPosition } from './journey'
-import { LEVEL_TITLES } from './gamification'
+import { MAX_LEVEL } from './gamification'
 
 describe('el viaje', () => {
-  it('los campamentos coinciden con los títulos de nivel y terminan en el Olimpo', () => {
-    expect(CAMPS.map((c) => c.level)).toEqual(LEVEL_TITLES.map(([l]) => l))
-    expect(CAMPS.at(-1)!.id).toBe('olympus')
+  it('tiene un checkpoint cada 5 niveles y termina en el Olimpo (nivel 100)', () => {
+    expect(CAMPS).toHaveLength(21)
+    CAMPS.slice(1).forEach((c, i) => expect(c.level).toBe((i + 1) * 5))
+    expect(CAMPS.at(-1)).toMatchObject({ id: 'olympus', level: MAX_LEVEL })
   })
 
-  it('ubica en qué campamento estás y cuánto falta para el próximo', () => {
-    expect(journeyPosition(1)).toMatchObject({ index: 0, progress: 0 })
-    const p = journeyPosition(4, 50, 100) // entre el 3 (gimnasio griego) y el 5
+  it('ubica en qué checkpoint estás y cuánto falta para el próximo', () => {
+    expect(journeyPosition(1)).toMatchObject({ index: 0 })
+    const p = journeyPosition(7, 50, 100) // entre el 5 y el 10
     expect(p.current.id).toBe('gymnasion')
-    expect(p.next?.id).toBe('strongmen')
-    expect(p.progress).toBeCloseTo(0.75)
-    expect(journeyPosition(30)).toMatchObject({ next: null, progress: 1 })
+    expect(p.next?.id).toBe('technique')
+    expect(p.progress).toBeCloseTo(0.5)
+    expect(journeyPosition(100)).toMatchObject({ next: null, progress: 1 })
   })
 })

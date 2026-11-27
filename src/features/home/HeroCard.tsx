@@ -39,14 +39,14 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-[46%] shrink-0 pt-3 pl-2"
+          className="w-[48%] shrink-0 pt-3 pl-1"
         >
           <AvatarFigure
             avatar={avatar}
             body={game.monthBody}
             jerseyNumber={level.level}
             heightCm={profile?.heightCm}
-            className="mx-auto h-60 w-auto"
+            className="mx-auto h-72 w-auto max-w-full"
             title={t.avatar.title}
           />
         </motion.div>

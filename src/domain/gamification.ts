@@ -14,6 +14,8 @@ export interface SessionFact {
   sets: number
   volume: number
   durationSeconds: number
+  /** Hora local de inicio (0–23), para logros como madrugador o nocturno. Opcional en tests. */
+  hour?: number
 }
 
 export interface PrFact {
@@ -54,7 +56,12 @@ export const XP = {
 } as const
 
 /** XP que hace falta para pasar del nivel `level` al siguiente. */
-export const xpToNext = (level: number) => 250 + 150 * (level - 1)
+/**
+ * Niveles 1 a 100. El nivel 2 pide ~600 XP (3–4 entrenamientos) y cada nivel un poco más:
+ * entrenando ~4 veces por semana se llega al 100 (el Olimpo) en unos dos años y medio.
+ */
+export const MAX_LEVEL = 100
+export const xpToNext = (level: number) => 600 + 25 * (level - 1)
 
 export interface LevelInfo {
   level: number
@@ -68,19 +75,20 @@ export interface LevelInfo {
 
 export const LEVEL_TITLES = [
   [1, 'rookie'],
-  [3, 'regular'],
-  [5, 'grinder'],
-  [8, 'athlete'],
-  [12, 'beast'],
-  [17, 'titan'],
-  [25, 'legend'],
+  [10, 'regular'],
+  [20, 'grinder'],
+  [35, 'athlete'],
+  [50, 'beast'],
+  [70, 'titan'],
+  [90, 'legend'],
+  [100, 'olympian'],
 ] as const
 export type LevelTitle = (typeof LEVEL_TITLES)[number][1]
 
 export function levelFromXp(xp: number): LevelInfo {
   let level = 1
   let rest = Math.max(0, Math.floor(xp))
-  while (rest >= xpToNext(level)) {
+  while (level < MAX_LEVEL && rest >= xpToNext(level)) {
     rest -= xpToNext(level)
     level++
   }
@@ -118,65 +126,82 @@ export function bestWeekStreak(f: Facts): number {
   return best
 }
 
-// ---------------------------------------------------------------- racha semanal
+// ---------------------------------------------------------------- racha diaria
 
 export interface StreakInfo {
-  /** Semanas seguidas cumpliendo la meta (la actual suma solo si ya se cumplió). */
+  /** Días seguidos desde que arrancó la racha (los días sin entrenar cuentan como descanso). */
   current: number
   best: number
-  /** Protectores disponibles: salvan una semana floja sin cortar la racha. */
+  /** Protectores: salvan una semana en la que no llegaste a tu meta. */
   freezes: number
   /** Semanas salvadas por un protector (lunes de cada una). */
   frozenWeeks: string[]
-  thisWeekDone: boolean
+  /** Primer día de la racha actual (AAAA-MM-DD), o null. */
+  start: string | null
+  trainedToday: boolean
+  /** Entrenamientos que faltan esta semana para cumplir la meta (y no perder la racha). */
+  weekLeft: number
 }
 
-/** Cada cuántas semanas seguidas se gana un protector, y cuántos se pueden guardar. */
-export const FREEZE_EVERY = 4
 export const MAX_FREEZES = 2
 
+const daysBetweenKeys = (a: string, b: string) =>
+  Math.round((fromDateKey(b).getTime() - fromDateKey(a).getTime()) / 86_400_000)
+
 /**
- * Racha por semanas (no por días: con días de descanso planeados una racha diaria se cortaría
- * siempre). Se calcula de los datos, así que nunca se desincroniza.
+ * Racha diaria: cada día suma; los que no entrenás son días de descanso (🌙 en la app).
+ * Se pierde cuando termina una semana sin cumplir tu meta de días, salvo que tengas un protector.
+ * Los protectores se ganan completando los 3 desafíos de una semana (máximo 2 guardados).
+ * Se calcula de los datos, así que nunca se desincroniza.
  */
-export function weeklyStreak(f: Facts, today: string): StreakInfo {
-  const empty: StreakInfo = {
-    current: 0,
-    best: 0,
-    freezes: 0,
-    frozenWeeks: [],
-    thisWeekDone: false,
-  }
-  if (f.weekGoal <= 0 || f.sessions.length === 0) return empty
-  const met = new Set(weeksGoalMet(f))
-  const first = [...f.sessions].map((s) => s.date).sort()[0]!
+export function dailyStreak(f: Facts, today: string): StreakInfo {
   const thisWeek = toDateKey(startOfWeek(fromDateKey(today)))
-  let week = startOfWeek(fromDateKey(first))
-  let current = 0
+  const daysThisWeek = new Set(
+    f.sessions.filter((s) => s.date >= thisWeek && s.date <= today).map((s) => s.date),
+  )
+  const base = {
+    trainedToday: daysThisWeek.has(today),
+    weekLeft: Math.max(0, f.weekGoal - daysThisWeek.size),
+  }
+  if (f.weekGoal <= 0 || f.sessions.length === 0)
+    return { current: 0, best: 0, freezes: 0, frozenWeeks: [], start: null, ...base }
+
+  const met = new Set(weeksGoalMet(f))
+  const firstIn = (week: string) => {
+    const end = toDateKey(addDays(fromDateKey(week), 6))
+    return (
+      f.sessions
+        .map((s) => s.date)
+        .filter((d) => d >= week && d <= end)
+        .sort()[0] ?? null
+    )
+  }
+  let week = startOfWeek(fromDateKey([...f.sessions].map((s) => s.date).sort()[0]!))
+  let start: string | null = null
   let best = 0
-  let run = 0
   let freezes = 0
   const frozenWeeks: string[] = []
   while (toDateKey(week) < thisWeek) {
     const key = toDateKey(week)
     if (met.has(key)) {
-      current++
-      run++
-      if (run % FREEZE_EVERY === 0) freezes = Math.min(MAX_FREEZES, freezes + 1)
-    } else if (current > 0 && freezes > 0) {
-      freezes--
-      frozenWeeks.push(key)
-      run = 0
-    } else {
-      current = 0
-      run = 0
+      start ??= firstIn(key)
+    } else if (start) {
+      if (freezes > 0) {
+        freezes--
+        frozenWeeks.push(key)
+      } else {
+        // Se cortó: duró hasta el domingo anterior
+        best = Math.max(best, daysBetweenKeys(start, toDateKey(addDays(week, -1))) + 1)
+        start = null
+      }
     }
-    best = Math.max(best, current)
+    if (weeklyChallenges(f, key).every((c) => c.done)) freezes = Math.min(MAX_FREEZES, freezes + 1)
     week = addDays(week, 7)
   }
-  const thisWeekDone = met.has(thisWeek)
-  if (thisWeekDone) current++
-  return { current, best: Math.max(best, current), freezes, frozenWeeks, thisWeekDone }
+  // Esta semana todavía está en juego: si entrenaste y no venías con racha, arranca hoy
+  if (!start && daysThisWeek.size > 0) start = [...daysThisWeek].sort()[0]!
+  const current = start ? daysBetweenKeys(start, today) + 1 : 0
+  return { current, best: Math.max(best, current), freezes, frozenWeeks, start, ...base }
 }
 
 export interface XpBreakdown {
@@ -211,7 +236,21 @@ export function sessionXp(sets: number, prs: number): number {
 // ---------------------------------------------------------------- logros
 
 export type AchievementIcon =
-  'dumbbell' | 'trophy' | 'flame' | 'droplet' | 'zap' | 'weight' | 'scale' | 'layers' | 'calendar'
+  | 'dumbbell'
+  | 'trophy'
+  | 'flame'
+  | 'droplet'
+  | 'zap'
+  | 'weight'
+  | 'scale'
+  | 'layers'
+  | 'calendar'
+  | 'sunrise'
+  | 'moon'
+  | 'target'
+  | 'mountain'
+  | 'crown'
+  | 'body'
 
 export interface Totals {
   workouts: number
@@ -224,6 +263,15 @@ export interface Totals {
   waterGoalDays: number
   weightLogs: number
   maxLift: number
+  /** Racha diaria más larga (días). */
+  bestDayStreak: number
+  level: number
+  challengesDone: number
+  earlySessions: number
+  lateSessions: number
+  weekendSessions: number
+  /** Máximo de grupos musculares distintos entrenados en un mismo mes (de 7). */
+  groupsInAMonth: number
 }
 
 export interface AchievementDef {
@@ -236,21 +284,38 @@ export interface AchievementDef {
 export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'first_workout', icon: 'dumbbell', target: 1, value: (t) => t.workouts },
   { id: 'workouts_10', icon: 'dumbbell', target: 10, value: (t) => t.workouts },
+  { id: 'workouts_25', icon: 'dumbbell', target: 25, value: (t) => t.workouts },
   { id: 'workouts_50', icon: 'dumbbell', target: 50, value: (t) => t.workouts },
   { id: 'workouts_100', icon: 'dumbbell', target: 100, value: (t) => t.workouts },
+  { id: 'workouts_250', icon: 'dumbbell', target: 250, value: (t) => t.workouts },
   { id: 'first_pr', icon: 'trophy', target: 1, value: (t) => t.prs },
   { id: 'prs_10', icon: 'trophy', target: 10, value: (t) => t.prs },
+  { id: 'prs_25', icon: 'trophy', target: 25, value: (t) => t.prs },
   { id: 'prs_50', icon: 'trophy', target: 50, value: (t) => t.prs },
+  { id: 'streak_7', icon: 'flame', target: 7, value: (t) => t.bestDayStreak },
+  { id: 'streak_30', icon: 'flame', target: 30, value: (t) => t.bestDayStreak },
+  { id: 'streak_100', icon: 'flame', target: 100, value: (t) => t.bestDayStreak },
+  { id: 'streak_365', icon: 'flame', target: 365, value: (t) => t.bestDayStreak },
   { id: 'full_week', icon: 'calendar', target: 1, value: (t) => t.weeksGoalMet },
-  { id: 'streak_4', icon: 'flame', target: 4, value: (t) => t.bestStreak },
-  { id: 'streak_12', icon: 'flame', target: 12, value: (t) => t.bestStreak },
+  { id: 'weeks_10', icon: 'calendar', target: 10, value: (t) => t.weeksGoalMet },
+  { id: 'challenges_10', icon: 'target', target: 10, value: (t) => t.challengesDone },
+  { id: 'challenges_50', icon: 'target', target: 50, value: (t) => t.challengesDone },
   { id: 'sets_500', icon: 'layers', target: 500, value: (t) => t.sets },
+  { id: 'sets_2000', icon: 'layers', target: 2000, value: (t) => t.sets },
   { id: 'volume_10t', icon: 'weight', target: 10_000, value: (t) => t.volume },
   { id: 'volume_100t', icon: 'weight', target: 100_000, value: (t) => t.volume },
   { id: 'volume_1000t', icon: 'weight', target: 1_000_000, value: (t) => t.volume },
+  { id: 'club_60', icon: 'trophy', target: 60, value: (t) => t.maxLift },
   { id: 'club_100', icon: 'trophy', target: 100, value: (t) => t.maxLift },
+  { id: 'complete_body', icon: 'body', target: 7, value: (t) => t.groupsInAMonth },
+  { id: 'early_bird', icon: 'sunrise', target: 5, value: (t) => t.earlySessions },
+  { id: 'night_owl', icon: 'moon', target: 5, value: (t) => t.lateSessions },
+  { id: 'weekend_warrior', icon: 'calendar', target: 10, value: (t) => t.weekendSessions },
   { id: 'cardio_10', icon: 'zap', target: 10, value: (t) => t.cardioSessions },
   { id: 'weigh_in_10', icon: 'scale', target: 10, value: (t) => t.weightLogs },
+  { id: 'level_25', icon: 'mountain', target: 25, value: (t) => t.level },
+  { id: 'level_50', icon: 'mountain', target: 50, value: (t) => t.level },
+  { id: 'level_100', icon: 'crown', target: 100, value: (t) => t.level },
 ]
 
 export interface AchievementState {
@@ -261,7 +326,20 @@ export interface AchievementState {
   progress: number
 }
 
-export function totalsOf(f: Facts): Totals {
+export function totalsOf(
+  f: Facts,
+  extra: { level?: number; challengesDone?: number; bestDayStreak?: number } = {},
+): Totals {
+  const groupsByMonth = new Map<string, Set<Stat>>()
+  for (const e of f.exerciseSets) {
+    const stat = e.muscle ? statOf(e.muscle) : null
+    if (!stat) continue
+    const m = e.date.slice(0, 7)
+    const set = groupsByMonth.get(m) ?? new Set<Stat>()
+    set.add(stat)
+    groupsByMonth.set(m, set)
+  }
+  const dow = (d: string) => fromDateKey(d).getDay()
   return {
     workouts: f.sessions.length,
     sets: f.sessions.reduce((n, s) => n + s.sets, 0),
@@ -273,6 +351,13 @@ export function totalsOf(f: Facts): Totals {
     waterGoalDays: f.waterGoalDays.length,
     weightLogs: f.weightLogs.length,
     maxLift: f.exerciseSets.reduce((m, e) => Math.max(m, e.maxWeight), 0),
+    bestDayStreak: extra.bestDayStreak ?? 0,
+    level: extra.level ?? 1,
+    challengesDone: extra.challengesDone ?? 0,
+    earlySessions: f.sessions.filter((s) => s.hour !== undefined && s.hour < 8).length,
+    lateSessions: f.sessions.filter((s) => s.hour !== undefined && s.hour >= 21).length,
+    weekendSessions: f.sessions.filter((s) => [0, 6].includes(dow(s.date))).length,
+    groupsInAMonth: Math.max(0, ...[...groupsByMonth.values()].map((g) => g.size)),
   }
 }
 

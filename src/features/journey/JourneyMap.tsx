@@ -63,11 +63,13 @@ export function JourneyMap() {
 
   return (
     <div
-      className="relative overflow-hidden rounded-[var(--radius-card)] border border-border"
+      className="relative overflow-hidden rounded-[var(--radius-card)] border border-accent/30"
       style={{
         height,
+        // Halo violeta alrededor del sendero y un cielo más intenso arriba, cerca del Olimpo
         background:
-          'linear-gradient(to bottom, color-mix(in oklab, var(--color-accent) 22%, var(--color-card)) 0%, var(--color-card) 30%, var(--color-card) 100%)',
+          'radial-gradient(70% 45% at 0% 60%, color-mix(in oklab, var(--color-accent) 18%, transparent), transparent 70%), radial-gradient(70% 45% at 100% 30%, color-mix(in oklab, var(--color-accent) 18%, transparent), transparent 70%), radial-gradient(60% 30% at 50% 100%, color-mix(in oklab, var(--color-accent) 22%, transparent), transparent 70%), linear-gradient(to bottom, color-mix(in oklab, var(--color-accent) 30%, var(--color-card)) 0%, var(--color-card) 32%, var(--color-card) 100%)',
+        boxShadow: 'inset 0 0 60px -10px color-mix(in oklab, var(--color-accent) 35%, transparent)',
       }}
     >
       {/* El Olimpo: nubes y templo */}
@@ -123,7 +125,7 @@ export function JourneyMap() {
         <path
           d={pathOf(pts)}
           fill="none"
-          className="stroke-border-strong"
+          className="stroke-accent/40"
           strokeWidth={6}
           strokeDasharray="1 14"
           strokeLinecap="round"
@@ -168,17 +170,17 @@ export function JourneyMap() {
                 'relative grid size-14 shrink-0 place-items-center rounded-full border-b-4 transition-transform active:translate-y-0.5 active:border-b-2',
                 camp.id === 'olympus'
                   ? reached
-                    ? 'border-amber-600 bg-amber-300 text-bg'
-                    : 'border-border-strong bg-card-2 text-subtle'
+                    ? 'border-[color-mix(in_oklab,var(--color-gold)_70%,black)] bg-gold text-gold-fg shadow-[0_0_24px_rgb(250_204_21/0.5)]'
+                    : 'border-[color-mix(in_oklab,var(--color-accent)_45%,var(--color-card))] bg-[color-mix(in_oklab,var(--color-accent)_14%,var(--color-card))] text-accent-2'
                   : reached
                     ? 'border-[color-mix(in_oklab,var(--color-gold)_70%,black)] bg-gold text-gold-fg'
-                    : 'border-border-strong bg-card-2 text-subtle',
+                    : 'border-[color-mix(in_oklab,var(--color-accent)_45%,var(--color-card))] bg-[color-mix(in_oklab,var(--color-accent)_14%,var(--color-card))] text-accent-2',
                 current && 'ring-4 ring-gold/30',
               )}
             >
               <Icon className="size-6" />
               {!reached && (
-                <Lock className="absolute -right-1 -bottom-1 size-5 rounded-full border border-border bg-card p-0.5 text-muted" />
+                <Lock className="absolute -right-1 -bottom-1 size-5 rounded-full border border-accent/30 bg-card p-0.5 text-accent-2" />
               )}
             </button>
             <span className="mt-1.5 w-28 text-center text-xs leading-tight">

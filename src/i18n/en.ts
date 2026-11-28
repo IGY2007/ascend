@@ -1158,7 +1158,7 @@ export const en = {
     notFound: "This routine doesn't exist.",
     back: 'Routines',
     generated: 'Built for you',
-    nextUp: 'Up next',
+    nextUp: 'Today',
     rotation: 'Your routines rotate in this order: you always get the next one.',
     start: 'Start',
     startThis: 'Start this routine',

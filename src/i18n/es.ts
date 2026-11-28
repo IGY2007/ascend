@@ -1169,7 +1169,7 @@ export const es: Messages = {
     notFound: 'Esta rutina no existe.',
     back: 'Rutinas',
     generated: 'Armada para vos',
-    nextUp: 'Te toca',
+    nextUp: 'Hoy',
     rotation: 'Tus rutinas rotan en este orden: siempre te toca la que sigue.',
     start: 'Empezar',
     startThis: 'Empezar esta rutina',

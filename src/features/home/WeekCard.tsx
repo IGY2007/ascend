@@ -132,7 +132,7 @@ export function WeekCard({ className }: { className?: string }) {
                 {trained ? (
                   <Check className="size-4" strokeWidth={3.5} />
                 ) : rest ? (
-                  <Moon className="size-4 fill-current text-accent-2" aria-label={t.streak.rest} />
+                  <Moon className="size-4 fill-current text-gold" aria-label={t.streak.rest} />
                 ) : (
                   date.getDate()
                 )}

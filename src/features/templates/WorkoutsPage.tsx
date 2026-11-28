@@ -101,7 +101,7 @@ export function WorkoutsPage() {
               <Link to={`/workouts/${next.id}`} className="block">
                 <div className="flex items-center justify-between gap-3">
                   <p className="flex items-center gap-1.5 text-sm font-medium text-success">
-                    <span className="size-1.5 rounded-full bg-success" />
+                    <span className="size-1.5 rounded-full bg-gold" />
                     {w.nextUp}
                   </p>
                   <ChevronRight className="size-5 text-muted" />
@@ -191,7 +191,7 @@ export function WorkoutsPage() {
                       to={`/workouts/${tpl.id}`}
                       className="flex items-center gap-4 rounded-[var(--radius-card)] border border-border bg-card p-4 transition-transform active:scale-[0.99]"
                     >
-                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-success/12 text-success">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold/12 text-success">
                         <Sparkles className="size-5" />
                       </span>
                       <div className="min-w-0 flex-1">

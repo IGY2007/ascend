@@ -89,7 +89,7 @@ Reglas:
 - `viewport-fit=cover` y `env(safe-area-inset-*)` para la barra inferior y el notch.
 - Inputs con `font-size` ≥ 16px (si no, iOS hace zoom). Peso: `inputMode="decimal"`; reps/RIR: `inputMode="numeric"`.
 - Aceptar coma y punto como separador decimal (69,5 y 69.5).
-- `apple-touch-icon`, `apple-mobile-web-app-capable`, `theme-color` #09090B.
+- `apple-touch-icon`, `apple-mobile-web-app-capable`, `theme-color` #0E0B16.
 - **Temporizador de descanso:** iOS congela el JS cuando la app pasa a segundo plano. Guardá la hora de fin (timestamp) y calculá el tiempo restante; no confíes en `setInterval`. La Vibration API no existe en iOS: feedback visual (y sonido opcional).
 - Zonas táctiles de 44px como mínimo.
 
@@ -97,12 +97,15 @@ Reglas:
 
 **La referencia visual principal es `design/referencia.*`.** Si la paleta de abajo choca con la imagen, gana la imagen. Los tokens finales viven en el archivo de tema; actualizá esta sección cuando cambien. El objetivo es que la app se vea premium y "fachera", con animaciones fluidas y que respeten `prefers-reduced-motion`.
 
-Paleta inicial (tokens de Tailwind / variables CSS):
-- bg `#09090B` · bg-2 `#111114` · card `#18181D` · border `#292932`
-- text `#F4F4F5` · text-muted `#92929E`
-- accent `#8B5CF6` · accent-2 `#A78BFA` · success `#22C55E`
+Paleta **Olimpo** (elegida el 28/11/2026; tokens en `src/index.css`):
+- bg `#0E0B16` · bg-2 `#13101D` · card `#181325` · card-2 `#221B33` · border `#2E2642`
+- text `#F5F3FA` · text-muted `#A39DB5`
+- accent (violeta real) `#7C3AED` · accent-2 `#A78BFA`
+- `gold` `#FACC15` para rellenos (días hechos, logros, campamentos, anillos) con `gold-fg` `#1A1300`; `success` es el oro para textos
+- Violeta = esfuerzo (botones, XP, series). Oro = lo que se gana (logros, récords, Olimpo).
+- Ícono de la app: el pico en blanco y el chevron dorado sobre `#0E0B16` (`npm run icons`).
 
-Hay **modo claro** (Ajustes → Apariencia: automático / oscuro / claro): mismos tokens con otra paleta en `:root[data-theme='light']` de `src/index.css`; el verde lima se oscurece para leerse sobre blanco. El oscuro sigue siendo la identidad de la marca.
+Hay **modo claro** (Ajustes → Apariencia: automático / oscuro / claro): mismos tokens con otra paleta en `:root[data-theme='light']` de `src/index.css`; el oro de los textos se oscurece (`#A16207`) para leerse sobre blanco. El oscuro sigue siendo la identidad de la marca.
 
 Tipografía moderna (Inter o Geist), números tabulares en los datos. Esquinas suaves, espaciado generoso, animaciones cortas y funcionales. Evitar: gradientes por todos lados, colores saturados, cards innecesarias, emojis como íconos, aspecto de plantilla genérica.
 

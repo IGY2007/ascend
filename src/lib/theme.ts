@@ -6,7 +6,7 @@
 export type ThemePref = 'dark' | 'light' | 'system'
 export const THEME_PREFS: ThemePref[] = ['system', 'dark', 'light']
 const KEY = 'ascend-theme'
-const BG = { dark: '#09090b', light: '#f5f4f9' } as const
+const BG = { dark: '#0e0b16', light: '#f7f5fc' } as const
 
 export function getThemePref(): ThemePref {
   try {

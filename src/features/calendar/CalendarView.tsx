@@ -92,7 +92,7 @@ export function CalendarView() {
                   {fromDateKey(date).getDate()}
                 </span>
                 <span className="flex h-1.5 items-center gap-1" aria-hidden>
-                  {cardio && <span className="size-1.5 rounded-full bg-success" />}
+                  {cardio && <span className="size-1.5 rounded-full bg-gold" />}
                 </span>
               </>
             )
@@ -125,7 +125,7 @@ export function CalendarView() {
             {c.legendWorkout}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-success" />
+            <span className="size-2 rounded-full bg-gold" />
             {c.legendCardio}
           </span>
         </div>

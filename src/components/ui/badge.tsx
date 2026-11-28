@@ -12,7 +12,7 @@ export function Badge({ className, tone = 'neutral', ...props }: BadgeProps) {
         'inline-flex h-6 items-center rounded-full px-2.5 text-xs font-medium',
         tone === 'neutral' && 'border border-border bg-card-2 text-muted',
         tone === 'accent' && 'bg-accent/15 text-accent-2',
-        tone === 'success' && 'bg-success/12 text-success',
+        tone === 'success' && 'bg-gold/12 text-success',
         className,
       )}
       {...props}

@@ -15,7 +15,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-accent text-accent-fg shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_8px_24px_-8px_rgb(139_92_246/0.55)] hover:bg-[#9b70f8]',
+          'bg-accent text-accent-fg shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_8px_24px_-8px_rgb(124_58_237/0.55)] hover:bg-[#9b70f8]',
         secondary: 'border border-border bg-card-2 text-fg hover:border-border-strong',
         ghost: 'text-muted hover:bg-card-2 hover:text-fg',
         danger: 'border border-danger/25 bg-danger/10 text-danger hover:bg-danger/15',

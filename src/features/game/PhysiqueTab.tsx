@@ -15,7 +15,7 @@ import { formatMonthYear, t } from '@/i18n'
 const m = t.game.muscles
 
 const READY_STYLE: Record<Readiness, string> = {
-  ready: 'bg-success/15 text-success',
+  ready: 'bg-gold/15 text-success',
   recovering: 'bg-accent/15 text-accent-2',
   cold: 'bg-warning/12 text-warning',
   untrained: 'bg-card-2 text-subtle',
@@ -84,7 +84,7 @@ export function PhysiqueTab() {
                     </div>
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-card-2">
                       <div
-                        className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-success transition-transform duration-700"
+                        className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-gold transition-transform duration-700"
                         style={{ transform: `scaleX(${Math.max(0.02, game.monthBody[s.stat])})` }}
                       />
                     </div>

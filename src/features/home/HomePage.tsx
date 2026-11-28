@@ -58,7 +58,7 @@ export function HomePage() {
               type="button"
               onClick={() => void start(next.id)}
               aria-label={`${h.startWorkout}: ${routineText(next.name)}`}
-              className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent text-accent-fg shadow-[0_8px_24px_-8px_rgb(139_92_246/0.8)] transition-transform active:scale-95"
+              className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent text-accent-fg shadow-[0_8px_24px_-8px_rgb(124_58_237/0.8)] transition-transform active:scale-95"
             >
               <Play className="size-5" fill="currentColor" />
             </button>

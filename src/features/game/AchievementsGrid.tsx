@@ -34,13 +34,13 @@ export function AchievementsGrid() {
               key={a.def.id}
               className={cn(
                 'flex flex-col items-center rounded-2xl border p-3 text-center',
-                a.unlocked ? 'border-success/40 bg-success/8' : 'border-border bg-card',
+                a.unlocked ? 'border-gold/40 bg-gold/8' : 'border-border bg-card',
               )}
             >
               <span
                 className={cn(
                   'relative grid size-11 place-items-center rounded-full',
-                  a.unlocked ? 'bg-success text-bg' : 'bg-card-2 text-subtle',
+                  a.unlocked ? 'bg-gold text-gold-fg' : 'bg-card-2 text-subtle',
                 )}
               >
                 <Icon className="size-5" />

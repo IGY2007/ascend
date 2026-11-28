@@ -79,7 +79,7 @@ export function SummaryPage() {
             initial={{ scale: 0.4, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-            className="mx-auto mb-5 grid size-20 place-items-center rounded-full bg-success text-bg shadow-[0_0_0_10px_rgb(163_230_53/0.12),0_0_60px_rgb(163_230_53/0.25)]"
+            className="mx-auto mb-5 grid size-20 place-items-center rounded-full bg-gold text-gold-fg shadow-[0_0_0_10px_rgb(250_204_21/0.12),0_0_60px_rgb(250_204_21/0.25)]"
           >
             <Check className="size-10" strokeWidth={3} />
           </motion.div>
@@ -99,7 +99,7 @@ export function SummaryPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="mt-6 rounded-2xl border border-success/30 bg-success/8 px-4 py-3"
+          className="mt-6 rounded-2xl border border-gold/30 bg-gold/8 px-4 py-3"
         >
           <div className="flex items-baseline justify-between gap-3">
             <p className="num text-lg font-bold text-success">
@@ -111,7 +111,7 @@ export function SummaryPage() {
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-card-2">
             <motion.div
-              className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-success"
+              className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-gold"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: game.level.into / game.level.needed }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}

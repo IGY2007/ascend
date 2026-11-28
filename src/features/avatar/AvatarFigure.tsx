@@ -110,7 +110,7 @@ export const AvatarFigure = memo(function AvatarFigure({
           </feMerge>
         </filter>
         <radialGradient id={`${uid}-aura`}>
-          <stop offset="0%" stopColor="#a3e635" stopOpacity={0.55} />
+          <stop offset="0%" stopColor="#facc15" stopOpacity={0.55} />
           <stop offset="55%" stopColor="#8b5cf6" stopOpacity={0.35} />
           <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
         </radialGradient>
@@ -190,7 +190,7 @@ export const AvatarFigure = memo(function AvatarFigure({
                     width={25}
                     height={5}
                     rx={2.5}
-                    fill={avatar.shoesColor === 0 ? '#a3e635' : '#f4f4f5'}
+                    fill={avatar.shoesColor === 0 ? '#facc15' : '#f4f4f5'}
                   />
                   <path
                     d={`M${fx - 3.5},${286} L${fx + 3.5},${286} M${fx - 3.5},${289} L${fx + 3.5},${289}`}
@@ -243,7 +243,7 @@ export const AvatarFigure = memo(function AvatarFigure({
                     width={fa + 2}
                     height={6}
                     rx={2.5}
-                    fill="#a3e635"
+                    fill="#facc15"
                   />
                 )}
                 <circle cx={CX + side * (armX + 1.5)} cy={190} r={6 + a * 1.5} fill={skin} />
@@ -549,7 +549,7 @@ export const AvatarFigure = memo(function AvatarFigure({
           {avatar.headwear === 'headband' && (
             <path
               d={`M${CX - 30},49 Q${CX},38 ${CX + 30},49 L${CX + 30},56 Q${CX},45 ${CX - 30},56 Z`}
-              fill="#a3e635"
+              fill="#facc15"
             />
           )}
           {avatar.headwear === 'cap' && (
@@ -607,7 +607,7 @@ export const AvatarFigure = memo(function AvatarFigure({
               />
               <circle cx={CX} cy={30} r={2.6} fill="#ef4444" />
               <circle cx={CX - 11} cy={31} r={2} fill="#3b82f6" />
-              <circle cx={CX + 11} cy={31} r={2} fill="#a3e635" />
+              <circle cx={CX + 11} cy={31} r={2} fill="#facc15" />
             </g>
           )}
 

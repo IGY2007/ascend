@@ -12,7 +12,7 @@ function seeded(key: string | number) {
   }
 }
 
-const COLORS = ['var(--color-accent)', 'var(--color-accent-2)', 'var(--color-success)', '#f4f4f5']
+const COLORS = ['var(--color-accent)', 'var(--color-accent-2)', 'var(--color-gold)', '#f4f4f5']
 
 /**
  * Explosión de confeti para festejar (récords, logros). Sin librerías: ~40 piezas animadas con

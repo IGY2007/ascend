@@ -70,7 +70,7 @@ export function ProfilePage() {
           className="relative block overflow-hidden rounded-[var(--radius-card)] border border-accent/40 transition-transform active:scale-[0.99]"
           style={{
             background:
-              'radial-gradient(80% 70% at 50% 100%, rgb(139 92 246 / 0.35), transparent 70%), var(--color-card)',
+              'radial-gradient(80% 70% at 50% 100%, rgb(124 58 237 / 0.35), transparent 70%), var(--color-card)',
           }}
         >
           <div className="flex items-end gap-2 px-4 pt-4">
@@ -198,7 +198,7 @@ function Stat({
         className={cn(
           'grid size-10 shrink-0 place-items-center rounded-xl',
           tone === 'accent' && 'bg-accent/15 text-accent-2',
-          tone === 'success' && 'bg-success/15 text-success',
+          tone === 'success' && 'bg-gold/15 text-success',
           tone === 'warning' && 'bg-warning/15 text-warning',
         )}
       >

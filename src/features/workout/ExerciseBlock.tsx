@@ -206,7 +206,7 @@ export function ExerciseBlock({
               className={cn(
                 'grid items-center gap-2 rounded-2xl p-1 transition-colors',
                 timed ? 'grid-cols-[2rem_1fr_3.25rem]' : 'grid-cols-[2rem_1fr_1fr_3.5rem_3.25rem]',
-                set.isCompleted && 'bg-success/8',
+                set.isCompleted && 'bg-gold/8',
               )}
             >
               <span
@@ -265,7 +265,7 @@ export function ExerciseBlock({
                 className={cn(
                   'grid size-12 place-items-center rounded-xl border transition-colors',
                   set.isCompleted
-                    ? 'border-success bg-success text-bg'
+                    ? 'border-gold bg-gold text-gold-fg'
                     : 'border-border-strong text-muted',
                 )}
               >

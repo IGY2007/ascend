@@ -6,7 +6,7 @@ export type MascotMood = 'happy' | 'wink' | 'wow' | 'proud'
 export type MascotPose = 'idle' | 'wave' | 'flex' | 'lift' | 'think' | 'cheer' | 'point'
 
 const INK = '#1f1a17'
-const LIME = '#a3e635'
+const LIME = '#facc15'
 const ARM = '#7c3aed'
 const ARM_DARK = '#5b21b6'
 

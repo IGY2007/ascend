@@ -43,7 +43,7 @@ export const FORMAT_SIZE: Record<ShareFormat, { w: number; h: number }> = {
 
 const FONT = '"Inter Variable", Inter, system-ui, -apple-system, sans-serif'
 const WHITE = '#ffffff'
-const LIME = '#a3e635'
+const LIME = '#facc15'
 const VIOLET = '#8b5cf6'
 
 /** Fondo: la foto recortada para llenar, o un degradado de la marca si no hay foto. */
@@ -70,7 +70,7 @@ function drawBackground(
     ctx.fillRect(0, 0, W, H)
     return
   }
-  ctx.fillStyle = '#09090b'
+  ctx.fillStyle = '#0e0b16'
   ctx.fillRect(0, 0, W, H)
   const r = ctx.createRadialGradient(W * 0.3, H * 0.75, 0, W * 0.3, H * 0.75, H * 0.8)
   r.addColorStop(0, 'rgba(139,92,246,0.55)')
@@ -78,8 +78,8 @@ function drawBackground(
   ctx.fillStyle = r
   ctx.fillRect(0, 0, W, H)
   const r2 = ctx.createRadialGradient(W * 0.9, H * 0.08, 0, W * 0.9, H * 0.08, H * 0.45)
-  r2.addColorStop(0, 'rgba(163,230,53,0.22)')
-  r2.addColorStop(1, 'rgba(163,230,53,0)')
+  r2.addColorStop(0, 'rgba(250,204,21,0.22)')
+  r2.addColorStop(1, 'rgba(250,204,21,0)')
   ctx.fillStyle = r2
   ctx.fillRect(0, 0, W, H)
 }

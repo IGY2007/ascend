@@ -693,7 +693,7 @@ export function OnboardingPage() {
                 </h1>
                 <p className="mt-2 text-muted">{o.summaryBody}</p>
 
-                <section className="mt-7 rounded-[var(--radius-card)] border border-accent/35 bg-[radial-gradient(120%_120%_at_0%_0%,rgb(139_92_246/0.25),transparent_60%),var(--color-card)] p-5">
+                <section className="mt-7 rounded-[var(--radius-card)] border border-accent/35 bg-[radial-gradient(120%_120%_at_0%_0%,rgb(124_58_237/0.25),transparent_60%),var(--color-card)] p-5">
                   <p className="text-sm font-medium text-muted">{o.dailyTarget}</p>
                   <p className="mt-1 flex items-baseline gap-1.5">
                     <AnimatedNumber

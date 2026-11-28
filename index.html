@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>ASCEND</title>
     <meta name="description" content="Build yourself. Track your progress." />
-    <meta name="theme-color" content="#09090B" />
+    <meta name="theme-color" content="#0E0B16" />
     <meta name="color-scheme" content="dark" />
 
     <!-- iOS: app instalable desde Safari -->
@@ -23,7 +23,7 @@
           r.dataset.theme = light ? 'light' : 'dark'
           if (light) {
             r.classList.remove('dark')
-            document.querySelector('meta[name=theme-color]').setAttribute('content', '#f5f4f9')
+            document.querySelector('meta[name=theme-color]').setAttribute('content', '#f7f5fc')
             document.querySelector('meta[name=color-scheme]').setAttribute('content', 'light')
             document
               .querySelector('meta[name=apple-mobile-web-app-status-bar-style]')
@@ -97,11 +97,11 @@
     <style>
       /* Fondo antes de que cargue el CSS (sin parpadeo blanco); el modo claro tiene el suyo */
       html:not([data-theme='light']) {
-        background: #09090b;
-        color: #f4f4f5;
+        background: #0e0b16;
+        color: #f5f3fa;
       }
       html[data-theme='light'] {
-        background: #f5f4f9;
+        background: #f7f5fc;
         color: #17141f;
       }
     </style>

@@ -28,10 +28,10 @@ const SHAPES = [
       [12, 13.75],
       [15, 19],
     ],
-    color: [139, 92, 246],
+    color: [250, 204, 21],
   },
 ]
-const BG = [9, 9, 11]
+const BG = [14, 11, 22]
 
 // ---- PNG ----
 const CRC_TABLE = new Uint32Array(256).map((_, n) => {
@@ -110,7 +110,7 @@ function render(width, height, { logoSize, glow = false }) {
         // Brillo violeta muy sutil detrás del logo
         const d = Math.hypot(x - cx, y - cy * 0.9) / (width * 0.6)
         const a = Math.max(0, 1 - d) ** 2 * 0.28
-        base = BG.map((c, i) => c + ([139, 92, 246][i] - c) * a)
+        base = BG.map((c, i) => c + ([124, 58, 237][i] - c) * a)
       }
       let r = 0,
         g = 0,
@@ -164,7 +164,7 @@ const svgPaths = SHAPES.map(
 ).join('')
 write(
   'favicon.svg',
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#09090B"/><g fill="none" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round">${svgPaths}</g></svg>\n`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#0E0B16"/><g fill="none" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round">${svgPaths}</g></svg>\n`,
 )
 
 // ---- Pantallas de inicio de iOS (apple-touch-startup-image) ----

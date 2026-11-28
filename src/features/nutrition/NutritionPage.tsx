@@ -108,7 +108,7 @@ export function NutritionPage() {
               <span
                 className={cn(
                   'rounded-full px-2 py-0.5 text-[0.7rem] font-semibold',
-                  trainingDay ? 'bg-success/15 text-success' : 'bg-card-2 text-muted',
+                  trainingDay ? 'bg-gold/15 text-success' : 'bg-card-2 text-muted',
                 )}
               >
                 {trainingDay ? n.trainingDay : n.restDay}
@@ -177,7 +177,7 @@ export function NutritionPage() {
                   className={cn(
                     'relative z-10 mt-3 grid size-[2.1rem] shrink-0 place-items-center rounded-full border',
                     around
-                      ? 'border-success/50 bg-success/12 text-success'
+                      ? 'border-gold/50 bg-gold/12 text-success'
                       : 'border-border bg-card text-muted',
                   )}
                 >

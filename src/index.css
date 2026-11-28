@@ -5,22 +5,25 @@
  * ASCEND — tokens de diseño.
  * Base: CLAUDE.md, ajustada con la referencia visual (design/referencia.jpg):
  *  - card y border con un tinte violeta muy leve
- *  - success pasa a verde lima (#A3E635), usado solo para progreso y récords
+ *  - paleta Olimpo (28/11/2026): violeta real + oro. `gold` rellena, `success` es el oro para textos
  */
 @theme {
-  --color-bg: #09090b;
-  --color-bg-2: #111114;
-  --color-card: #15131c;
-  --color-card-2: #1c1925;
-  --color-border: #2a2735;
-  --color-border-strong: #3a3548;
-  --color-fg: #f4f4f5;
-  --color-muted: #92929e;
-  --color-subtle: #5e5e6b;
-  --color-accent: #8b5cf6;
+  --color-bg: #0e0b16;
+  --color-bg-2: #13101d;
+  --color-card: #181325;
+  --color-card-2: #221b33;
+  --color-border: #2e2642;
+  --color-border-strong: #3d3456;
+  --color-fg: #f5f3fa;
+  --color-muted: #a39db5;
+  --color-subtle: #6b6482;
+  --color-accent: #7c3aed;
   --color-accent-2: #a78bfa;
   --color-accent-fg: #ffffff;
-  --color-success: #a3e635;
+  --color-success: #facc15;
+  /* Oro del Olimpo para rellenos (días hechos, logros, campamentos); success queda para textos */
+  --color-gold: #facc15;
+  --color-gold-fg: #1a1300;
   --color-danger: #f87171;
   --color-warning: #fbbf24;
 
@@ -86,18 +89,20 @@
 /* Modo claro: mismos tokens, otra paleta. Los verdes y violetas se oscurecen para leerse sobre blanco. */
 :root[data-theme='light'] {
   color-scheme: light;
-  --color-bg: #f5f4f9;
+  --color-bg: #f7f5fc;
   --color-bg-2: #ffffff;
   --color-card: #ffffff;
-  --color-card-2: #efedf6;
-  --color-border: #e2dfeb;
-  --color-border-strong: #cdc8dc;
-  --color-fg: #17141f;
-  --color-muted: #5d5970;
-  --color-subtle: #858197;
-  --color-accent: #7c3aed;
+  --color-card-2: #efeafb;
+  --color-border: #e2dbf3;
+  --color-border-strong: #cbc1e6;
+  --color-fg: #1a1426;
+  --color-muted: #635c78;
+  --color-subtle: #857d9c;
+  --color-accent: #6d28d9;
   --color-accent-2: #6d28d9;
-  --color-success: #4d7c0f;
+  --color-success: #a16207;
+  --color-gold: #eab308;
+  --color-gold-fg: #1a1300;
   --color-danger: #dc2626;
   --color-warning: #b45309;
 }

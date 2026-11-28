@@ -133,7 +133,7 @@ export function JourneyMap() {
           <path
             d={pathOf(done)}
             fill="none"
-            className="stroke-success"
+            className="stroke-gold"
             strokeWidth={6}
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
@@ -156,7 +156,7 @@ export function JourneyMap() {
             style={{ left: `${x}%`, top: yAt(r) - 28 }}
           >
             {current && (
-              <span className="absolute -top-12 block size-11 overflow-hidden rounded-full border-2 border-success bg-card-2 shadow-[0_0_22px_rgb(163_230_53/0.45)]">
+              <span className="absolute -top-12 block size-11 overflow-hidden rounded-full border-2 border-gold bg-card-2 shadow-[0_0_22px_rgb(250_204_21/0.45)]">
                 <AvatarFigure avatar={avatar} variant="head" className="size-full" />
               </span>
             )}
@@ -171,9 +171,9 @@ export function JourneyMap() {
                     ? 'border-amber-600 bg-amber-300 text-bg'
                     : 'border-border-strong bg-card-2 text-subtle'
                   : reached
-                    ? 'border-[color-mix(in_oklab,var(--color-success)_70%,black)] bg-success text-bg'
+                    ? 'border-[color-mix(in_oklab,var(--color-gold)_70%,black)] bg-gold text-gold-fg'
                     : 'border-border-strong bg-card-2 text-subtle',
-                current && 'ring-4 ring-success/30',
+                current && 'ring-4 ring-gold/30',
               )}
             >
               <Icon className="size-6" />

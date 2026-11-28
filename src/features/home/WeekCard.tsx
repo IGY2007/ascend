@@ -66,7 +66,7 @@ export function WeekCard({ className }: { className?: string }) {
                   <span
                     className={cn(
                       'grid size-5 shrink-0 place-items-center rounded-full border',
-                      c.done ? 'border-success bg-success text-bg' : 'border-border-strong',
+                      c.done ? 'border-gold bg-gold text-gold-fg' : 'border-border-strong',
                     )}
                   >
                     {c.done ? (
@@ -91,7 +91,7 @@ export function WeekCard({ className }: { className?: string }) {
                   <div
                     className={cn(
                       'h-full origin-left rounded-full transition-transform duration-500',
-                      c.done ? 'bg-success' : 'bg-accent',
+                      c.done ? 'bg-gold' : 'bg-accent',
                     )}
                     style={{ transform: `scaleX(${Math.min(1, c.value / c.target)})` }}
                   />
@@ -123,7 +123,7 @@ export function WeekCard({ className }: { className?: string }) {
                 className={cn(
                   'grid size-8 place-items-center rounded-full num text-sm font-semibold',
                   trained
-                    ? 'bg-success text-bg'
+                    ? 'bg-gold text-gold-fg'
                     : isToday
                       ? 'text-fg ring-1 ring-accent-2'
                       : 'text-muted',

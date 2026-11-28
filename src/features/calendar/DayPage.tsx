@@ -129,7 +129,7 @@ function DayReport({
           {/* Objetivo de calorías del día */}
           {energy && (
             <Card className="flex items-center gap-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-success/12 text-success">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold/12 text-success">
                 <Flame className="size-5" />
               </span>
               <div className="min-w-0 flex-1">

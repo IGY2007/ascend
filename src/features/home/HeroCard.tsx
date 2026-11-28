@@ -25,11 +25,11 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
   return (
     <Link
       to="/physique"
-      className="relative block overflow-hidden rounded-[var(--radius-card)] border border-accent/40 shadow-[0_12px_40px_-16px_rgb(139_92_246/0.5)] transition-transform active:scale-[0.99]"
+      className="relative block overflow-hidden rounded-[var(--radius-card)] border border-accent/40 shadow-[0_12px_40px_-16px_rgb(124_58_237/0.5)] transition-transform active:scale-[0.99]"
       aria-label={`${t.avatar.title} · ${g.level(level.level)}`}
       style={{
         background:
-          'radial-gradient(90% 80% at 25% 85%, rgb(139 92 246 / 0.38), transparent 70%), radial-gradient(60% 50% at 95% 5%, rgb(163 230 53 / 0.12), transparent 70%), var(--color-card)',
+          'radial-gradient(90% 80% at 25% 85%, rgb(124 58 237 / 0.38), transparent 70%), radial-gradient(60% 50% at 95% 5%, rgb(250 204 21 / 0.14), transparent 70%), var(--color-card)',
       }}
     >
       {/* Piso */}
@@ -66,7 +66,7 @@ export function HeroCard({ trainedToday }: { trainedToday: boolean }) {
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-card-2">
             <motion.div
-              className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-success"
+              className="h-full origin-left rounded-full bg-gradient-to-r from-accent to-gold"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: level.into / level.needed }}
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}

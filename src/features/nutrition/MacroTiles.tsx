@@ -4,7 +4,7 @@ import type { MacroTargets } from '@/types/models'
 
 const MACROS = [
   { key: 'proteinG', label: t.macros.protein, kcalPerG: 4, color: 'bg-accent-2' },
-  { key: 'carbsG', label: t.macros.carbsTile, kcalPerG: 4, color: 'bg-success' },
+  { key: 'carbsG', label: t.macros.carbsTile, kcalPerG: 4, color: 'bg-gold' },
   { key: 'fatG', label: t.macros.fat, kcalPerG: 9, color: 'bg-warning' },
 ] as const
 

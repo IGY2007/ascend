@@ -181,10 +181,10 @@ export function ActiveWorkoutPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ type: 'spring', stiffness: 380, damping: 24 }}
-            className="fixed inset-x-4 top-[calc(env(safe-area-inset-top)+4.5rem)] z-50 mx-auto flex max-w-sm items-center gap-3 rounded-2xl border border-success/40 bg-card-2/95 px-4 py-3 shadow-[0_12px_40px_-12px_rgb(163_230_53/0.45)] backdrop-blur"
+            className="fixed inset-x-4 top-[calc(env(safe-area-inset-top)+4.5rem)] z-50 mx-auto flex max-w-sm items-center gap-3 rounded-2xl border border-gold/40 bg-card-2/95 px-4 py-3 shadow-[0_12px_40px_-12px_rgb(250_204_21/0.45)] backdrop-blur"
             role="status"
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-success text-bg">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gold text-gold-fg">
               <Trophy className="size-5" />
             </span>
             <span className="min-w-0">

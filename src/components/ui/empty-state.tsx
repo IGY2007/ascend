@@ -36,7 +36,7 @@ export function EmptyState({
         aria-hidden
         className="pointer-events-none absolute -top-24 left-1/2 size-56 -translate-x-1/2 rounded-full bg-accent/10 blur-3xl"
       />
-      <div className="relative mb-5 grid size-16 place-items-center rounded-2xl border border-accent/25 bg-accent/10 text-accent-2 shadow-[0_0_0_6px_rgb(139_92_246/0.05)]">
+      <div className="relative mb-5 grid size-16 place-items-center rounded-2xl border border-accent/25 bg-accent/10 text-accent-2 shadow-[0_0_0_6px_rgb(124_58_237/0.05)]">
         <Icon className="size-7" strokeWidth={1.75} />
       </div>
       {comingSoon && (
